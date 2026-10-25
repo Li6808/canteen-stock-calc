@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d434b"/>
+      <stop offset="1" stop-color="#15171a"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".3"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <rect width="512" height="220" rx="114" fill="url(#sheen)"/>
+
+  <g filter="url(#sh)">
+    <!-- 出库单据 -->
+    <rect x="96" y="118" width="230" height="290" rx="18" fill="#f7f8f9"/>
+    <!-- 标题条 -->
+    <rect x="120" y="140" width="96" height="13" rx="6" fill="#2b2f34"/>
+    <!-- 表格行 -->
+    <g fill="#c9ced4">
+      <rect x="120" y="176" width="182" height="11" rx="5"/>
+      <rect x="120" y="230" width="182" height="11" rx="5"/>
+      <rect x="120" y="284" width="182" height="11" rx="5"/>
+      <rect x="120" y="338" width="130" height="11" rx="5"/>
+    </g>
+    <!-- 确认绿勾 -->
+    <circle cx="356" cy="150" r="52" fill="#3f9c4f"/>
+    <path d="M331,150 L349,168 L382,131" fill="none" stroke="#ffffff" stroke-width="17"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
