@@ -80,6 +80,16 @@ button.b.sm{padding:5px 10px;font-size:12px;border-radius:7px}
 button.b.dg{color:var(--red);border-color:var(--red-line)}
 button.b.dg:hover{background:var(--red-bg)}
 button.b.big{padding:13px 26px;font-size:15px;font-weight:600;border-radius:10px}
+/* 一排小按钮不许被拆行：整组包进 nowrap 容器，断行只发生在组前后 */
+.btn-group{display:flex;gap:8px;flex-wrap:nowrap;align-items:center}
+.btn-group>*{flex:0 0 auto}
+/* 满宽按钮允许换行（窄列小按钮仍不许换行） */
+button.b.block{width:100%;white-space:normal;text-align:center;justify-content:center}
+/* 导出/分享类按钮排：nowrap + 放不下左右滑 */
+.btn-scroll{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;padding-bottom:3px;scrollbar-width:none}
+.btn-scroll::-webkit-scrollbar{display:none}
+.btn-scroll>*{flex:0 0 auto}
 button:disabled{opacity:.4;cursor:not-allowed}
 .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .spread{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
@@ -236,6 +246,26 @@ tr.grp.c-dry    td{background:rgba(140,120,190,.14) !important;border-top-color:
 .sheet tr.lunch td{background:#fff8e1 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .sheet .bad{color:#a00;font-weight:700}
 
+/* ================= 版本徽章与更新记录 ================= */
+.ver-badge{font-size:10.5px !important;padding:1.5px 6px;border-radius:5px;
+  background:var(--panel2);color:var(--tx2);border:1px solid var(--line2);
+  cursor:pointer;white-space:nowrap;flex:0 0 auto;letter-spacing:.2px}
+.ver-badge:hover{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-line)}
+.ver-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 4px}
+.ver-line b{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.ver-line span{font-size:12px;color:var(--tx2)}
+.ver-line button{margin-left:auto}
+.ver-entry{padding:11px 0;border-bottom:1px solid var(--line)}
+.ver-entry:last-child{border-bottom:0;padding-bottom:0}
+.ver-entry.cur{background:rgba(133,183,235,.07);margin:0 -12px;padding:11px 12px;
+  border-radius:8px;border-bottom:1px solid var(--line)}
+.ver-head{display:flex;align-items:center;gap:9px;margin-bottom:6px;flex-wrap:wrap}
+.ver-head b{font-size:13.5px;font-weight:700}
+.ver-head span{font-size:11.5px;color:var(--tx2)}
+.ver-entry ul{margin:0;padding-left:18px}
+.ver-entry li{font-size:12.5px;line-height:1.85;color:var(--tx2);margin-bottom:1px}
+.ver-entry.cur li{color:var(--tx)}
+
 /* ==================== 手机端适配 ==================== */
 @media(max-width:820px){
   :root{--pad:12px}
@@ -247,9 +277,11 @@ tr.grp.c-dry    td{background:rgba(140,120,190,.14) !important;border-top-color:
   /* 顶栏：品牌与工具同一行，导航另起一行 */
   .top{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line)}
   .top-in{display:flex;align-items:center;gap:8px;padding:7px 10px}
-  .brand{font-size:15px;display:flex;align-items:baseline;gap:6px;min-width:0;flex:1 1 auto;line-height:1.25}
-  .brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand{font-size:14.5px;display:flex;align-items:baseline;gap:6px;min-width:0;flex:1 1 auto;
+    line-height:1.2;flex-wrap:nowrap}
+  .brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .brand span{font-size:10.5px;white-space:nowrap;flex:0 0 auto}
+  .brand .ver-badge{font-size:9.5px !important;padding:1px 4.5px}
   .tools{margin-left:auto;flex:0 0 auto;display:flex;gap:4px}
   .tools .b{font-size:11.5px;padding:5px 8px}
   /* 导航独立一行，横向滑动 */
@@ -379,8 +411,9 @@ tr.grp.c-dry    td{background:rgba(140,120,190,.14) !important;border-top-color:
 
 <div class="top">
   <div class="top-in">
-    <div class="brand"><b id="schoolName">丰都县第三中学校</b><span>食堂出库计算器</span></div>
-    <div class="tools">
+    <div class="brand"><b id="schoolName">丰都县第三中学校</b><span>食堂出库计算器</span>
+    <span class="ver-badge" id="verBadge" title="版本与更新记录">V1.0</span></div>
+    <div class="tools btn-group">
       <button class="b sm" onclick="saveFile()">备份</button>
       <button class="b sm" onclick="document.getElementById('impf').click()">导入</button>
       <input type="file" id="impf" accept=".json" style="display:none" onchange="loadFile(this)">
@@ -461,8 +494,9 @@ tr.grp.c-dry    td{background:rgba(140,120,190,.14) !important;border-top-color:
           <option value="split">周六、周日各一列</option>
           <option value="merge">周六日合并一列</option>
         </select></label>
+      <div class="btn-group">
       <button class="b" onclick="editOil()">油用量（桶）</button>
-      <button class="b" onclick="printPlan()">打印计划表</button>
+      <button class="b" onclick="printPlan()">打印计划表</button></div>
     </div>
   </div>
   <div class="alert info" id="planTip"></div>
@@ -477,7 +511,7 @@ tr.grp.c-dry    td{background:rgba(140,120,190,.14) !important;border-top-color:
       <select id="itemCat" style="width:160px" onchange="renderItems()">
         <option value="">全部类别</option>
       </select>
-      <button class="b p" onclick="addItem()">＋ 新增食材</button>
+      <div class="btn-group"><button class="b p" onclick="addItem()">＋ 新增食材</button></div>
     </div>
   </div>
   <div class="card"><div class="card-h"><h3 id="itemTitle">全部食材</h3><span class="sub" id="itemCnt"></span></div>
@@ -536,6 +570,18 @@ tr.grp.c-dry    td{background:rgba(140,120,190,.14) !important;border-top-color:
         <button class="b dg" onclick="askClear('all')">恢复出厂设置</button>
       </div>
     </div></div>
+  </div>
+
+  <div class="card" id="verBox" style="margin-top:15px">
+    <div class="card-h"><h3>🆕 版本与更新记录</h3>
+      <span class="sub" id="verBadge2">V1.0</span></div>
+    <div class="card-b">
+      <div class="ver-line" style="margin-bottom:12px">
+        <b id="verLine">V1.0</b>
+        <span id="verDate">更新于 2026-10-25</span>
+      </div>
+      <div id="verBody"></div>
+    </div>
   </div>
 </div>
 
@@ -748,6 +794,45 @@ const eatOf=(slot,base)=>Math.round(base*rateOf(slot));
    每一批入库有独立成本价，出库按批次先后扣减，批用完自动切下一批。
    同一批出库可能跨日、跨周，单价按该批真实成本计价，金额最准。 */
 
+
+/* ==================== 版本与更新记录 ==================== */
+/* 展示在三个地方：顶栏版本徽章、设置页版本行、设置页「更新记录」区块
+   —— 全读这一个对象，改一处全变 */
+const APP_VERSION='V1.0';
+const APP_BUILD='2026-10-25';
+const CHANGELOG=[
+  { version:'V1.0', date:'2026-10-25', items:[
+    '按纸质食谱自动算每天出多少斤：选星期就出数，不用自己算',
+    '早晚餐合并一段，午餐（营养午餐）单独一段并用黄色标出',
+    '各餐按实际就餐人数算：早上人少、午餐最多、晚上较少，比例可调',
+    '油按桶单独计，每天 4 桶（早1+午2+晚1），不随人数变',
+    '食材分五类：米·面、油、肉类、蔬菜类、干鲜类，分类可自己改',
+    '一周计划表：行是食材、列是每天，每格直接是出库斤数',
+    '菜名可以点一下直接改，字看错了自己纠正',
+    '手机上能用：加了主屏幕图标，像 App 一样全屏打开',
+    '可打印出库单（A4 横向），带营养午餐专项签字栏',
+    '已发布到 GitHub：li6808.github.io/canteen-stock-calc'
+  ]},
+];
+/* 更新记录里不许写死具体人名、电话、真实单位名 */
+
+/* ================= 版本与更新记录渲染 ================= */
+function renderVersion(){
+  const vb=$('verBadge');if(vb)vb.textContent=APP_VERSION;
+  const vb2=$('verBadge2');if(vb2)vb2.textContent=APP_VERSION;
+  const vl=$('verLine');if(vl)vl.textContent=APP_VERSION;
+  const vd=$('verDate');if(vd)vd.textContent='更新于 '+APP_BUILD;
+  const body=$('verBody');if(!body)return;
+  body.innerHTML=CHANGELOG.map((c,i)=>`
+    <div class="ver-entry${i===0?' cur':''}">
+      <div class="ver-head">
+        <b>${esc(c.version)}</b>
+        <span>${esc(c.date)}</span>
+        ${i===0?'<span class="pill b">当前版本</span>':''}
+      </div>
+      <ul>${c.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+    </div>`).join('');
+}
 
 /* ================= 导航 ================= */
 function go(p){
@@ -1046,7 +1131,7 @@ function renderWeek(){
     h+=`<div class="wk" style="margin-bottom:14px">
       <div class="wkh"><b>${DAY[d]}</b><span class="sub">${isWeekend(d)?'周末 · 不设营养午餐（三餐合并）':'工作日'}</span>
         ${custom?'<span class="pill b">已自定义</span>':'<span class="pill n">默认食谱</span>'}
-        <div class="row" style="margin-left:auto"><button class="b sm" onclick="editDayMenu(${d})">编辑</button>
+        <div class="btn-group" style="margin-left:auto"><button class="b sm" onclick="editDayMenu(${d})">编辑</button>
         <button class="b sm" onclick="resetDayMenu(${d})">恢复默认</button></div></div>
       <div class="wkb">`;
     for(const s of ['早','午','晚']){
@@ -2026,6 +2111,7 @@ if($('smStu'))$('smStu').value=S.stu||800;
 if($('smWe'))$('smWe').value=S.stuWe||200;
 if($('pWeekend'))$('pWeekend').value=S.mergeWeekend===false?'split':'merge';
 renderOne();
+renderVersion();
 </script>
 </body>
 </html>
