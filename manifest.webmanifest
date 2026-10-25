@@ -1,0 +1,17 @@
+{
+  "name": "食堂出库计算器",
+  "short_name": "出库计算",
+  "description": "按周食谱自动算出每日出库量，早晚餐与营养午餐分列",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15171a",
+  "theme_color": "#15171a",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
