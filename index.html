@@ -8,7 +8,6 @@
 <meta name="theme-color" content="#15171a">
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -17,8 +16,9 @@
 :root{
   --bg:#f5f6f7;--panel:#ffffff;--panel2:#f0f2f5;--line:#e5e8ec;--line2:#cfd5dd;
   --tx:#1a1c1f;--tx2:#5f6672;--tx3:#9aa2ad;
-  --amber:#ba7517;--red:#c94f3d;--green:#4d8f4a;--blue:#2f6f8f;
-  --amber-bg:#f6ecd8;--red-bg:#f9e6e2;--green-bg:#e7f0e4;--blue-bg:#e2ecf2;
+  --amber:#ba7517;--red:#c94f3d;--green:#4d8f4a;--blue:#2f6f8f;--purple:#7a4fd0;
+  --amber-bg:#f6ecd8;--red-bg:#f9e6e2;--green-bg:#e7f0e4;--blue-bg:#e2ecf2;--purple-bg:#ece7f8;
+  --orange:#d85a30;
   --r:10px;--r2:14px;
   --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
 }
@@ -27,7 +27,7 @@ html,body{margin:0;padding:0;max-width:100%;overflow-x:hidden}
 body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:15px;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:760px;margin:0 auto;padding:0 12px 100px}
 
-.top{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
 .top-in{display:flex;align-items:center;gap:10px;padding:10px 14px}
 .brand{font-size:16px;font-weight:600;display:flex;align-items:baseline;gap:7px;min-width:0;flex:1 1 auto}
 .brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -60,16 +60,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:15px
 .cal-legend span{display:inline-flex;align-items:center;gap:4px}
 .cal-legend i{width:8px;height:8px;border-radius:3px;display:inline-block}
 
-.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
-.sum-col .cat{font-size:12.5px;font-weight:600;margin:10px 0 6px;padding-left:7px;border-left:3px solid}
+.sum-grid{display:grid;grid-template-columns:1fr;gap:0}
+.sum-col .cat{font-size:12.5px;font-weight:600;margin:12px 0 6px;padding-left:7px;border-left:3px solid}
+.sum-col .cat:first-child{margin-top:0}
 .sum-col .cat.c-amber{border-color:var(--amber);color:var(--amber)}
 .sum-col .cat.c-red{border-color:var(--red);color:var(--red)}
 .sum-col .cat.c-green{border-color:var(--green);color:var(--green)}
-.sum-col .cat.c-blue{border-color:var(--blue);color:var(--blue)}
-.sum-col .cat:first-child{margin-top:0}
-.ing-row{display:flex;align-items:baseline;justify-content:space-between;padding:4px 0 4px 10px;font-size:14px}
-.ing-row .nm{font-weight:500}
-.ing-row .slot{font-size:11px;color:var(--tx3);white-space:nowrap}
+.sum-col .cat.c-purple{border-color:var(--purple);color:var(--purple)}
+.ing-row{display:flex;align-items:center;gap:8px;padding:5px 0 5px 10px;font-size:14px}
+.ing-row .nm{font-weight:500;flex:1}
+.ing-row .slots{display:flex;gap:4px;flex:0 0 auto}
+.ing-row .slots .s{font-size:11px;color:var(--tx3)}
+.ing-row .slots .s.mid{color:var(--orange);font-weight:600}
+.obtn{font-size:11px;border:1px solid var(--blue);color:var(--blue);border-radius:6px;padding:3px 8px;white-space:nowrap;background:transparent;cursor:pointer;flex:0 0 auto}
+.obtn.done{color:var(--green);border-color:var(--green);background:var(--green-bg);font-weight:600}
 
 .slot-block{margin-bottom:14px}
 .slot-block:last-child{margin-bottom:0}
@@ -83,9 +87,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:15px
 .chip.c-amber{background:var(--amber-bg);color:var(--amber)}
 .chip.c-red{background:var(--red-bg);color:var(--red)}
 .chip.c-green{background:var(--green-bg);color:var(--green)}
-.chip.c-blue{background:var(--blue-bg);color:var(--blue)}
+.chip.c-purple{background:var(--purple-bg);color:var(--purple)}
 .chip:active{opacity:.6}
 .dish-row .add{font-size:11px;color:var(--tx3);cursor:pointer;padding:2px 6px;border:1px dashed var(--line2);border-radius:6px}
+
+.card.lunch{border:2px solid var(--orange)}
+
+.prog{display:flex;flex-direction:column;gap:6px;align-items:center}
+.prog-bg{width:100%;height:8px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.prog-fill{height:100%;background:var(--green);border-radius:4px;transition:width .3s}
+.prog-txt{font-size:12px;color:var(--tx2)}
+
+.edit-mode .dish-row{border:1px dashed var(--line2);border-radius:9px;padding:7px 10px;margin-bottom:6px}
+.edit-mode .dish-row:last-child{margin-bottom:0}
+.edit-mode .del{font-size:11px;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:2px 7px;cursor:pointer;flex:0 0 auto;white-space:nowrap}
+.edit-mode .add-dish{display:flex;align-items:center;justify-content:center;gap:4px;border:1px dashed var(--blue);border-radius:9px;padding:9px;color:var(--blue);font-size:13px;cursor:pointer;margin-top:8px}
+.icon-btn.editing{border-color:var(--orange);color:var(--orange);font-weight:600}
 
 .divider{height:1px;background:var(--line);margin:14px 0}
 
@@ -140,6 +157,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
     <div class="brand"><b>食堂出库</b><span class="ver" id="verBadge"></span></div>
     <div class="top-btns">
       <button class="icon-btn" id="btnImport" onclick="doImport()">导入菜谱</button>
+      <button class="icon-btn" id="btnEdit" onclick="toggleEditMode()">改菜谱</button>
       <button class="icon-btn" onclick="openSet()">设置</button>
     </div>
   </div>
@@ -147,9 +165,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 
 <div class="wrap" id="wrap"></div>
 
-<div class="confirm-bar" id="confirmBar" style="display:none">
-  <button class="btn" id="confirmBtn" onclick="toggleConfirm()"></button>
-</div>
+<div class="confirm-bar" id="confirmBar" style="display:none"></div>
 
 <div class="mask" id="mask" onclick="if(event.target===this)closeM()">
   <div class="mbox">
@@ -163,9 +179,17 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 
 <script src="xlsx.full.min.js"></script>
 <script>
-const APP_VERSION='V2.0';
+const APP_VERSION='V2.1';
 const APP_BUILD='2026-10-29';
 const CHANGELOG=[
+  {version:'V2.1',date:'2026-10-29',items:[
+    '每样食材后加「出库单」按钮，点一下标记已填，防止漏',
+    '食材汇总改一列，「中」字橙色醒目',
+    '干鲜改紫色，和蔬菜分得更清',
+    '营养午餐单独一份，橙色边框圈出，也带出库单按钮',
+    '顶栏加「改菜谱」入口，手动改名/改食材/加菜/删菜',
+    '顶栏下移，手机不再被状态栏挡住'
+  ]},
   {version:'V2.0',date:'2026-10-29',items:[
     '重做：以最新菜谱表为准，只关心每天出什么菜、用什么食材',
     '顶部加日历，翻月选日，核对今天和过去的差异',
@@ -182,7 +206,7 @@ const CAT_META={
   '米油面蛋':{c:'c-amber',order:1},
   '肉类':{c:'c-red',order:2},
   '蔬菜':{c:'c-green',order:3},
-  '干鲜':{c:'c-blue',order:4}
+  '干鲜':{c:'c-purple',order:4}
 };
 const EXACT_CAT={
   '大米':'米油面蛋','面粉':'米油面蛋','面条':'米油面蛋','米粉':'米油面蛋',
@@ -233,16 +257,17 @@ const DAYS=['周一','周二','周三','周四','周五','周六','周日'];
 const SLOTS=['早','午','晚'];
 const SLOT_NAMES={早:'早餐',午:'午餐',晚:'晚餐'};
 
-const LSKEY='canteen_menu_v1';
+const LSKEY='canteen_menu_v2';
 let S=load()||fresh();
 let cur=new Date();
-function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{}};}
+function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{},outDetail:{}};}
 function load(){
   try{
     const d=JSON.parse(localStorage.getItem(LSKEY));
     if(!d||!d.menu)return null;
     if(!d.cat)d.cat={};
     if(!d.out)d.out={};
+    if(!d.outDetail)d.outDetail={};
     return d;
   }catch(e){return null;}
 }
@@ -285,27 +310,57 @@ function render(){
   </div>`;
 
   h+=`<div class="card">
-    <div class="sec-h"><span class="t">${DAYS[dow-1]} · 食材汇总</span><span class="s">后标早/中/晚</span></div>
+    <div class="sec-h"><span class="t">${DAYS[dow-1]} · 食材汇总</span><span class="s">后跟出库单</span></div>
     <div class="sum-grid">${sumGrid(dow)}</div>
   </div>`;
 
-  h+=`<div class="card">
-    <div class="sec-h"><span class="t">${DAYS[dow-1]} · 全天菜谱</span><span class="s">点菜名/食材可改</span></div>
+  h+=`<div class="card${window._editing?' edit-mode':''}">
+    <div class="sec-h"><span class="t">${DAYS[dow-1]} · 全天菜谱</span><span class="s">${window._editing?'编辑模式：可加删改':'点菜名/食材可改'}</span></div>
     ${SLOTS.map(sl=>slotBlock(dow,sl)).join('<div class="divider"></div>')}
   </div>`;
 
-  h+=`<div class="card">
-    <div class="sec-h"><span class="t">营养午餐食材</span><span class="s">按分类</span></div>
+  h+=`<div class="card lunch">
+    <div class="sec-h"><span class="t" style="color:var(--orange)">营养午餐食材</span><span class="s">单独一份 · 后跟出库单</span></div>
     <div class="sum-grid">${sumGrid(dow,'午',true)}</div>
   </div>`;
 
   wrap.innerHTML=h;
 
-  const done=!!S.out[selIso];
+  // 底部进度条
+  const total=countDishes(dow);
+  const filled=countFilled(dow);
   $('confirmBar').style.display='block';
-  const cb=$('confirmBtn');
-  cb.textContent=done?'✓ 已出库 · 点此撤销':'确认今日出库';
-  cb.className='btn'+(done?' done':'');
+  $('confirmBar').innerHTML=`
+    <div class="prog">
+      <div class="prog-bg"><div class="prog-fill" style="width:${total?Math.round(filled/total*100):0}%"></div></div>
+      <div class="prog-txt">已填出库单 ${filled} / ${total}</div>
+    </div>`;
+}
+/* 当天食材总数（去重） */
+function allIngs(dow,slot){
+  const set=new Set();
+  const slots=slot?[slot]:['早','午','晚'];
+  slots.forEach(sl=>S.menu[dow][sl].forEach(x=>x.i.forEach(i=>set.add(i))));
+  if(!slot||slot==='午')set.add('菜油');
+  return [...set];
+}
+function countDishes(dow){return allIngs(dow).length;}
+function countFilled(dow){
+  const di=iso(cur);
+  return allIngs(dow).filter(ing=>S.outDetail[di+'|'+ing]).length;
+}
+function toggleOb(ing){
+  const di=iso(cur);
+  const k=di+'|'+ing;
+  if(S.outDetail[k])delete S.outDetail[k];
+  else{
+    S.outDetail[k]=true;
+    // 全部填完则标记当天已出库
+    if(countFilled(dowOf(cur))===countDishes(dowOf(cur)))S.out[di]=true;
+  }
+  // 若有撤销则同步取消当天整体标记
+  if(S.out[di]&&countFilled(dowOf(cur))<countDishes(dowOf(cur)))delete S.out[di];
+  save();render();
 }
 
 function calGrid(){
@@ -359,22 +414,29 @@ function sumGrid(dow,slot,onlyLunch){
     }
     return arr;
   };
-  const leftCats=['米油面蛋','蔬菜'],rightCats=['肉类','干鲜'];
-  const col=cats=>cats.map(c=>{
+  const di=iso(cur);
+  // 一列：按 CATS 顺序往下排
+  return CATS.map(c=>{
     const arr=sortInCat(c,group[c]);
     if(!arr.length)return '';
     const meta=CAT_META[c];
     const rows=arr.map(ing=>{
-      const s=onlyLunch?'':slotsOf(dow,ing);
-      return `<div class="ing-row"><span class="nm">${esc(ing)}</span>${s?`<span class="slot">${s.join('/')}</span>`:''}</div>`;
+      const s=onlyLunch?[]:slotsOf(dow,ing);
+      const slotsHtml=s.map(sl=>`<span class="s${sl==='中'?' mid':''}">${sl}</span>`).join('');
+      const done=S.outDetail[di+'|'+ing];
+      return `<div class="ing-row">
+        <span class="nm">${esc(ing)}</span>
+        ${s.length?`<span class="slots">${slotsHtml}</span>`:''}
+        <button class="obtn${done?' done':''}" onclick="toggleOb('${esc(ing)}')">${done?'✓ 已填':'出库单'}</button>
+      </div>`;
     }).join('');
     return `<div class="sum-col"><div class="cat ${meta.c}">${c}</div>${rows}</div>`;
   }).join('');
-  return `<div>${col(leftCats)}</div><div>${col(rightCats)}</div>`;
 }
 
 function slotBlock(dow,slot){
   const dishes=S.menu[dow][slot];
+  const editing=window._editing;
   const rows=dishes.map((x,xi)=>{
     const chips=x.i.map(ing=>{
       const c=catOf(ing);
@@ -382,13 +444,45 @@ function slotBlock(dow,slot){
     }).join('');
     return `<div class="dish-row">
       <span class="dn" onclick="editDish(${dow},'${slot}',${xi})">${esc(x.n)}</span>
-      <span class="ings">${chips}<span class="add" onclick="addIng(${dow},'${slot}',${xi})">+</span></span>
+      <span class="ings">${chips}${editing?`<span class="add" onclick="addIng(${dow},'${slot}',${xi})">+</span>`:''}</span>
+      ${editing?`<span class="del" onclick="delDish(${dow},'${slot}',${xi})">删</span>`:''}
     </div>`;
   }).join('');
+  const addBtn=editing?`<div class="add-dish" onclick="addDish(${dow},'${slot}')">＋ 加菜</div>`:'';
   return `<div class="slot-block">
     <div class="slot-tag">${SLOT_NAMES[slot]}</div>
-    ${rows}
+    ${rows}${addBtn}
   </div>`;
+}
+
+function toggleEditMode(){
+  window._editing=!window._editing;
+  const btn=$('btnEdit');
+  if(btn)btn.classList.toggle('editing',window._editing);
+  render();
+  if(window._editing)msg('编辑模式：可改菜名、改食材、加菜、删菜');
+}
+function delDish(dow,slot,xi){
+  const x=S.menu[dow][slot][xi];
+  if(!confirm('删除「'+x.n+'」这道菜？'))return;
+  S.menu[dow][slot].splice(xi,1);
+  save();render();
+}
+function addDish(dow,slot){
+  openM('加菜 · '+SLOT_NAMES[slot],`
+    <label class="f-label">菜名</label>
+    <input id="eNewDish" placeholder="如：清炒豆芽">
+    <label class="f-label">食材（顿号隔开）</label>
+    <input id="eNewIngs" placeholder="如：豆芽、蒜">
+  `,
+  `<button class="btn-s" onclick="closeM()">取消</button><button class="btn-p" onclick="saveAddDish(${dow},'${slot}')">添加</button>`);
+}
+function saveAddDish(dow,slot){
+  const n=$('eNewDish').value.trim();
+  if(!n){alert('请输入菜名');return;}
+  const ings=$('eNewIngs').value.trim().split(/[、,，\s]+/).filter(x=>x);
+  S.menu[dow][slot].push({n:n,i:ings});
+  save();render();closeM();
 }
 
 function shiftMonth(d){cur=new Date(cur.getFullYear(),cur.getMonth()+d,1);render();}
@@ -396,21 +490,6 @@ function pick(isoStr){
   const p=isoStr.split('-');
   cur=new Date(+p[0],+p[1]-1,+p[2]);
   render();
-}
-function toggleConfirm(){
-  const di=iso(cur);
-  if(S.out[di]){delete S.out[di];}
-  else{
-    S.out[di]=true;
-    save();render();
-    openM('确认出库',`<p style="font-size:14px;line-height:1.7;margin:0">
-      ${DAYS[dowOf(cur)-1]}（${di}）三餐已确认出库。<br><br>
-      请记得填写<strong>采购出库单</strong>：<br>
-      早晚餐、营养午餐各一份，照上面的食材汇总抄即可。</p>`,
-      '<button class="btn-p" onclick="closeM()">知道了</button>');
-    return;
-  }
-  save();render();
 }
 
 function editDish(dow,slot,xi){
@@ -628,6 +707,7 @@ function msg(t){
 
 function init(){
   $('verBadge').textContent=APP_VERSION;
+  window._editing=false;
   cur=new Date();
   render();
 }
