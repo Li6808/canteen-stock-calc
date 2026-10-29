@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>食堂出库</title>
 <style>
 :root{
@@ -49,12 +49,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:15px
 .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;margin-bottom:4px}
 .cal-week span{font-size:11px;color:var(--tx3);padding:3px 0}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:13px;cursor:pointer;position:relative;border:1px solid transparent}
+.cal-day{height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;font-size:13px;cursor:pointer;position:relative;border:1px solid transparent}
 .cal-day.empty{cursor:default}
 .cal-day.today{background:var(--blue-bg);color:var(--blue);font-weight:600}
 .cal-day.sel{background:var(--tx);color:#fff;font-weight:600}
 .cal-day.other{color:var(--tx3)}
-.cal-day .done{position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--green)}
+.cal-day .done{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--green)}
 .cal-day.sel .done{background:#fff}
 .cal-legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--tx2);flex-wrap:wrap}
 .cal-legend span{display:inline-flex;align-items:center;gap:4px}
@@ -125,7 +125,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:15px
 
 .f-label{font-size:12px;color:var(--tx2);display:block;margin:12px 0 5px}
 .f-label:first-child{margin-top:0}
-input,select,textarea{width:100%;font:inherit;font-size:15px;color:var(--tx);background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:9px 11px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--tx);background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:9px 11px}
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hint{font-size:12px;color:var(--tx3);line-height:1.6;margin-top:8px}
@@ -349,13 +349,13 @@ function countFilled(dow){
   const di=iso(cur);
   return allIngs(dow).filter(ing=>S.outDetail[di+'|'+ing]).length;
 }
-function toggleOb(ing){
+function toggleOb(ing,lunch){
   const di=iso(cur);
-  const k=di+'|'+ing;
+  const k=di+(lunch?'|午':'')+'|'+ing;   // 营养午餐用「日期|午|食材」独立记录，不与汇总联动
   if(S.outDetail[k])delete S.outDetail[k];
   else{
     S.outDetail[k]=true;
-    // 全部填完则标记当天已出库
+    // 全部填完则标记当天已出库（只统计汇总，不含营养午餐独立那份）
     if(countFilled(dowOf(cur))===countDishes(dowOf(cur)))S.out[di]=true;
   }
   // 若有撤销则同步取消当天整体标记
@@ -423,11 +423,12 @@ function sumGrid(dow,slot,onlyLunch){
     const rows=arr.map(ing=>{
       const s=onlyLunch?[]:slotsOf(dow,ing);
       const slotsHtml=s.map(sl=>`<span class="s${sl==='中'?' mid':''}">${sl}</span>`).join('');
-      const done=S.outDetail[di+'|'+ing];
+      const doneKey=di+(onlyLunch?'|午':'')+'|'+ing;
+      const done=S.outDetail[doneKey];
       return `<div class="ing-row">
         <span class="nm">${esc(ing)}</span>
         ${s.length?`<span class="slots">${slotsHtml}</span>`:''}
-        <button class="obtn${done?' done':''}" onclick="toggleOb('${esc(ing)}')">${done?'✓ 已填':'出库单'}</button>
+        <button class="obtn${done?' done':''}" onclick="toggleOb('${esc(ing)}',${onlyLunch?'true':'false'})">${done?'✓ 已填':'出库单'}</button>
       </div>`;
     }).join('');
     return `<div class="sum-col"><div class="cat ${meta.c}">${c}</div>${rows}</div>`;
@@ -666,6 +667,7 @@ function setCat(ing,v){
   if(catOf(ing)===v){delete S.cat[ing];}
   else S.cat[ing]=v;
   save();
+  render();   // 主页面立即生效
   openSet();
 }
 
