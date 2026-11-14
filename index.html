@@ -161,6 +161,19 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 .out-bar button{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;border:0;cursor:pointer;color:#fff}
 .out-bar .b-excel{background:var(--green)}
 .out-bar .b-img{background:var(--blue)}
+.o-edit{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.o-erow{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel)}
+.o-erow.extra{border-style:dashed;background:#faf7f0}
+.o-etop{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.o-ename{font-size:14px;font-weight:600;flex:1}
+.o-ecat{font-size:11px;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;white-space:nowrap}
+.o-etag{font-size:10px;color:#fff;background:#c98a2b;border-radius:6px;padding:2px 6px}
+.o-ebot{display:flex;align-items:center;gap:6px}
+.o-eqty,.o-eprice{flex:1;min-width:0}
+.o-eunit{width:62px;flex:0 0 62px;text-align:center}
+.o-edel{font-size:11px;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:3px 8px;background:transparent;white-space:nowrap;cursor:pointer}
+.o-hidden{margin-top:8px;font-size:12px;color:var(--tx3)}
+.o-restore{font-size:12px;color:var(--tx2);border:1px solid var(--line2);border-radius:6px;padding:3px 8px;background:var(--panel);cursor:pointer;margin:2px 4px 2px 0}
 
 @media(max-width:420px){
   .dish-row .dn{flex:0 0 82px}
@@ -200,9 +213,16 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 
 <script src="xlsx.full.min.js"></script>
 <script>
-const APP_VERSION='V2.4';
-const APP_BUILD='2026-11-14 21:53:02';
+const APP_VERSION='V2.5';
+const APP_BUILD='2026-11-14 22:03:23';
 const CHANGELOG=[
+  {version:'V2.5',date:'2026-11-14 22:03:23',items:[
+    '出库录入改为「按菜谱」：选日期+餐次，自动列出当天菜谱全部食材，无需逐个手填品名',
+    '数量/单价/单位输入即自动保存（不再需要「添加」按钮），分类按食材名自动判定',
+    '支持临时「加菜」（加一道菜/食材）、「删菜」（隐藏某食材）、误删可一键恢复',
+    '早餐+晚餐合并为「早/晚」，午餐单独一份，与结算表口径一致',
+    '导出 Excel / 午餐图片功能保持不变'
+  ]},
   {version:'V2.4',date:'2026-11-14 21:53:02',items:[
     '新增「出库」视图：手机端直接录入每日出库（日期/餐次/分类/品名/数量/单价/领用人）',
     '一键导出 Excel：列结构与结算表「每日出库」一致，可直接粘贴对账',
@@ -292,7 +312,7 @@ const LSKEY='canteen_menu_v2';
 let S=load()||fresh();
 let cur=new Date();
 let view='main';
-function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{},outDetail:{},outbound:[]};}
+function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{},outDetail:{},outbound:[],outDel:{}};}
 function load(){
   try{
     const d=JSON.parse(localStorage.getItem(LSKEY));
@@ -301,6 +321,7 @@ function load(){
     if(!d.out)d.out={};
     if(!d.outDetail)d.outDetail={};
     if(!d.outbound)d.outbound=[];
+    if(!d.outDel)d.outDel={};
     return d;
   }catch(e){return null;}
 }
@@ -755,37 +776,99 @@ function wdName(d){
   const w=new Date(d).getDay();
   return '周'+['日','一','二','三','四','五','六'][w];
 }
+// ============ 出库：基于菜谱每日食材自动列出 ============
+function outKey(date,meal,name){return date+'|'+meal+'|'+name;}
+function outMap(){
+  const m={};
+  (S.outbound||[]).forEach(r=>{m[outKey(r.date,r.meal,r.name)]=r;});
+  return m;
+}
+function outUnit(name){
+  const U={'鸡蛋':'个','鸭蛋':'个','皮蛋':'个','鹌鹑蛋':'个','大米':'斤','面粉':'斤','面条':'斤','菜油':'斤','油':'斤'};
+  return U[name]||'斤';
+}
+function baseIngList(meal){
+  const date=$('oDate').value||iso(new Date());
+  const dow=dowOf(new Date(date));
+  const slots = meal==='午' ? ['午'] : ['早','晚'];
+  const seen=new Set(); const list=[];
+  slots.forEach(sl=>{
+    (S.menu[dow][sl]||[]).forEach(d=>{
+      (d.i||[]).forEach(ing=>{ if(!seen.has(ing)){seen.add(ing);list.push(ing);} });
+    });
+  });
+  return list;
+}
+function onOutDateChange(){ renderOutbound(); }
+
 function renderOutbound(){
   if(!S.outbound)S.outbound=[];
+  if(!S.outDel)S.outDel={};
   const wrap=$('wrap');
   const today=iso(new Date());
+  const date=$('oDate').value||today;
+  const meal=$('oMeal').value||'午';
   let h='';
   h+=`<div class="card out-form">
-    <div class="sec-h"><span class="t">出库录入</span><span class="s">手机上直接记</span></div>
-    <div class="f-row"><label>日期</label><input type="date" id="oDate" value="${today}"></div>
-    <div class="f-row"><label>餐次</label><select id="oMeal">
-      <option value="午">午（营养午餐）</option>
-      <option value="早/晚">早/晚（早+晚合并）</option>
+    <div class="sec-h"><span class="t">出库录入（按菜谱）</span><span class="s">选日期自动带出食材</span></div>
+    <div class="f-row"><label>日期</label><input type="date" id="oDate" value="${date}" onchange="onOutDateChange()"></div>
+    <div class="f-row"><label>餐次</label><select id="oMeal" onchange="onOutDateChange()">
+      <option value="午"${meal==='午'?' selected':''}>午（营养午餐）</option>
+      <option value="早/晚"${meal==='早/晚'?' selected':''}>早/晚（早+晚合并）</option>
     </select></div>
-    <div class="f-row"><label>分类</label><select id="oCat">
-      ${OUT_CATS.map(c=>`<option>${c}</option>`).join('')}
-    </select></div>
-    <div class="f-row"><label>品名</label><input id="oName" placeholder="如：大米"></div>
-    <div class="row2">
-      <div class="f-row"><label>数量</label><input type="number" id="oQty" placeholder="0" step="0.01" inputmode="decimal"></div>
-      <div class="f-row"><label>单位</label><input id="oUnit" value="斤"></div>
-    </div>
-    <div class="f-row"><label>单价(元)</label><input type="number" id="oPrice" placeholder="0" step="0.01" inputmode="decimal"></div>
-    <div class="f-row"><label>领用人</label><input id="oUser" placeholder="选填"></div>
-    <div class="f-row"><label>备注</label><input id="oNote" placeholder="选填"></div>
-    <button class="btn-p" style="width:100%;padding:12px;margin-top:4px" onclick="addOutbound()">＋ 添加这条出库</button>
-  </div>`;
+    <div class="hint">食材按当天菜谱自动列出，填「数量 / 单价」即自动保存；可加菜、删菜。</div>
+    <div class="o-edit">`;
+  const base=baseIngList(meal);
+  const map=outMap();
+  let anyBase=false;
+  base.forEach(name=>{
+    const key=outKey(date,meal,name);
+    if(S.outDel[key])return;
+    anyBase=true;
+    const rec=map[key];
+    const qty=rec&&rec.qty?rec.qty:'';
+    const price=rec&&rec.price?rec.price:'';
+    const unit=rec&&rec.unit?rec.unit:outUnit(name);
+    h+=`<div class="o-erow">
+      <div class="o-etop"><span class="o-ename">${esc(name)}</span><span class="o-ecat">${catOf(name)}</span></div>
+      <div class="o-ebot">
+        <input class="o-eqty" type="number" step="0.01" inputmode="decimal" placeholder="数量" value="${qty}" oninput="setOutField('${key}','qty',this.value)">
+        <input class="o-eunit" value="${esc(unit)}" oninput="setOutField('${key}','unit',this.value)">
+        <input class="o-eprice" type="number" step="0.01" inputmode="decimal" placeholder="单价" value="${price}" oninput="setOutField('${key}','price',this.value)">
+        <button class="o-edel" onclick="delOutIngredient('${key}')">删</button>
+      </div>
+    </div>`;
+  });
+  if(!anyBase)h+=`<div class="hint">当天菜谱没有食材，可点下面「＋ 加菜」手动添加。</div>`;
+  const baseSet=new Set(base);
+  const extras=(S.outbound||[]).filter(r=>r.date===date&&r.meal===meal&&!baseSet.has(r.name)&&!S.outDel[outKey(r.date,r.meal,r.name)]);
+  extras.forEach(r=>{
+    const key=outKey(r.date,r.meal,r.name);
+    const unit=r.unit||outUnit(r.name);
+    h+=`<div class="o-erow extra">
+      <div class="o-etop"><span class="o-ename">${esc(r.name)}</span><span class="o-ecat">${catOf(r.name)}</span><span class="o-etag">加</span></div>
+      <div class="o-ebot">
+        <input class="o-eqty" type="number" step="0.01" inputmode="decimal" placeholder="数量" value="${r.qty||''}" oninput="setOutField('${key}','qty',this.value)">
+        <input class="o-eunit" value="${esc(unit)}" oninput="setOutField('${key}','unit',this.value)">
+        <input class="o-eprice" type="number" step="0.01" inputmode="decimal" placeholder="单价" value="${r.price||''}" oninput="setOutField('${key}','price',this.value)">
+        <button class="o-edel" onclick="delOutIngredient('${key}')">删</button>
+      </div>
+    </div>`;
+  });
+  h+=`</div>
+    <button class="btn-p" style="width:100%;padding:11px;margin-top:8px" onclick="addOutIngredient()">＋ 加一道菜 / 食材</button>`;
+  const hidden=base.filter(n=>S.outDel[outKey(date,meal,n)]);
+  if(hidden.length){
+    h+=`<div class="o-hidden">已隐藏：${hidden.map(n=>`<button class="o-restore" onclick="restoreOutIngredient('${date}','${meal}','${esc(n)}')">${esc(n)}↺</button>`).join(' ')}</div>`;
+  }
+  h+=`</div>`;
+  // 历史记录
   const recs=S.outbound.slice().sort((a,b)=>(b.date+a.id).localeCompare(a.date+a.id));
   const byDate={};
   recs.forEach(r=>{(byDate[r.date]=byDate[r.date]||[]).push(r);});
   const dates=Object.keys(byDate).sort().reverse();
   if(dates.length===0){
-    h+=`<div class="card"><div class="hint">还没有出库记录。上面录入后，月底可一键导出 Excel，或导出午餐图片。</div></div>`;
+    h+=`<div class="card"><div class="hint">还没有出库记录。选日期、填数量单价即可自动保存，月底一键导出 Excel 或午餐图片。</div></div>`;
   }else{
     dates.forEach(d=>{
       const list=byDate[d];
@@ -795,8 +878,8 @@ function renderOutbound(){
       list.forEach(r=>{
         h+=`<div class="o-item">
           <div class="o-main">
-            <div class="o-name">${esc(r.name)} <span style="color:var(--tx3);font-weight:400">${r.meal}·${esc(r.cat)}</span></div>
-            <div class="o-sub">${r.qty}${esc(r.unit)} × ${r.price}元${r.user?(' · '+esc(r.user)):''}${r.note?(' · '+esc(r.note)):''}</div>
+            <div class="o-name">${esc(r.name)} <span style="color:var(--tx3);font-weight:400">${r.meal}·${esc(r.cat||catOf(r.name))}</span></div>
+            <div class="o-sub">${r.qty}${esc(r.unit||'')} × ${r.price}元${r.user?(' · '+esc(r.user)):''}${r.note?(' · '+esc(r.note)):''}</div>
           </div>
           <div class="o-amt">${((r.qty*r.price)||0).toFixed(2)}</div>
           <button class="o-del" onclick="delOutbound('${r.id}')">删</button>
@@ -811,26 +894,44 @@ function renderOutbound(){
   </div>`;
   wrap.innerHTML=h;
 }
+
 let _oid=0;
-function addOutbound(){
+function setOutField(key,field,val){
+  if(!S.outbound)S.outbound=[];
+  let rec=S.outbound.find(r=>outKey(r.date,r.meal,r.name)===key);
+  if(!rec){
+    const [date,meal,name]=key.split('|');
+    rec={id:Date.now()+'_'+(_oid++),date,meal,name,unit:outUnit(name),cat:catOf(name),qty:0,price:0,user:'',note:''};
+    S.outbound.push(rec);
+  }
+  if(field==='qty')rec.qty=parseFloat(val)||0;
+  else if(field==='price')rec.price=parseFloat(val)||0;
+  else if(field==='unit')rec.unit=val.trim()||rec.unit;
+  save();
+}
+function addOutIngredient(){
   const date=$('oDate').value||iso(new Date());
   const meal=$('oMeal').value;
-  const cat=$('oCat').value;
-  const name=$('oName').value.trim();
-  const unit=$('oUnit').value.trim()||'斤';
-  const qty=parseFloat($('oQty').value)||0;
-  const price=parseFloat($('oPrice').value)||0;
-  const user=$('oUser').value.trim();
-  const note=$('oNote').value.trim();
-  if(!name){msg('请填品名');return;}
-  if(qty<=0){msg('请填数量');return;}
-  if(!S.outbound)S.outbound=[];
-  S.outbound.push({id:Date.now()+'_'+(_oid++),date,meal,cat,name,unit,qty,price,user,note});
-  save();
-  $('oName').value='';$('oQty').value='';$('oPrice').value='';$('oUser').value='';$('oNote').value='';
-  $('oName').focus();
-  renderOutbound();
-  msg('✅ 已添加');
+  const nm=prompt('加一道菜 / 食材的名称：','');
+  if(!nm)return;
+  const name=nm.trim();
+  if(!name)return;
+  const key=outKey(date,meal,name);
+  if(S.outbound.some(r=>outKey(r.date,r.meal,r.name)===key)){msg('该食材已存在');return;}
+  if(!S.outDel)S.outDel={};delete S.outDel[key];
+  S.outbound.push({id:Date.now()+'_'+(_oid++),date,meal,name,unit:outUnit(name),cat:catOf(name),qty:0,price:0,user:'',note:''});
+  save();renderOutbound();msg('✅ 已加：'+name);
+}
+function delOutIngredient(key){
+  S.outbound=S.outbound.filter(r=>outKey(r.date,r.meal,r.name)!==key);
+  if(!S.outDel)S.outDel={};
+  S.outDel[key]=true;
+  save();renderOutbound();
+}
+function restoreOutIngredient(date,meal,name){
+  const key=outKey(date,meal,name);
+  if(S.outDel)delete S.outDel[key];
+  save();renderOutbound();msg('已恢复：'+name);
 }
 function delOutbound(id){
   S.outbound=S.outbound.filter(r=>r.id!==id);
