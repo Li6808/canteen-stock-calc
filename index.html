@@ -1,2242 +1,1001 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="食堂出库">
-<meta name="theme-color" content="#12634c">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#15171a">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>食堂出库</title>
 <style>
 :root{
-  --bg:#f4f6f7;--card:#fff;--line:#e8ecea;--tx:#111a16;--tx2:#5c6b64;--tx3:#93a09a;
-  --brand:#1a7f63;--brand-2:#0e5a45;--brand-soft:#e7f3ee;--amber:#a96b00;--amber-soft:#fdf3e2;
-  --red:#b03a2e;--red-soft:#fbe9e6;--r:18px;
-  --shadow:0 1px 2px rgba(16,40,32,.05),0 8px 24px rgba(16,40,32,.06);
+  --bg:#f5f6f7;--panel:#ffffff;--panel2:#f0f2f5;--line:#e5e8ec;--line2:#cfd5dd;
+  --tx:#1a1c1f;--tx2:#5f6672;--tx3:#9aa2ad;
+  --amber:#ba7517;--red:#c94f3d;--green:#4d8f4a;--blue:#2f6f8f;--purple:#7a4fd0;
+  --amber-bg:#f6ecd8;--red-bg:#f9e6e2;--green-bg:#e7f0e4;--blue-bg:#e2ecf2;--purple-bg:#ece7f8;
+  --orange:#d85a30;
+  --r:10px;--r2:14px;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;overflow-x:hidden;max-width:100%}
-body{background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  -webkit-font-smoothing:antialiased}
-header{background:linear-gradient(150deg,#1d8a6b 0%,#12634c 55%,#0d5340 100%);
-  padding:calc(env(safe-area-inset-top) + 18px) 18px 30px;color:#fff;border-radius:0 0 26px 26px;position:relative}
-header:after{content:'';position:absolute;right:-40px;top:-60px;width:180px;height:180px;border-radius:50%;
-  background:rgba(255,255,255,.06)}
-.hd b{display:block;font-size:20px;font-weight:700;letter-spacing:.3px}
-.hd span{display:block;font-size:12px;color:rgba(255,255,255,.72);margin-top:3px}
-.chips{display:flex;gap:8px;margin-top:14px;position:relative;z-index:1}
-.chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16);border-radius:11px;
-  padding:7px 11px;font-size:12px;color:#fff;backdrop-filter:blur(4px)}
-.chip b{font-size:15px;font-weight:700;margin-right:3px}
-main{padding:0 14px calc(96px + env(safe-area-inset-bottom));max-width:760px;margin:-16px auto 0;position:relative;z-index:2}
-.card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
-.h{display:flex;align-items:center;justify-content:space-between;margin:0 0 4px}
-.h b{font-size:15px;font-weight:700;letter-spacing:.2px}
-.tag{font-size:11px;padding:3px 9px;border-radius:8px;background:var(--brand-soft);color:var(--brand);font-weight:600}
-.tag.nut{background:var(--amber-soft);color:var(--amber)}
-.dt{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--card);border-radius:16px;
-  padding:8px;box-shadow:var(--shadow)}
-.dt button{border:0;background:#f1f5f3;border-radius:11px;width:36px;height:36px;font-size:17px;color:var(--brand);cursor:pointer}
-.dt b{flex:1;text-align:center;font-size:14.5px;font-weight:600}
-.dt .today{white-space:nowrap;min-width:56px;border:0;background:var(--brand-soft);color:var(--brand);border-radius:11px;padding:0 12px;height:36px;
-  font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer}
-.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f1f4f3;min-width:0}
-.row:last-child{border-bottom:0;padding-bottom:2px}
-.nm{flex:1;min-width:0}
-.nm b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nm small{display:block;font-size:11.5px;color:var(--tx3);margin-top:1px}
-.warn-t{color:var(--red);font-size:11px;margin-top:1px}
-.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;flex:0 0 auto}
-.sbtn{width:34px;height:40px;border:0;background:#f3f7f5;color:var(--brand);font-size:18px;line-height:1;cursor:pointer;font-family:inherit}
-.sbtn:active{background:#e3efe9}
-.q{width:58px;height:40px;border:0;text-align:center;font-size:16px;font-weight:700;color:var(--brand-2);
-  font-family:inherit;background:#fff;padding:0}
-.q:focus{outline:0;background:#f7fbf9}
-.u{font-size:11.5px;color:var(--tx3);width:16px}
-.btn{border:0;border-radius:14px;padding:14px;font-size:15px;font-family:inherit;font-weight:600;width:100%;cursor:pointer}
-.btn.main{background:linear-gradient(135deg,#1d8a6b,#12634c);color:#fff;box-shadow:0 6px 16px rgba(18,99,76,.24)}
-.btn.ghost{background:#fff;color:var(--brand);border:1.5px solid var(--brand-soft)}
-.btn.warn{background:var(--red-soft);color:var(--red)}
-.btn:active{transform:scale(.99);opacity:.92}
-.muted{color:var(--tx3);font-size:12px}
-.banner{background:var(--amber-soft);color:#8a5a00;border-radius:14px;padding:11px 13px;font-size:12px;
-  margin-bottom:12px;line-height:1.55}
-.banner b{color:#7a4f00}
-.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.kpi>div{background:var(--card);border-radius:16px;padding:13px 14px;box-shadow:var(--shadow)}
-.kpi small{display:block;color:var(--tx3);font-size:11.5px;margin-bottom:5px}
-.kpi b{font-size:20px;font-weight:700;color:var(--brand-2);letter-spacing:.3px}
-input,select{font-family:inherit;font-size:15px;border:1px solid var(--line);border-radius:12px;padding:12px;
-  background:#fbfcfc;color:var(--tx);width:100%}
-input:focus,select:focus{outline:0;border-color:var(--brand);background:#fff}
-label{display:block;font-size:12px;color:var(--tx2);margin:12px 0 5px;font-weight:600}
-.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,8px);
-  background:rgba(17,26,22,.95);color:#fff;padding:11px 18px;border-radius:14px;font-size:13px;z-index:60;
-  opacity:0;transition:.22s;pointer-events:none;max-width:80%;text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-main table{width:100%;border-collapse:collapse;font-size:13px}
-main th,main td{padding:9px 4px;border-bottom:1px solid #f1f4f3;text-align:right}
-main th:first-child,main td:first-child{text-align:left}
-main th{color:var(--tx3);font-weight:500;font-size:11.5px}
-main tr:last-child td{border-bottom:0}
-.empty{text-align:center;color:var(--tx3);padding:28px 0;font-size:13px}
-nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(255,255,255,.92);
-  backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
-nav button{flex:1;background:none;border:0;padding:6px 0;font-size:10.5px;color:var(--tx3);font-family:inherit;
-  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
-nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-nav button.on{color:var(--brand)}
-nav button.on svg{stroke-width:2.1}
-.sect{font-size:12px;color:var(--tx3);margin:14px 0 6px;font-weight:600;letter-spacing:.5px}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;max-width:100%;overflow-x:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);font-size:15px;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:760px;margin:0 auto;padding:0 12px 100px}
 
+.top{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.top-in{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.brand{font-size:16px;font-weight:600;display:flex;align-items:baseline;gap:7px;min-width:0;flex:1 1 auto}
+.brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .ver{font-size:10px;color:var(--tx3);font-weight:400;white-space:nowrap}
+.top-btns{display:flex;gap:6px;flex:0 0 auto}
+.icon-btn{font-size:13px;border:1px solid var(--line2);background:var(--panel);color:var(--tx);border-radius:8px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.icon-btn:active{background:var(--panel2)}
 
-.seg{display:flex;gap:6px;margin:2px 0 10px}
-.seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 0;font-size:12.5px;color:var(--tx2);font-family:inherit;cursor:pointer}
-.seg button.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
-.seg.segwrap{flex-wrap:wrap}
-.seg.segwrap button{flex:0 0 auto;padding:8px 12px}
-.dish{padding:10px 0;border-bottom:1px solid #f1f4f3}
-.dish:last-child{border-bottom:0}
-.dh{display:flex;align-items:center;justify-content:space-between}
-.dh b{font-size:14.5px;font-weight:600}
-.chips2{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
-.ingchip{display:inline-flex;align-items:center;gap:5px;background:#f1f6f4;color:var(--brand-2);
-  border-radius:8px;padding:4px 8px;font-size:12px}
-.ingchip i{font-style:normal;color:#9aa8a2;cursor:pointer;font-size:13px;line-height:1;padding:0 2px}
-.ingadd{border:1px dashed var(--line);background:#fff;color:var(--tx3);border-radius:8px;
-  padding:4px 8px;font-size:12px;font-family:inherit;cursor:pointer}
-.mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 9px;font-size:12px;
-  color:var(--tx2);font-family:inherit;cursor:pointer}
-.mini.ok{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
-.pickrow{display:flex;gap:6px;margin-top:8px;align-items:center}
-.pickrow select{flex:1;padding:8px;font-size:13px;border-radius:9px}
-.q2{width:70px;padding:8px;font-size:13px;border-radius:9px;text-align:center}
-.subcard{background:#f7faf9;border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:12px}
-.btnbar{display:flex;gap:8px;margin-top:12px}
-.btnbar .btn{flex:1}
-.ov{position:fixed;inset:0;background:rgba(12,22,18,.72);z-index:90;display:flex;align-items:flex-start;
-  justify-content:center;padding:14px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.ovin{background:#fff;border-radius:18px;padding:14px;max-width:520px;width:100%;display:flex;
-  flex-direction:column;gap:10px;margin:auto}
-.ovin img{width:100%;border-radius:10px;display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:14px;margin-bottom:14px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:2px 0 12px}
+.sec-h .t{font-size:16px;font-weight:600}
+.sec-h .s{font-size:12px;color:var(--tx3)}
 
-.dishname{background:#fff;border:1px solid var(--line);color:var(--tx2);border-radius:8px;
-  padding:3px 8px;font-size:12px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-head .ym{font-size:15px;font-weight:600}
+.cal-nav{display:flex;gap:4px}
+.cal-nav button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--tx);font-size:16px;cursor:pointer}
+.cal-nav button:active{background:var(--panel2)}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;margin-bottom:4px}
+.cal-week span{font-size:11px;color:var(--tx3);padding:3px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day{height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;font-size:13px;cursor:pointer;position:relative;border:1px solid transparent}
+.cal-day.empty{cursor:default}
+.cal-day.today{background:var(--blue-bg);color:var(--blue);font-weight:600}
+.cal-day.sel{background:var(--tx);color:#fff;font-weight:600}
+.cal-day.other{color:var(--tx3)}
+.cal-day .done{position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--green)}
+.cal-day.sel .done{background:#fff}
+.cal-legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--tx2);flex-wrap:wrap}
+.cal-legend span{display:inline-flex;align-items:center;gap:4px}
+.cal-legend i{width:8px;height:8px;border-radius:3px;display:inline-block}
 
-.brow{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f1f4f3}
-.brow:last-child{border-bottom:0}
-.bday{flex:0 0 40px;font-size:12.5px;font-weight:600;color:var(--brand)}
-.btxt{flex:1;min-width:0;font-size:12px;color:var(--tx2);line-height:1.6}
+.sum-grid{display:grid;grid-template-columns:1fr;gap:0}
+.sum-col .cat{font-size:12.5px;font-weight:600;margin:12px 0 6px;padding-left:7px;border-left:3px solid}
+.sum-col .cat:first-child{margin-top:0}
+.sum-col .cat.c-amber{border-color:var(--amber);color:var(--amber)}
+.sum-col .cat.c-red{border-color:var(--red);color:var(--red)}
+.sum-col .cat.c-green{border-color:var(--green);color:var(--green)}
+.sum-col .cat.c-purple{border-color:var(--purple);color:var(--purple)}
+.ing-row{display:flex;align-items:center;gap:8px;padding:5px 0 5px 10px;font-size:14px}
+.ing-row .nm{font-weight:500;flex:1}
+.ing-row .slots{display:flex;gap:4px;flex:0 0 auto}
+.ing-row .slots .s{font-size:11px;color:var(--tx3)}
+.ing-row .slots .s.mid{color:var(--orange);font-weight:600}
+.obtn{font-size:11px;border:1px solid var(--blue);color:var(--blue);border-radius:6px;padding:3px 8px;white-space:nowrap;background:transparent;cursor:pointer;flex:0 0 auto}
+.obtn.done{color:var(--green);border-color:var(--green);background:var(--green-bg);font-weight:600}
 
-.c-amber{background:#fdf3e2;color:#a96b00}
-.c-red{background:#fbe9e6;color:#b03a2e}
-.c-green{background:#e7f3ee;color:#1a7f63}
-.c-purple{background:#efe9fa;color:#6b4fa8}
-.c-blue{background:#e4eef4;color:#2f6f8f}
-.ichip{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:3px 8px;font-size:12px}
-.mpart{font-size:12px;color:var(--tx3);margin:14px 0 2px;font-weight:600;letter-spacing:.5px}
-.dishline{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed #eef2f0}
-.dishline:last-child{border-bottom:0}
-.dishline .dn2{flex:0 0 92px;font-size:14.5px;font-weight:600;word-break:break-all}
-.dishline .ings{display:flex;gap:6px;flex-wrap:wrap;flex:1;align-items:center}
-.mhint{font-size:11px;color:var(--tx3);font-weight:400}
+.slot-block{margin-bottom:14px}
+.slot-block:last-child{margin-bottom:0}
+.slot-tag{font-size:12px;color:var(--tx2);margin-bottom:8px}
+.dish-row{display:flex;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.dish-row:last-child{border-bottom:0}
+.dish-row .dn{font-weight:500;font-size:14px;flex:0 0 92px;cursor:pointer;word-break:break-all}
+.dish-row .dn:active{color:var(--blue)}
+.dish-row .ings{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:12px;padding:2px 8px;border-radius:6px;cursor:pointer}
+.chip.c-amber{background:var(--amber-bg);color:var(--amber)}
+.chip.c-red{background:var(--red-bg);color:var(--red)}
+.chip.c-green{background:var(--green-bg);color:var(--green)}
+.chip.c-purple{background:var(--purple-bg);color:var(--purple)}
+.chip:active{opacity:.6}
+.dish-row .add{font-size:11px;color:var(--tx3);cursor:pointer;padding:2px 6px;border:1px dashed var(--line2);border-radius:6px}
 
-.calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.calym{font-size:15px;font-weight:700}
-.calnav{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;font-size:15px;
-  color:var(--tx2);font-family:inherit;cursor:pointer}
-.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.calwd{text-align:center;font-size:11px;color:var(--tx3);padding:2px 0 4px}
-.calcell{height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;
-  font-size:13.5px;color:var(--tx);cursor:pointer;position:relative}
-.calcell.empty{cursor:default}
-.calcell.sel{background:#111a16;color:#fff;font-weight:700}
-.calcell.today{color:var(--brand);font-weight:700}
-.calcell.today.sel{color:#fff}
-.calcell .d{position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:var(--brand)}
-.calcell.sel .d{background:#fff}
-.callegend{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--tx2)}
-.callegend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.card.lunch{border:2px solid var(--orange)}
 
-/* 档案页 */
-#view .row .nm{display:flex;flex-direction:column;gap:4px}
-#view .row .nm .ops{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
-.mini-sel{width:auto;flex:0 0 auto;padding:6px 8px;font-size:12.5px;border-radius:9px;background:#f7faf9}
-.mini-num{width:82px;flex:0 0 82px;padding:6px 8px;font-size:13px;text-align:right;border-radius:9px;background:#f7faf9}
-#view .row .nm small{font-size:11.5px;color:var(--tx3)}
+.prog{display:flex;flex-direction:column;gap:6px;align-items:center}
+.prog-bg{width:100%;height:8px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.prog-fill{height:100%;background:var(--green);border-radius:4px;transition:width .3s}
+.prog-txt{font-size:12px;color:var(--tx2)}
 
-.dishname{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);
-  color:var(--tx2);border-radius:8px;padding:3px 6px 3px 9px;font-size:12px}
-.dishx{border:0;background:#f2f6f4;color:#93a09a;border-radius:6px;width:20px;height:20px;font-size:14px;
-  line-height:1;font-family:inherit;cursor:pointer;padding:0}
-.dishx:active{background:#e3efe9;color:#b03a2e}
+.edit-mode .dish-row{border:1px dashed var(--line2);border-radius:9px;padding:7px 10px;margin-bottom:6px}
+.edit-mode .dish-row:last-child{margin-bottom:0}
+.edit-mode .del{font-size:11px;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:2px 7px;cursor:pointer;flex:0 0 auto;white-space:nowrap}
+.edit-mode .add-dish{display:flex;align-items:center;justify-content:center;gap:4px;border:1px dashed var(--blue);border-radius:9px;padding:9px;color:var(--blue);font-size:13px;cursor:pointer;margin-top:8px}
+.icon-btn.editing{border-color:var(--orange);color:var(--orange);font-weight:600}
 
-.ichip.off{background:#f1f3f2;color:#b8c2bd;text-decoration:line-through}
-.usel{width:66px;flex:0 0 66px;border:1px solid var(--line);border-radius:9px;padding:9px 2px;font-size:12px;
-  color:var(--tx2);background:#f7faf9;font-family:inherit}
-#view .row .nm{min-width:0}
+.divider{height:1px;background:var(--line);margin:14px 0}
 
-.azbar{position:fixed;right:3px;top:150px;z-index:25;display:flex;flex-direction:column;gap:1px;
-  max-height:60vh;overflow-y:auto;padding:4px 2px;background:rgba(255,255,255,.86);
-  border-radius:10px;box-shadow:0 2px 10px rgba(16,40,32,.08)}
-.azbar button{border:0;background:transparent;font-size:10.5px;line-height:1;padding:4px 5px;
-  color:var(--tx3);font-family:inherit;cursor:pointer;border-radius:6px}
-.azbar button.on{background:var(--brand);color:#fff;font-weight:700}
+.confirm-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--panel);border-top:1px solid var(--line);padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+.confirm-bar .btn{width:100%;padding:13px;border-radius:10px;border:0;font-size:15px;font-weight:600;cursor:pointer;color:#fff;background:var(--tx)}
+.confirm-bar .btn.done{background:var(--green)}
+.confirm-bar .btn:active{opacity:.85}
 
-.cover{border:1.5px solid #2b2b2b;border-radius:6px;padding:0;margin-top:10px;background:#fff;overflow:hidden}
-.cvtitle{text-align:center;font-size:17px;font-weight:700;letter-spacing:6px;padding:12px 0;border-bottom:1.5px solid #2b2b2b}
-.cvrow{display:flex;border-bottom:1px dashed #9aa39e}
-.cvrow:last-of-type{border-bottom:1.5px solid #2b2b2b}
-.cvlab{flex:0 0 76px;padding:10px 8px;font-size:12.5px;color:#333;background:#fafafa;border-right:1px dashed #9aa39e;letter-spacing:2px}
-.cvval{flex:1;padding:10px 10px;font-size:13px;color:#111;min-width:0;word-break:break-all}
-.cvval.big{font-size:18px;font-weight:700}
-.cvsign{display:flex;justify-content:space-between;padding:12px 10px;font-size:12px;color:#333;flex-wrap:wrap;gap:6px}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.mask.on{display:flex}
+.mbox{background:var(--panel);width:100%;max-width:600px;border-radius:16px 16px 0 0;max-height:88vh;display:flex;flex-direction:column}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.mhead h3{margin:0;font-size:15px;font-weight:600}
+.mclose{width:30px;height:30px;border:0;background:var(--panel2);border-radius:50%;font-size:18px;cursor:pointer;color:var(--tx)}
+.mbody{padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.mfoot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.mfoot button{flex:1;padding:11px;border-radius:9px;font-size:14px;cursor:pointer}
+.btn-p{background:var(--tx);color:#fff;border:0;font-weight:500}
+.btn-s{background:var(--panel);color:var(--tx);border:1px solid var(--line2)}
 
-.lgsum{margin-top:10px;background:var(--brand-soft);color:var(--brand-2);border-radius:10px;
-  padding:10px 12px;font-size:14px;font-weight:700;text-align:right}
+.f-label{font-size:12px;color:var(--tx2);display:block;margin:12px 0 5px}
+.f-label:first-child{margin-top:0}
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--tx);background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:9px 11px}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12px;color:var(--tx3);line-height:1.6;margin-top:8px}
 
-.ovin img{max-height:none;width:100%;height:auto}
+.cat-list{display:flex;flex-direction:column;gap:6px}
+.cat-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px}
+.cat-item .nm{flex:1;font-size:14px}
+.cat-item select{width:auto;font-size:13px;padding:6px 8px}
+
+.ver-entry{padding:10px 0;border-bottom:1px solid var(--line)}
+.ver-entry:last-child{border-bottom:0}
+.ver-entry .vh{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.ver-entry .vh b{font-size:13px}
+.ver-entry .vh span{font-size:11px;color:var(--tx3)}
+.ver-entry ul{margin:0;padding-left:17px}
+.ver-entry li{font-size:12.5px;line-height:1.8;color:var(--tx2)}
+
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:200;transition:opacity .3s;max-width:80%;opacity:0}
+
+.tabbar{display:flex;gap:6px;margin:0 0 0 6px}
+.tab{font-size:13px;border:1px solid var(--line2);background:var(--panel);color:var(--tx2);border-radius:8px;padding:6px 14px;cursor:pointer}
+.tab.on{background:var(--tx);color:#fff;border-color:var(--tx);font-weight:600}
+.out-form .f-row{margin-bottom:10px}
+.out-form label{font-size:12px;color:var(--tx2);display:block;margin-bottom:4px}
+.out-list .o-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.out-list .o-item:last-child{border-bottom:0}
+.out-list .o-main{flex:1;min-width:0}
+.out-list .o-name{font-weight:500}
+.out-list .o-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.out-list .o-amt{font-weight:600;color:var(--red);white-space:nowrap}
+.out-list .o-del{font-size:11px;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:3px 7px;cursor:pointer;background:transparent;white-space:nowrap}
+.out-bar{position:sticky;bottom:0;display:flex;gap:8px;padding:10px 0;background:var(--panel);margin-top:6px}
+.out-bar button{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;border:0;cursor:pointer;color:#fff}
+.out-bar .b-excel{background:var(--green)}
+.out-bar .b-img{background:var(--blue)}
+.o-edit{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.o-erow{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel)}
+.o-erow.extra{border-style:dashed;background:#faf7f0}
+.o-etop{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.o-ename{font-size:14px;font-weight:600;flex:1}
+.o-ecat{font-size:11px;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;white-space:nowrap}
+.o-etag{font-size:10px;color:#fff;background:#c98a2b;border-radius:6px;padding:2px 6px}
+.o-ebot{display:flex;align-items:center;gap:6px}
+.o-eqty,.o-eprice{flex:1;min-width:0}
+.o-eunit{width:62px;flex:0 0 62px;text-align:center}
+.o-edel{font-size:11px;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:3px 8px;background:transparent;white-space:nowrap;cursor:pointer}
+.o-hidden{margin-top:8px;font-size:12px;color:var(--tx3)}
+.o-restore{font-size:12px;color:var(--tx2);border:1px solid var(--line2);border-radius:6px;padding:3px 8px;background:var(--panel);cursor:pointer;margin:2px 4px 2px 0}
+
+@media(max-width:420px){
+  .dish-row .dn{flex:0 0 82px}
+  .sum-grid{gap:4px 12px}
+}
 </style>
 </head>
 <body>
-<header><div class="hd"><b id="school">食堂出库</b><span id="sub"></span></div>
-<div class="chips" id="chips"></div></header>
-<main id="view"></main>
-<nav id="tabs">
-  <button data-t="today" class="on"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="M8 14h3M8 17h6"/></svg>今日</button>
-  <button data-t="stock"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>库存</button>
-  <button data-t="in"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>入库</button>
-  <button data-t="menu"><svg viewBox="0 0 24 24"><path d="M7 4h10a2 2 0 012 2v14H5V6a2 2 0 012-2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>菜谱</button>
-  <button data-t="archive"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M4 7l2-3h12l2 3"/><path d="M9 12h6"/></svg>档案</button>
-  <button data-t="month"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="8" rx="1"/><rect x="17" y="13" width="3" height="3" rx="1"/></svg>结算</button>
-</nav>
-<div class="toast" id="toast"></div>
-<script>var DATA = {"school":"丰都县第三中学校","month":"2026-11","items":[{"n":"大米","c":"粮食","u":"斤"},{"n":"面粉","c":"粮食","u":"斤"},{"n":"面条","c":"粮食","u":"斤"},{"n":"瘦肉","c":"肉禽蛋","u":"斤"},{"n":"三线肉","c":"肉禽蛋","u":"斤"},{"n":"排骨","c":"肉禽蛋","u":"斤"},{"n":"牛肉","c":"肉禽蛋","u":"斤"},{"n":"猪蹄","c":"肉禽蛋","u":"斤"},{"n":"鸡","c":"肉禽蛋","u":"斤"},{"n":"鸭","c":"肉禽蛋","u":"斤"},{"n":"鸡蛋","c":"肉禽蛋","u":"斤"},{"n":"莲白","c":"蔬菜","u":"斤"},{"n":"油麦菜","c":"蔬菜","u":"斤"},{"n":"冬瓜","c":"蔬菜","u":"斤"},{"n":"南瓜","c":"蔬菜","u":"斤"},{"n":"土豆","c":"蔬菜","u":"斤"},{"n":"青椒","c":"蔬菜","u":"斤"},{"n":"尖椒","c":"蔬菜","u":"斤"},{"n":"小白菜","c":"蔬菜","u":"斤"},{"n":"花菜","c":"蔬菜","u":"斤"},{"n":"芹菜","c":"蔬菜","u":"斤"},{"n":"茄子","c":"蔬菜","u":"斤"},{"n":"豇豆","c":"蔬菜","u":"斤"},{"n":"蒜苔","c":"蔬菜","u":"斤"},{"n":"水白菜","c":"蔬菜","u":"斤"},{"n":"胡萝卜","c":"蔬菜","u":"斤"},{"n":"洋葱","c":"蔬菜","u":"斤"},{"n":"平菇","c":"蔬菜","u":"斤"},{"n":"香菇","c":"蔬菜","u":"斤"},{"n":"木耳","c":"干鲜","u":"斤"},{"n":"豆芽","c":"蔬菜","u":"斤"},{"n":"西红柿","c":"蔬菜","u":"斤"},{"n":"酸萝卜","c":"蔬菜","u":"斤"},{"n":"海带","c":"干鲜","u":"斤"},{"n":"海带丝","c":"干鲜","u":"斤"},{"n":"紫菜","c":"干鲜","u":"斤"},{"n":"豆腐","c":"蔬菜","u":"斤"},{"n":"豆干","c":"蔬菜","u":"斤"},{"n":"青豆","c":"蔬菜","u":"斤"},{"n":"山东白","c":"蔬菜","u":"斤"},{"n":"西芹","c":"蔬菜","u":"斤"},{"n":"大葱","c":"蔬菜","u":"斤"},{"n":"小葱","c":"蔬菜","u":"斤"},{"n":"生姜","c":"蔬菜","u":"斤"},{"n":"香菜","c":"蔬菜","u":"斤"},{"n":"蒜苗","c":"蔬菜","u":"斤"},{"n":"蒜米","c":"蔬菜","u":"斤"},{"n":"玉米","c":"蔬菜","u":"斤"},{"n":"苹果","c":"瓜果","u":"斤"},{"n":"香蕉","c":"瓜果","u":"斤"},{"n":"橙子","c":"瓜果","u":"斤"},{"n":"菜油","c":"油盐","u":"桶"},{"n":"盐","c":"油盐","u":"袋"},{"n":"酱油","c":"油盐","u":"瓶"},{"n":"醋","c":"油盐","u":"瓶"},{"n":"味精","c":"油盐","u":"袋"},{"n":"鸡精","c":"油盐","u":"袋"},{"n":"料酒","c":"油盐","u":"瓶"},{"n":"白糖","c":"油盐","u":"袋"},{"n":"豆瓣","c":"干鲜","u":"斤"},{"n":"花椒","c":"干鲜","u":"斤"},{"n":"干辣椒","c":"干鲜","u":"斤"},{"n":"豌豆粉条","c":"干鲜","u":"斤"},{"n":"胡椒面","c":"干鲜","u":"斤"},{"n":"大豆","c":"干鲜","u":"斤"},{"n":"黄豆","c":"干鲜","u":"袋"},{"n":"米豆","c":"干鲜","u":"袋"},{"n":"海椒面","c":"干鲜","u":"斤"},{"n":"芝麻","c":"干鲜","u":"斤"},{"n":"孜然面","c":"干鲜","u":"斤"},{"n":"红苕芡粉","c":"干鲜","u":"斤"},{"n":"嫩肉粉","c":"干鲜","u":"件"},{"n":"蒸肉粉","c":"干鲜","u":"件"},{"n":"老抽","c":"干鲜","u":"件"},{"n":"味极鲜","c":"干鲜","u":"瓶"},{"n":"耗油","c":"干鲜","u":"瓶"},{"n":"老干妈","c":"干鲜","u":"瓶"},{"n":"十三香","c":"干鲜","u":"袋"},{"n":"海椒节","c":"干鲜","u":"包"},{"n":"红泡椒","c":"干鲜","u":"包"},{"n":"泡姜","c":"干鲜","u":"包"},{"n":"火锅料","c":"干鲜","u":"包"},{"n":"老鸭汤","c":"干鲜","u":"包"},{"n":"胖子鱼","c":"干鲜","u":"包"},{"n":"老咸菜","c":"干鲜","u":"件"},{"n":"红苕粉条","c":"干鲜","u":"斤"},{"n":"洗涤剂","c":"低值易耗","u":"瓶"},{"n":"厨具杂件","c":"低值易耗","u":"批"},{"n":"水盐菜","c":"蔬菜","u":"斤"},{"n":"香油","c":"干鲜","u":"瓶"},{"n":"花椒面","c":"干鲜","u":"斤"},{"n":"藕","c":"蔬菜","u":"斤"}],"price":{"大米":2.9,"菜油":300.0,"鸡蛋":13.09,"排骨":13.95,"瘦肉":10.31,"鸡":23.36,"冬瓜":1,"土豆":1.3,"西红柿":1.9,"青豆":6.5,"玉米":5.9,"红苕粉条":6.85,"面条":2.6,"面粉":3.69,"三线肉":8.37,"莲白":0.8,"油麦菜":1.6,"平菇":3.7,"豆芽":1.4,"大豆":10.4,"海带":16.35,"紫菜":43.3,"木耳":39.0,"黄豆":5.0,"豌豆粉条":6.4,"胡萝卜":2.0,"牛肉":69.2,"猪蹄":8.01,"洋葱":1.9,"豆腐":2.5,"尖椒":2.9,"茄子":2.8,"豇豆":3.5,"海带丝":16.35,"鸭":16.85,"豆干":4.2,"南瓜":1.1,"米豆":6,"香菇":7.0,"粉条":6.4,"青椒":2.8,"花菜":2.1,"山东白":1.3,"西芹":3.3,"大葱":3.7,"小葱":5.9,"生姜":5.6,"香菜":8.4,"蒜米":4.6,"蒜苗":4.5,"海椒面":16.2,"芝麻":25,"孜然面":50,"红苕芡粉":6.9,"豆瓣":65.0,"鸡精":370.0,"味精":250.0,"嫩肉粉":250.0,"蒸肉粉":100.0,"老抽":85.0,"味极鲜":10.8,"耗油":8.3,"老干妈":10,"十三香":30,"海椒节":250,"红泡椒":150.0,"泡姜":150.0,"火锅料":12.8,"老鸭汤":6.8,"胖子鱼":12.8,"老咸菜":200.0,"芹菜":3.3,"苹果":8.6,"胡椒面":50,"白糖":3.3,"香油":19.5,"花椒面":49.6,"藕":2.9,"蒜苔":5},"opening":[{"n":"大米","c":"粮食","u":"斤","q":50,"p":2.9},{"n":"面粉","c":"粮食","u":"斤","q":100,"p":1.8},{"n":"面条","c":"粮食","u":"斤","q":168,"p":2.6},{"n":"瘦肉","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"三线肉","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"排骨","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"牛肉","c":"肉禽蛋","u":"公斤","q":0,"p":0},{"n":"猪蹄","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"鸡","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"鸭","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"鸡蛋","c":"肉禽蛋","u":"斤","q":0,"p":0},{"n":"莲白","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"油麦菜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"冬瓜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"南瓜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"土豆","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"青椒","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"尖椒","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"小白菜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"花菜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"芹菜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"茄子","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"豇豆","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"蒜苔","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"水白菜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"胡萝卜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"洋葱","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"平菇","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"香菇","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"木耳","c":"干鲜","u":"斤","q":15,"p":38},{"n":"豆芽","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"西红柿","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"酸萝卜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"海带","c":"干鲜","u":"斤","q":12,"p":15.9},{"n":"海带丝","c":"干鲜","u":"斤","q":14,"p":15.9},{"n":"紫菜","c":"干鲜","u":"斤","q":2,"p":42.9},{"n":"豆腐","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"豆干","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"青豆","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"山东白","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"西芹","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"大葱","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"小葱","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"生姜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"香菜","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"蒜苗","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"蒜米","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"玉米","c":"蔬菜","u":"斤","q":0,"p":0},{"n":"苹果","c":"瓜果","u":"斤","q":0,"p":0},{"n":"香蕉","c":"瓜果","u":"斤","q":0,"p":0},{"n":"橙子","c":"瓜果","u":"斤","q":0,"p":0},{"n":"菜油","c":"油盐","u":"桶","q":32,"p":300},{"n":"盐","c":"油盐","u":"袋","q":0,"p":0},{"n":"酱油","c":"油盐","u":"瓶","q":0,"p":0},{"n":"醋","c":"油盐","u":"瓶","q":0,"p":0},{"n":"味精","c":"油盐","u":"袋","q":0,"p":0},{"n":"鸡精","c":"油盐","u":"袋","q":0,"p":0},{"n":"料酒","c":"油盐","u":"瓶","q":0,"p":0},{"n":"白糖","c":"油盐","u":"袋","q":0,"p":0},{"n":"豆瓣","c":"干鲜","u":"斤","q":0,"p":0},{"n":"花椒","c":"干鲜","u":"斤","q":0,"p":0},{"n":"干辣椒","c":"干鲜","u":"斤","q":0,"p":0},{"n":"豌豆粉条","c":"干鲜","u":"斤","q":10,"p":6.8},{"n":"豌豆粉条","c":null,"u":null,"q":10,"p":6.8},{"n":"大豆","c":"干鲜","u":"斤","q":0,"p":0},{"n":"黄豆","c":"干鲜","u":"袋","q":15,"p":5.1},{"n":"米豆","c":"干鲜","u":"袋","q":30,"p":6},{"n":"海椒面","c":"干鲜","u":"斤","q":0,"p":0},{"n":"芝麻","c":"干鲜","u":"斤","q":0,"p":0},{"n":"孜然面","c":"干鲜","u":"斤","q":0,"p":0},{"n":"红苕芡粉","c":"干鲜","u":"斤","q":0,"p":0},{"n":"嫩肉粉","c":"干鲜","u":"件","q":0,"p":0},{"n":"蒸肉粉","c":"干鲜","u":"件","q":0,"p":0},{"n":"老抽","c":"干鲜","u":"件","q":0,"p":0},{"n":"味极鲜","c":"干鲜","u":"瓶","q":0,"p":0},{"n":"耗油","c":"干鲜","u":"瓶","q":0,"p":0},{"n":"老干妈","c":"干鲜","u":"瓶","q":0,"p":0},{"n":"十三香","c":"干鲜","u":"袋","q":0,"p":0},{"n":"海椒节","c":"干鲜","u":"包","q":0,"p":0},{"n":"红泡椒","c":"干鲜","u":"包","q":0,"p":0},{"n":"泡姜","c":"干鲜","u":"包","q":0,"p":0},{"n":"火锅料","c":"干鲜","u":"包","q":0,"p":0},{"n":"老鸭汤","c":"干鲜","u":"包","q":0,"p":0},{"n":"胖子鱼","c":"干鲜","u":"包","q":0,"p":0},{"n":"老咸菜","c":"干鲜","u":"件","q":0,"p":0},{"n":"红苕粉条","c":"干鲜","u":"斤","q":30,"p":6.8},{"n":"水盐菜","c":"蔬菜","u":"斤","q":0,"p":0}],"inb":[{"d":"2026-11-01","no":"","c":"粮食","n":"大米","u":"斤","q":1500,"p":2.9,"a":4350,"sup":"","by":""},{"d":"2026-11-02","no":"","c":"粮食","n":"面条","u":"斤","q":300,"p":5.2,"a":1560,"sup":"","by":""},{"d":"2026-11-02","no":"","c":"粮食","n":"面粉","u":"斤","q":500,"p":3.69,"a":1845,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"海带丝","u":"斤","q":14,"p":16.8,"a":235.2,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"木耳","u":"斤","q":5,"p":40,"a":200,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"豌豆粉条","u":"斤","q":40,"p":6.4,"a":256,"sup":"","by":""},{"d":"2026-11-05","no":"","c":"粮食","n":"大米","u":"斤","q":1500,"p":2.9,"a":4350,"sup":"","by":""},{"d":"2026-11-11","no":"","c":"粮食","n":"大米","u":"斤","q":1500,"p":2.9,"a":4350,"sup":"","by":""},{"d":"2026-11-11","no":"","c":"粮食","n":"面条","u":"斤","q":360,"p":5.18,"a":1864.8,"sup":"","by":""},{"d":"2026-11-08","no":"","c":"干鲜","n":"豌豆粉条","u":"斤","q":40,"p":6.4,"a":256,"sup":"","by":""},{"d":"2026-11-08","no":"","c":"干鲜","n":"紫菜","u":"斤","q":4,"p":43.7,"a":174.8,"sup":"","by":""},{"d":"2026-11-08","no":"","c":"干鲜","n":"木耳","u":"斤","q":30,"p":40,"a":1200,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"黄豆","u":"袋","q":90,"p":4.9,"a":441,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"红苕粉条","u":"斤","q":40,"p":6.9,"a":276,"sup":"","by":""},{"d":"2026-11-08","no":"","c":"干鲜","n":"红苕粉条","u":"斤","q":40,"p":6.9,"a":276,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"海带","u":"斤","q":8,"p":16.8,"a":134.4,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"海带","u":"斤","q":16,"p":16.8,"a":268.8,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"大豆","u":"斤","q":64,"p":10.4,"a":665.6,"sup":"","by":""},{"d":"2026-11-01","no":"","c":"干鲜","n":"大豆","u":"斤","q":64,"p":10.4,"a":665.6,"sup":"","by":""}],"out":[{"d":"2026-11-02","t":"午","n":"大米","u":"斤","q":150,"p":2.9,"a":435,"by":""},{"d":"2026-11-02","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-02","t":"午","n":"鸡蛋","u":"斤","q":30,"p":13.09,"a":392.7,"by":""},{"d":"2026-11-02","t":"午","n":"排骨","u":"斤","q":158,"p":14.43,"a":2279.94,"by":""},{"d":"2026-11-02","t":"午","n":"瘦肉","u":"斤","q":30,"p":9.905,"a":297.15,"by":""},{"d":"2026-11-02","t":"午","n":"鸡","u":"斤","q":100,"p":23.36,"a":2336,"by":""},{"d":"2026-11-02","t":"午","n":"冬瓜","u":"斤","q":160,"p":1,"a":160,"by":""},{"d":"2026-11-02","t":"午","n":"土豆","u":"斤","q":80,"p":1.3,"a":104,"by":""},{"d":"2026-11-02","t":"午","n":"西红柿","u":"斤","q":53,"p":1.9,"a":100.7,"by":""},{"d":"2026-11-02","t":"午","n":"青豆","u":"斤","q":60,"p":6.5,"a":390,"by":""},{"d":"2026-11-02","t":"午","n":"玉米","u":"斤","q":80,"p":5.9,"a":472,"by":""},{"d":"2026-11-02","t":"午","n":"红苕粉条","u":"斤","q":30,"p":6.8,"a":204,"by":""},{"d":"2026-11-02","t":"早/晚","n":"大米","u":"斤","q":100,"p":2.9,"a":290,"by":""},{"d":"2026-11-02","t":"早/晚","n":"面条","u":"斤","q":80,"p":2.6,"a":208,"by":""},{"d":"2026-11-02","t":"早/晚","n":"面粉","u":"斤","q":50,"p":1.8,"a":90,"by":""},{"d":"2026-11-02","t":"早/晚","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-02","t":"早/晚","n":"瘦肉","u":"斤","q":50,"p":9.905,"a":495.25,"by":""},{"d":"2026-11-02","t":"早/晚","n":"三线肉","u":"斤","q":100,"p":9.145,"a":914.5,"by":""},{"d":"2026-11-02","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-02","t":"早/晚","n":"土豆","u":"斤","q":80,"p":1.3,"a":104,"by":""},{"d":"2026-11-02","t":"早/晚","n":"莲白","u":"斤","q":50,"p":0.8,"a":40,"by":""},{"d":"2026-11-02","t":"早/晚","n":"油麦菜","u":"斤","q":60,"p":1.6,"a":96,"by":""},{"d":"2026-11-02","t":"早/晚","n":"平菇","u":"斤","q":25,"p":3.7,"a":92.5,"by":""},{"d":"2026-11-02","t":"早/晚","n":"豆芽","u":"斤","q":30,"p":1.4,"a":42,"by":""},{"d":"2026-11-03","t":"早/晚","n":"大米","u":"斤","q":240,"p":2.9,"a":696,"by":""},{"d":"2026-11-03","t":"午","n":"大米","u":"斤","q":260,"p":2.9,"a":754,"by":""},{"d":"2026-11-03","t":"早/晚","n":"面条","u":"斤","q":96,"p":2.6,"a":249.6,"by":""},{"d":"2026-11-03","t":"早/晚","n":"面粉","u":"斤","q":50,"p":1.8,"a":90,"by":""},{"d":"2026-11-03","t":"早/晚","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-03","t":"午","n":"菜油","u":"桶","q":2,"p":300,"a":600,"by":""},{"d":"2026-11-03","t":"午","n":"大豆","u":"斤","q":32,"p":10.4,"a":332.8,"by":""},{"d":"2026-11-03","t":"午","n":"海带","u":"斤","q":4,"p":15.9,"a":63.6,"by":""},{"d":"2026-11-03","t":"午","n":"紫菜","u":"斤","q":2,"p":42.9,"a":85.8,"by":""},{"d":"2026-11-03","t":"早/晚","n":"木耳","u":"斤","q":5,"p":38,"a":190,"by":""},{"d":"2026-11-03","t":"早/晚","n":"黄豆","u":"袋","q":15,"p":5.1,"a":76.5,"by":""},{"d":"2026-11-03","t":"早/晚","n":"豌豆粉条","u":"斤","q":10,"p":6.8,"a":68,"by":""},{"d":"2026-11-03","t":"早/晚","n":"莲白","u":"斤","q":60,"p":0.8,"a":48,"by":""},{"d":"2026-11-03","t":"早/晚","n":"油麦菜","u":"斤","q":60,"p":1.6,"a":96,"by":""},{"d":"2026-11-03","t":"午","n":"土豆","u":"斤","q":180,"p":1.3,"a":234,"by":""},{"d":"2026-11-03","t":"午","n":"胡萝卜","u":"斤","q":120,"p":2,"a":240,"by":""},{"d":"2026-11-03","t":"早/晚","n":"西红柿","u":"斤","q":100,"p":1.9,"a":190,"by":""},{"d":"2026-11-03","t":"早/晚","n":"瘦肉","u":"斤","q":50,"p":9.905,"a":495.25,"by":""},{"d":"2026-11-03","t":"午","n":"牛肉","u":"斤","q":140,"p":34.6,"a":4844,"by":""},{"d":"2026-11-03","t":"午","n":"猪蹄","u":"斤","q":180,"p":8.005,"a":1440.9,"by":""},{"d":"2026-11-03","t":"早/晚","n":"三线肉","u":"斤","q":101,"p":9.145,"a":923.65,"by":""},{"d":"2026-11-03","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-03","t":"午","n":"洋葱","u":"斤","q":45,"p":1.9,"a":85.5,"by":""},{"d":"2026-11-03","t":"早/晚","n":"洋葱","u":"斤","q":44,"p":1.9,"a":83.6,"by":""},{"d":"2026-11-03","t":"午","n":"鸡蛋","u":"斤","q":30,"p":13.09,"a":392.7,"by":""},{"d":"2026-11-03","t":"午","n":"豆腐","u":"斤","q":114,"p":2.5,"a":285,"by":""},{"d":"2026-11-04","t":"早/晚","n":"大米","u":"斤","q":180,"p":2.9,"a":522,"by":""},{"d":"2026-11-04","t":"午","n":"大米","u":"斤","q":220,"p":2.9,"a":638,"by":""},{"d":"2026-11-04","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-04","t":"早/晚","n":"面条","u":"斤","q":120,"p":2.6,"a":312,"by":""},{"d":"2026-11-04","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-04","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-04","t":"早/晚","n":"牛肉","u":"斤","q":120,"p":34.6,"a":4152,"by":""},{"d":"2026-11-04","t":"早/晚","n":"瘦肉","u":"斤","q":30,"p":10.545,"a":316.35,"by":""},{"d":"2026-11-04","t":"午","n":"瘦肉","u":"斤","q":150,"p":9.905,"a":1485.75,"by":""},{"d":"2026-11-04","t":"午","n":"鸡","u":"斤","q":91.7,"p":23.36,"a":2142.11,"by":""},{"d":"2026-11-04","t":"早/晚","n":"猪蹄","u":"斤","q":160,"p":7.98,"a":1276.8,"by":""},{"d":"2026-11-04","t":"早/晚","n":"莲白","u":"斤","q":110,"p":0.8,"a":88,"by":""},{"d":"2026-11-04","t":"早/晚","n":"油麦菜","u":"斤","q":60,"p":1.6,"a":96,"by":""},{"d":"2026-11-04","t":"早/晚","n":"尖椒","u":"斤","q":19.4,"p":2.9,"a":56.26,"by":""},{"d":"2026-11-04","t":"午","n":"尖椒","u":"斤","q":35,"p":2.9,"a":101.5,"by":""},{"d":"2026-11-04","t":"早/晚","n":"平菇","u":"斤","q":30,"p":3.7,"a":111,"by":""},{"d":"2026-11-04","t":"午","n":"平菇","u":"斤","q":35,"p":3.7,"a":129.5,"by":""},{"d":"2026-11-04","t":"早/晚","n":"茄子","u":"斤","q":130.8,"p":2.8,"a":366.24,"by":""},{"d":"2026-11-04","t":"午","n":"洋葱","u":"斤","q":44,"p":1.9,"a":83.6,"by":""},{"d":"2026-11-04","t":"午","n":"木耳","u":"斤","q":10,"p":38,"a":380,"by":""},{"d":"2026-11-04","t":"午","n":"豇豆","u":"斤","q":139.6,"p":3.5,"a":488.6,"by":""},{"d":"2026-11-04","t":"午","n":"海带丝","u":"斤","q":14,"p":15.9,"a":222.6,"by":""},{"d":"2026-11-04","t":"午","n":"豌豆粉条","u":"斤","q":20,"p":6.4,"a":128,"by":""},{"d":"2026-11-04","t":"早/晚","n":"胡萝卜","u":"斤","q":20,"p":2,"a":40,"by":""},{"d":"2026-11-04","t":"午","n":"豆芽","u":"斤","q":50.8,"p":1.4,"a":71.12,"by":""},{"d":"2026-11-05","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-05","t":"早/晚","n":"大米","u":"斤","q":150,"p":2.9,"a":435,"by":""},{"d":"2026-11-05","t":"早/晚","n":"面条","u":"斤","q":96,"p":2.6,"a":249.6,"by":""},{"d":"2026-11-05","t":"早/晚","n":"菜油","u":"桶","q":2,"p":300,"a":600,"by":""},{"d":"2026-11-05","t":"早/晚","n":"瘦肉","u":"斤","q":30,"p":10.545,"a":316.35,"by":""},{"d":"2026-11-05","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-05","t":"早/晚","n":"鸭","u":"斤","q":90,"p":17.08,"a":1537.2,"by":""},{"d":"2026-11-05","t":"早/晚","n":"三线肉","u":"斤","q":185,"p":8.37,"a":1548.45,"by":""},{"d":"2026-11-05","t":"早/晚","n":"莲白","u":"斤","q":60,"p":0.8,"a":48,"by":""},{"d":"2026-11-05","t":"早/晚","n":"海带","u":"斤","q":4,"p":15.9,"a":63.6,"by":""},{"d":"2026-11-05","t":"早/晚","n":"青豆","u":"斤","q":60,"p":6.5,"a":390,"by":""},{"d":"2026-11-05","t":"早/晚","n":"玉米","u":"斤","q":80,"p":5.9,"a":472,"by":""},{"d":"2026-11-05","t":"早/晚","n":"豆干","u":"斤","q":70,"p":4.2,"a":294,"by":""},{"d":"2026-11-05","t":"午","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-05","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-05","t":"午","n":"牛肉","u":"斤","q":143.2,"p":34.6,"a":4954.72,"by":""},{"d":"2026-11-05","t":"午","n":"排骨","u":"斤","q":160,"p":13.945,"a":2231.2,"by":""},{"d":"2026-11-05","t":"午","n":"土豆","u":"斤","q":165,"p":1.3,"a":214.5,"by":""},{"d":"2026-11-05","t":"午","n":"海带","u":"斤","q":8,"p":16.8,"a":134.4,"by":""},{"d":"2026-11-05","t":"午","n":"油麦菜","u":"斤","q":120,"p":1.6,"a":192,"by":""},{"d":"2026-11-05","t":"午","n":"豆腐","u":"斤","q":110,"p":2.5,"a":275,"by":""},{"d":"2026-11-05","t":"午","n":"南瓜","u":"斤","q":124,"p":1.1,"a":136.4,"by":""},{"d":"2026-11-05","t":"午","n":"大豆","u":"斤","q":32,"p":10.4,"a":332.8,"by":""},{"d":"2026-11-05","t":"午","n":"米豆","u":"袋","q":15,"p":6,"a":90,"by":""},{"d":"2026-11-06","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-06","t":"早/晚","n":"面条","u":"斤","q":80,"p":2.6,"a":208,"by":""},{"d":"2026-11-06","t":"早/晚","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-06","t":"早/晚","n":"瘦肉","u":"斤","q":30,"p":10.545,"a":316.35,"by":""},{"d":"2026-11-06","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-06","t":"早/晚","n":"莲白","u":"斤","q":80,"p":0.8,"a":64,"by":""},{"d":"2026-11-06","t":"早/晚","n":"油麦菜","u":"斤","q":43.6,"p":1.6,"a":69.76,"by":""},{"d":"2026-11-06","t":"午","n":"大米","u":"斤","q":150,"p":2.9,"a":435,"by":""},{"d":"2026-11-06","t":"午","n":"菜油","u":"桶","q":2,"p":300,"a":600,"by":""},{"d":"2026-11-06","t":"午","n":"鸡","u":"斤","q":81,"p":23.36,"a":1892.16,"by":""},{"d":"2026-11-06","t":"午","n":"瘦肉","u":"斤","q":130,"p":10.545,"a":1370.85,"by":""},{"d":"2026-11-06","t":"午","n":"鸡蛋","u":"斤","q":20,"p":13.09,"a":261.8,"by":""},{"d":"2026-11-06","t":"午","n":"香菇","u":"斤","q":50.4,"p":7,"a":352.8,"by":""},{"d":"2026-11-06","t":"午","n":"洋葱","u":"斤","q":44.4,"p":1.9,"a":84.36,"by":""},{"d":"2026-11-06","t":"午","n":"冬瓜","u":"斤","q":184,"p":1,"a":184,"by":""},{"d":"2026-11-06","t":"午","n":"土豆","u":"斤","q":150,"p":1.3,"a":195,"by":""},{"d":"2026-11-06","t":"午","n":"西红柿","u":"斤","q":100.8,"p":1.9,"a":191.52,"by":""},{"d":"2026-11-08","t":"早/晚","n":"大米","u":"斤","q":100,"p":2.9,"a":290,"by":""},{"d":"2026-11-08","t":"早/晚","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-08","t":"早/晚","n":"三线肉","u":"斤","q":85,"p":8.37,"a":711.45,"by":""},{"d":"2026-11-08","t":"早/晚","n":"排骨","u":"斤","q":31,"p":13.945,"a":432.3,"by":""},{"d":"2026-11-08","t":"早/晚","n":"油麦菜","u":"斤","q":80,"p":1.6,"a":128,"by":""},{"d":"2026-11-08","t":"早/晚","n":"土豆","u":"斤","q":90,"p":1.3,"a":117,"by":""},{"d":"2026-11-08","t":"早/晚","n":"平菇","u":"斤","q":25,"p":3.7,"a":92.5,"by":""},{"d":"2026-11-09","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-09","t":"早/晚","n":"大米","u":"斤","q":150,"p":2.9,"a":435,"by":""},{"d":"2026-11-09","t":"早/晚","n":"面条","u":"斤","q":84,"p":2.6,"a":218.4,"by":""},{"d":"2026-11-09","t":"早/晚","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-09","t":"早/晚","n":"瘦肉","u":"斤","q":80,"p":10.315,"a":825.2,"by":""},{"d":"2026-11-09","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-09","t":"早/晚","n":"三线肉","u":"斤","q":110,"p":8.37,"a":920.7,"by":""},{"d":"2026-11-09","t":"早/晚","n":"莲白","u":"斤","q":30,"p":0.8,"a":24,"by":""},{"d":"2026-11-09","t":"早/晚","n":"油麦菜","u":"斤","q":35,"p":1.6,"a":56,"by":""},{"d":"2026-11-09","t":"早/晚","n":"土豆","u":"斤","q":100,"p":1.3,"a":130,"by":""},{"d":"2026-11-09","t":"早/晚","n":"平菇","u":"斤","q":25,"p":3.7,"a":92.5,"by":""},{"d":"2026-11-09","t":"早/晚","n":"豆芽","u":"斤","q":30.4,"p":1.4,"a":42.56,"by":""},{"d":"2026-11-09","t":"午","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-09","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-09","t":"午","n":"排骨","u":"斤","q":190,"p":13.945,"a":2649.55,"by":""},{"d":"2026-11-09","t":"午","n":"鸡","u":"斤","q":100,"p":23.36,"a":2336,"by":""},{"d":"2026-11-09","t":"午","n":"瘦肉","u":"斤","q":30,"p":10.315,"a":309.45,"by":""},{"d":"2026-11-09","t":"午","n":"鸡蛋","u":"斤","q":22,"p":13.09,"a":287.98,"by":""},{"d":"2026-11-09","t":"午","n":"冬瓜","u":"斤","q":170,"p":1,"a":170,"by":""},{"d":"2026-11-09","t":"午","n":"土豆","u":"斤","q":100,"p":1.3,"a":130,"by":""},{"d":"2026-11-09","t":"午","n":"青豆","u":"斤","q":60,"p":6.5,"a":390,"by":""},{"d":"2026-11-09","t":"午","n":"玉米","u":"斤","q":80,"p":5.9,"a":472,"by":""},{"d":"2026-11-09","t":"午","n":"西红柿","u":"斤","q":60,"p":1.9,"a":114,"by":""},{"d":"2026-11-09","t":"午","n":"红苕粉条","u":"斤","q":40,"p":6.9,"a":276,"by":""},{"d":"2026-11-10","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-10","t":"早/晚","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-10","t":"早/晚","n":"面条","u":"斤","q":96,"p":2.6,"a":249.6,"by":""},{"d":"2026-11-10","t":"早/晚","n":"菜油","u":"桶","q":2,"p":300,"a":600,"by":""},{"d":"2026-11-10","t":"早/晚","n":"瘦肉","u":"斤","q":76,"p":9.905,"a":752.78,"by":""},{"d":"2026-11-10","t":"早/晚","n":"鸡蛋","u":"斤","q":20,"p":13.09,"a":261.8,"by":""},{"d":"2026-11-10","t":"早/晚","n":"三线肉","u":"斤","q":118,"p":9.145,"a":1079.11,"by":""},{"d":"2026-11-10","t":"早/晚","n":"莲白","u":"斤","q":35,"p":0.8,"a":28,"by":""},{"d":"2026-11-10","t":"早/晚","n":"油麦菜","u":"斤","q":35,"p":1.6,"a":56,"by":""},{"d":"2026-11-10","t":"早/晚","n":"西红柿","u":"斤","q":72,"p":1.9,"a":136.8,"by":""},{"d":"2026-11-10","t":"早/晚","n":"木耳","u":"斤","q":10,"p":40,"a":400,"by":""},{"d":"2026-11-10","t":"早/晚","n":"黄豆","u":"袋","q":45,"p":4.9,"a":220.5,"by":""},{"d":"2026-11-10","t":"早/晚","n":"豌豆粉条","u":null,"q":20,"p":6.4,"a":128,"by":""},{"d":"2026-11-10","t":"午","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-10","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-10","t":"午","n":"牛肉","u":"斤","q":160,"p":34.6,"a":5536,"by":""},{"d":"2026-11-10","t":"午","n":"猪蹄","u":"斤","q":182,"p":8.005,"a":1456.91,"by":""},{"d":"2026-11-10","t":"午","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-10","t":"午","n":"土豆","u":"斤","q":100,"p":1.3,"a":130,"by":""},{"d":"2026-11-10","t":"午","n":"海带","u":"斤","q":4,"p":15.9,"a":63.6,"by":""},{"d":"2026-11-10","t":"午","n":"胡萝卜","u":"斤","q":120,"p":2,"a":240,"by":""},{"d":"2026-11-10","t":"午","n":"紫菜","u":"斤","q":2,"p":43.7,"a":87.4,"by":""},{"d":"2026-11-10","t":"午","n":"大豆","u":"斤","q":32,"p":10.4,"a":332.8,"by":""},{"d":"2026-11-11","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-11","t":"早/晚","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-11","t":"早/晚","n":"面条","u":"斤","q":120,"p":2.6,"a":312,"by":""},{"d":"2026-11-11","t":"早/晚","n":"菜油","u":"桶","q":2,"p":300,"a":600,"by":""},{"d":"2026-11-11","t":"早/晚","n":"牛肉","u":"斤","q":105.2,"p":34.6,"a":3639.92,"by":""},{"d":"2026-11-11","t":"早/晚","n":"猪蹄","u":"斤","q":110,"p":8.005,"a":880.55,"by":""},{"d":"2026-11-11","t":"早/晚","n":"鸡蛋","u":"斤","q":30,"p":13.09,"a":392.7,"by":""},{"d":"2026-11-11","t":"早/晚","n":"瘦肉","u":"斤","q":50,"p":10.315,"a":515.75,"by":""},{"d":"2026-11-11","t":"早/晚","n":"莲白","u":"斤","q":119.8,"p":0.8,"a":95.84,"by":""},{"d":"2026-11-11","t":"早/晚","n":"油麦菜","u":"斤","q":60,"p":1.6,"a":96,"by":""},{"d":"2026-11-11","t":"早/晚","n":"尖椒","u":"斤","q":40,"p":2.9,"a":116,"by":""},{"d":"2026-11-11","t":"早/晚","n":"平菇","u":"斤","q":25,"p":3.7,"a":92.5,"by":""},{"d":"2026-11-11","t":"早/晚","n":"洋葱","u":"斤","q":50,"p":1.9,"a":95,"by":""},{"d":"2026-11-11","t":"午","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-11","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-11","t":"午","n":"瘦肉","u":"斤","q":100,"p":10.315,"a":1031.5,"by":""},{"d":"2026-11-11","t":"午","n":"鸡","u":"斤","q":86.6,"p":23.36,"a":2022.98,"by":""},{"d":"2026-11-11","t":"午","n":"尖椒","u":"斤","q":50,"p":2.9,"a":145,"by":""},{"d":"2026-11-11","t":"午","n":"豇豆","u":"斤","q":122,"p":3.5,"a":427,"by":""},{"d":"2026-11-11","t":"午","n":"洋葱","u":"斤","q":50,"p":1.9,"a":95,"by":""},{"d":"2026-11-11","t":"午","n":"平菇","u":"斤","q":25,"p":3.7,"a":92.5,"by":""},{"d":"2026-11-11","t":"午","n":"豆芽","u":"斤","q":50,"p":1.4,"a":70,"by":""},{"d":"2026-11-11","t":"午","n":"木耳","u":"斤","q":10,"p":40,"a":400,"by":""},{"d":"2026-11-11","t":"午","n":"海带丝","u":"斤","q":7,"p":16.8,"a":117.6,"by":""},{"d":"2026-11-11","t":"午","n":"豌豆粉条","u":"斤","q":20,"p":6.4,"a":128,"by":""},{"d":"2026-11-12","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-12","t":"早/晚","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-12","t":"早/晚","n":"面条","u":"斤","q":100,"p":2.6,"a":256.76,"by":""},{"d":"2026-11-12","t":"早/晚","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-12","t":"早/晚","n":"瘦肉","u":"斤","q":30,"p":10.315,"a":309.45,"by":""},{"d":"2026-11-12","t":"早/晚","n":"鸡蛋","u":"斤","q":20,"p":13.09,"a":261.8,"by":""},{"d":"2026-11-12","t":"早/晚","n":"鸭","u":"斤","q":80.5,"p":16.62,"a":1337.91,"by":""},{"d":"2026-11-12","t":"早/晚","n":"三线肉","u":"斤","q":60,"p":8.37,"a":502.2,"by":""},{"d":"2026-11-12","t":"早/晚","n":"莲白","u":"斤","q":70,"p":0.8,"a":56,"by":""},{"d":"2026-11-12","t":"早/晚","n":"油麦菜","u":"斤","q":35,"p":1.6,"a":56,"by":""},{"d":"2026-11-12","t":"早/晚","n":"海带","u":"斤","q":5,"p":16.8,"a":84,"by":""},{"d":"2026-11-12","t":"早/晚","n":"青豆","u":"斤","q":60,"p":6.5,"a":390,"by":""},{"d":"2026-11-12","t":"早/晚","n":"胡萝卜","u":"斤","q":21,"p":2,"a":42,"by":""},{"d":"2026-11-12","t":"早/晚","n":"玉米","u":"斤","q":80,"p":5.9,"a":472,"by":""},{"d":"2026-11-12","t":"午","n":"大米","u":"斤","q":200,"p":2.9,"a":580,"by":""},{"d":"2026-11-12","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-12","t":"午","n":"牛肉","u":"斤","q":148,"p":39.995,"a":5919.26,"by":""},{"d":"2026-11-12","t":"午","n":"排骨","u":"斤","q":100,"p":13.945,"a":1394.5,"by":""},{"d":"2026-11-12","t":"午","n":"土豆","u":"斤","q":100,"p":1.3,"a":130,"by":""},{"d":"2026-11-12","t":"午","n":"海带","u":"斤","q":5,"p":16.8,"a":84,"by":""},{"d":"2026-11-12","t":"午","n":"油麦菜","u":"斤","q":70,"p":1.6,"a":112,"by":""},{"d":"2026-11-12","t":"午","n":"豆腐","u":"斤","q":114,"p":2.5,"a":285,"by":""},{"d":"2026-11-12","t":"午","n":"南瓜","u":"斤","q":90,"p":1.1,"a":99,"by":""},{"d":"2026-11-12","t":"午","n":"大豆","u":"斤","q":32,"p":10.4,"a":332.8,"by":""},{"d":"2026-11-13","t":"早/晚","n":"面粉","u":"斤","q":25,"p":3.69,"a":92.25,"by":""},{"d":"2026-11-13","t":"早/晚","n":"大米","u":"斤","q":80,"p":2.9,"a":232,"by":""},{"d":"2026-11-13","t":"早/晚","n":"面条","u":"斤","q":96,"p":2.59,"a":248.64,"by":""},{"d":"2026-11-13","t":"早/晚","n":"菜油","u":"桶","q":2,"p":300,"a":600,"by":""},{"d":"2026-11-13","t":"早/晚","n":"瘦肉","u":"斤","q":30,"p":10.135,"a":304.05,"by":""},{"d":"2026-11-13","t":"早/晚","n":"鸡蛋","u":"斤","q":10,"p":13.09,"a":130.9,"by":""},{"d":"2026-11-13","t":"早/晚","n":"三线肉","u":"斤","q":90,"p":8.37,"a":753.3,"by":""},{"d":"2026-11-13","t":"早/晚","n":"排骨","u":"斤","q":87,"p":13.945,"a":1213.22,"by":""},{"d":"2026-11-13","t":"早/晚","n":"莲白","u":"斤","q":60,"p":0.8,"a":48,"by":""},{"d":"2026-11-13","t":"早/晚","n":"油麦菜","u":"斤","q":35,"p":1.6,"a":56,"by":""},{"d":"2026-11-13","t":"早/晚","n":"西红柿","u":"斤","q":45,"p":1.9,"a":85.5,"by":""},{"d":"2026-11-13","t":"早/晚","n":"冬瓜","u":"斤","q":65,"p":1,"a":65,"by":""},{"d":"2026-11-13","t":"早/晚","n":"平菇","u":"斤","q":21,"p":3.7,"a":77.7,"by":""},{"d":"2026-11-13","t":"午","n":"大米","u":"斤","q":120,"p":2.9,"a":348,"by":""},{"d":"2026-11-13","t":"午","n":"菜油","u":"桶","q":1,"p":300,"a":300,"by":""},{"d":"2026-11-13","t":"午","n":"鸡","u":"斤","q":70,"p":23.36,"a":1635.2,"by":""},{"d":"2026-11-13","t":"午","n":"瘦肉","u":"斤","q":80,"p":10.315,"a":825.2,"by":""},{"d":"2026-11-13","t":"午","n":"鸡蛋","u":"斤","q":20,"p":13.09,"a":261.8,"by":""},{"d":"2026-11-13","t":"午","n":"香菇","u":"斤","q":58,"p":7,"a":406,"by":""},{"d":"2026-11-13","t":"午","n":"洋葱","u":"斤","q":70,"p":1.9,"a":133,"by":""},{"d":"2026-11-13","t":"午","n":"冬瓜","u":"斤","q":90,"p":1,"a":90,"by":""},{"d":"2026-11-13","t":"午","n":"土豆","u":"斤","q":159,"p":1.3,"a":206.7,"by":""},{"d":"2026-11-13","t":"午","n":"西红柿","u":"斤","q":45,"p":1.9,"a":85.5,"by":""},{"d":"2026-11-14","t":"早/晚","n":"瘦肉","u":"斤","q":132,"p":10.315,"a":1361.58,"by":""},{"d":"2026-11-14","t":"早/晚","n":"三线肉","u":"斤","q":60.8,"p":8.37,"a":508.9,"by":""},{"d":"2026-11-14","t":"早/晚","n":"油麦菜","u":"斤","q":30,"p":1.6,"a":48,"by":""},{"d":"2026-11-14","t":"早/晚","n":"洋葱","u":"斤","q":31,"p":1.9,"a":58.9,"by":""},{"d":"2026-11-14","t":"早/晚","n":"土豆","u":"斤","q":100,"p":1.3,"a":130,"by":""},{"d":"2026-11-14","t":"早/晚","n":"莲白","u":"斤","q":40,"p":0.8,"a":32,"by":""},{"d":"2026-11-14","t":"早/晚","n":"玉米","u":"斤","q":40,"p":5.9,"a":236,"by":""},{"d":"2026-11-14","t":"早/晚","n":"南瓜","u":"斤","q":38,"p":1.1,"a":41.8,"by":""},{"d":"2026-11-14","t":"午","n":"鸡","u":"斤","q":32.2,"p":23.36,"a":752.19,"by":""},{"d":"2026-11-14","t":"午","n":"猪蹄","u":"斤","q":75,"p":8.005,"a":600.38,"by":""},{"d":"2026-11-14","t":"午","n":"鸡蛋","u":"斤","q":34,"p":13.09,"a":445.06,"by":""},{"d":"2026-11-14","t":"午","n":"尖椒","u":"斤","q":74,"p":2.9,"a":214.6,"by":""},{"d":"2026-11-14","t":"午","n":"西红柿","u":"斤","q":32,"p":1.9,"a":60.8,"by":""}],"oneoff":[{"d":"2026-11-01","c":"蔬菜","n":"青椒","u":"斤","q":101,"p":2.8,"a":282.8},{"d":"2026-11-01","c":"蔬菜","n":"花菜","u":"斤","q":162,"p":2.1,"a":340.2},{"d":"2026-11-01","c":"蔬菜","n":"山东白","u":"斤","q":280,"p":1.3,"a":364},{"d":"2026-11-01","c":"蔬菜","n":"西芹","u":"斤","q":21,"p":3.3,"a":69.3},{"d":"2026-11-01","c":"蔬菜","n":"大葱","u":"斤","q":52,"p":3.7,"a":192.4},{"d":"2026-11-01","c":"蔬菜","n":"小葱","u":"斤","q":35,"p":5.9,"a":206.5},{"d":"2026-11-01","c":"蔬菜","n":"生姜","u":"斤","q":20,"p":5.6,"a":112},{"d":"2026-11-01","c":"蔬菜","n":"香菜","u":"斤","q":3,"p":8.4,"a":25.2},{"d":"2026-11-01","c":"蔬菜","n":"蒜米","u":"斤","q":20,"p":4.6,"a":92},{"d":"2026-11-01","c":"蔬菜","n":"蒜苗","u":"斤","q":25,"p":4.5,"a":112.5},{"d":"2026-11-01","c":"干鲜","n":"海椒面","u":"斤","q":30,"p":16.2,"a":486},{"d":"2026-11-01","c":"干鲜","n":"芝麻","u":"斤","q":5,"p":25,"a":125},{"d":"2026-11-01","c":"干鲜","n":"孜然面","u":"斤","q":5,"p":50,"a":250},{"d":"2026-11-01","c":"干鲜","n":"红苕芡粉","u":"斤","q":50,"p":6.9,"a":345},{"d":"2026-11-01","c":"干鲜","n":"豆瓣","u":"斤","q":2,"p":65,"a":130},{"d":"2026-11-01","c":"干鲜","n":"鸡精","u":"袋","q":1,"p":370,"a":370},{"d":"2026-11-01","c":"干鲜","n":"味精","u":"袋","q":1,"p":250,"a":250},{"d":"2026-11-01","c":"干鲜","n":"嫩肉粉","u":"件","q":1,"p":250,"a":250},{"d":"2026-11-01","c":"干鲜","n":"蒸肉粉","u":"件","q":1,"p":100,"a":100},{"d":"2026-11-01","c":"干鲜","n":"老抽","u":"件","q":2,"p":85,"a":170},{"d":"2026-11-01","c":"干鲜","n":"味极鲜","u":"瓶","q":12,"p":10.8,"a":129.6},{"d":"2026-11-01","c":"干鲜","n":"耗油","u":"瓶","q":12,"p":8.3,"a":99.6},{"d":"2026-11-01","c":"干鲜","n":"老干妈","u":"瓶","q":24,"p":10,"a":240},{"d":"2026-11-01","c":"干鲜","n":"十三香","u":"袋","q":1,"p":30,"a":30},{"d":"2026-11-01","c":"干鲜","n":"海椒节","u":"包","q":1,"p":250,"a":250},{"d":"2026-11-01","c":"干鲜","n":"红泡椒","u":"包","q":5,"p":150,"a":750},{"d":"2026-11-01","c":"干鲜","n":"泡姜","u":"包","q":1,"p":150,"a":150},{"d":"2026-11-01","c":"干鲜","n":"火锅料","u":"包","q":100,"p":12.8,"a":1280},{"d":"2026-11-01","c":"干鲜","n":"老鸭汤","u":"包","q":30,"p":6.8,"a":204},{"d":"2026-11-01","c":"干鲜","n":"胖子鱼","u":"包","q":40,"p":12.8,"a":512},{"d":"2026-11-01","c":"干鲜","n":"老咸菜","u":"件","q":1,"p":200,"a":200},{"d":"2026-11-03","c":"蔬菜","n":"豆腐","u":null,"q":114,"p":2.5,"a":285},{"d":"2026-11-03","c":"蔬菜","n":"豆干","u":null,"q":72,"p":4.2,"a":302.4},{"d":"2026-11-03","c":"蔬菜","n":"豆腐","u":null,"q":110,"p":2.5,"a":275},{"d":"2026-11-03","c":"蔬菜","n":"豆腐","u":null,"q":70,"p":4.2,"a":294},{"d":"2026-11-04","c":"蔬菜","n":"茄子","u":"斤","q":130.8,"p":2.8,"a":366.24},{"d":"2026-11-04","c":"蔬菜","n":"青椒","u":"斤","q":90,"p":2.8,"a":252},{"d":"2026-11-04","c":"蔬菜","n":"山东白","u":"斤","q":120,"p":1.3,"a":156},{"d":"2026-11-04","c":"蔬菜","n":"芹菜","u":"斤","q":21.3,"p":3.3,"a":70.29},{"d":"2026-11-04","c":"蔬菜","n":"大葱","u":"斤","q":26,"p":3.7,"a":96.2},{"d":"2026-11-04","c":"蔬菜","n":"小葱","u":"斤","q":21.2,"p":5.9,"a":125.08},{"d":"2026-11-04","c":"蔬菜","n":"香菜","u":"斤","q":3.2,"p":8.4,"a":26.88},{"d":"2026-11-04","c":"蔬菜","n":"蒜米","u":"斤","q":30,"p":4.6,"a":138},{"d":"2026-11-04","c":"蔬菜","n":"蒜苗","u":"斤","q":16.4,"p":4.5,"a":73.8},{"d":"2026-11-04","c":"瓜果","n":"苹果","u":"斤","q":776.2,"p":8.6,"a":6675.32},{"d":"2026-11-08","c":"蔬菜","n":"青椒","u":"斤","q":80,"p":2.8,"a":224},{"d":"2026-11-08","c":"蔬菜","n":"花菜","u":"斤","q":130,"p":2.1,"a":273},{"d":"2026-11-08","c":"蔬菜","n":"山东白","u":"斤","q":160,"p":1.3,"a":208},{"d":"2026-11-08","c":"蔬菜","n":"西芹","u":"斤","q":20,"p":3.3,"a":66},{"d":"2026-11-08","c":"蔬菜","n":"大葱","u":"斤","q":50.8,"p":3.7,"a":187.96},{"d":"2026-11-08","c":"蔬菜","n":"小葱","u":"斤","q":35.2,"p":5.9,"a":207.68},{"d":"2026-11-08","c":"蔬菜","n":"生姜","u":"斤","q":20.4,"p":5.6,"a":114.24},{"d":"2026-11-08","c":"蔬菜","n":"香菜","u":"斤","q":3.2,"p":8.4,"a":26.88},{"d":"2026-11-08","c":"蔬菜","n":"蒜米","u":"斤","q":10,"p":4.6,"a":46},{"d":"2026-11-08","c":"蔬菜","n":"蒜苗","u":"斤","q":24.8,"p":4.5,"a":111.6},{"d":"2026-11-08","c":"干鲜","n":"胡椒面","u":"斤","q":5,"p":50,"a":250},{"d":"2026-11-08","c":"干鲜","n":"白糖","u":"袋","q":100,"p":3.3,"a":330},{"d":"2026-11-08","c":"干鲜","n":"味极鲜","u":"瓶","q":24,"p":10.8,"a":259.2},{"d":"2026-11-08","c":"干鲜","n":"老抽","u":"件","q":3,"p":85,"a":255},{"d":"2026-11-08","c":"干鲜","n":"蒸肉粉","u":"件","q":1,"p":100,"a":100},{"d":"2026-11-08","c":"干鲜","n":"嫩肉粉","u":"件","q":1,"p":250,"a":250},{"d":"2026-11-08","c":"干鲜","n":"味精","u":"袋","q":1,"p":250,"a":250},{"d":"2026-11-08","c":"干鲜","n":"豆瓣","u":"斤","q":3,"p":65,"a":195},{"d":"2026-11-08","c":"干鲜","n":"香油","u":"瓶","q":20,"p":19.5,"a":390},{"d":"2026-11-08","c":"干鲜","n":"红泡椒","u":"包","q":5,"p":150,"a":750},{"d":"2026-11-08","c":"干鲜","n":"泡姜","u":"包","q":1,"p":150,"a":150},{"d":"2026-11-08","c":"干鲜","n":"老鸭汤","u":"包","q":30,"p":6.8,"a":204},{"d":"2026-11-08","c":"干鲜","n":"老咸菜","u":"件","q":1,"p":200,"a":200},{"d":"2026-11-08","c":"干鲜","n":"鸡精","u":"袋","q":1,"p":370,"a":370},{"d":"2026-11-08","c":"干鲜","n":"胖子鱼","u":"包","q":40,"p":12.8,"a":512},{"d":"2026-11-08","c":"干鲜","n":"花椒面","u":"斤","q":5,"p":49.6,"a":248},{"d":"2026-11-11","c":"瓜果","n":"苹果","u":"斤","q":920,"p":8.6,"a":7912},{"d":"2026-11-11","c":"蔬菜","n":"豆腐","u":"斤","q":112,"p":2.5,"a":280},{"d":"2026-11-11","c":"蔬菜","n":"豆干","u":"斤","q":71,"p":4.2,"a":298.2},{"d":"2026-11-11","c":"蔬菜","n":"青椒","u":"斤","q":100,"p":2.8,"a":280},{"d":"2026-11-11","c":"蔬菜","n":"茄子","u":"斤","q":153,"p":2.8,"a":428.4},{"d":"2026-11-11","c":"蔬菜","n":"花菜","u":"斤","q":56,"p":2.1,"a":117.6},{"d":"2026-11-11","c":"蔬菜","n":"山东白","u":"斤","q":150,"p":1.3,"a":195},{"d":"2026-11-11","c":"蔬菜","n":"芹菜","u":"斤","q":21,"p":3.3,"a":69.3},{"d":"2026-11-11","c":"蔬菜","n":"大葱","u":"斤","q":58,"p":3.7,"a":214.6},{"d":"2026-11-11","c":"蔬菜","n":"小葱","u":"斤","q":37,"p":5.9,"a":218.3},{"d":"2026-11-11","c":"蔬菜","n":"生姜","u":"斤","q":20,"p":5.6,"a":112},{"d":"2026-11-11","c":"蔬菜","n":"香菜","u":"斤","q":3,"p":8.4,"a":25.2},{"d":"2026-11-11","c":"蔬菜","n":"蒜米","u":"斤","q":30,"p":4.6,"a":138},{"d":"2026-11-11","c":"蔬菜","n":"蒜苗","u":"斤","q":25,"p":4.5,"a":112.5},{"d":"2026-11-12","c":"蔬菜","n":"藕","u":"斤","q":20,"p":2.9,"a":58},{"d":"2026-11-12","c":"蔬菜","n":"蒜苔","u":"斤","q":15,"p":5,"a":75},{"d":"2026-11-12","c":"蔬菜","n":"豆干","u":"斤","q":71,"p":4.2,"a":298.2},{"d":"2026-11-12","c":"蔬菜","n":"豆腐","u":"斤","q":114,"p":2.5,"a":285}],"base":{"0|午|大米":175.0,"0|午|菜油":1.0,"0|午|鸡蛋":26.0,"0|午|排骨":174.0,"0|午|瘦肉":30.0,"0|午|鸡":100.0,"0|午|冬瓜":165.0,"0|午|土豆":90.0,"0|午|西红柿":56.5,"0|午|青豆":60.0,"0|午|玉米":80.0,"0|午|红苕粉条":35.0,"0|早/晚|大米":125.0,"0|早/晚|面条":82.0,"0|早/晚|面粉":37.5,"0|早/晚|菜油":1.0,"0|早/晚|瘦肉":65.0,"0|早/晚|三线肉":105.0,"0|早/晚|鸡蛋":10.0,"0|早/晚|土豆":90.0,"0|早/晚|莲白":40.0,"0|早/晚|油麦菜":47.5,"0|早/晚|平菇":25.0,"0|早/晚|豆芽":30.2,"1|早/晚|大米":220.0,"1|午|大米":230.0,"1|早/晚|面条":96.0,"1|早/晚|面粉":37.5,"1|早/晚|菜油":1.5,"1|午|菜油":1.5,"1|午|大豆":32.0,"1|午|海带":4.0,"1|午|紫菜":2.0,"1|早/晚|木耳":7.5,"1|早/晚|黄豆":30.0,"1|早/晚|豌豆粉条":10.0,"1|早/晚|莲白":47.5,"1|早/晚|油麦菜":47.5,"1|午|土豆":140.0,"1|午|胡萝卜":120.0,"1|早/晚|西红柿":86.0,"1|早/晚|瘦肉":63.0,"1|午|牛肉":150.0,"1|午|猪蹄":181.0,"1|早/晚|三线肉":109.5,"1|早/晚|鸡蛋":15.0,"1|午|洋葱":45.0,"1|早/晚|洋葱":44.0,"1|午|鸡蛋":20.0,"1|午|豆腐":114.0,"2|早/晚|大米":190.0,"2|午|大米":210.0,"2|早/晚|面粉":25.0,"2|早/晚|面条":120.0,"2|午|菜油":1.0,"2|早/晚|鸡蛋":20.0,"2|早/晚|牛肉":112.6,"2|早/晚|瘦肉":40.0,"2|午|瘦肉":125.0,"2|午|鸡":89.15,"2|早/晚|猪蹄":135.0,"2|早/晚|莲白":114.9,"2|早/晚|油麦菜":60.0,"2|早/晚|尖椒":29.7,"2|午|尖椒":42.5,"2|早/晚|平菇":27.5,"2|午|平菇":30.0,"2|早/晚|茄子":130.8,"2|午|洋葱":47.0,"2|午|木耳":10.0,"2|午|豇豆":130.8,"2|午|海带丝":10.5,"2|午|豌豆粉条":20.0,"2|早/晚|胡萝卜":20.0,"2|午|豆芽":50.4,"3|早/晚|面粉":25.0,"3|早/晚|大米":175.0,"3|早/晚|面条":98.0,"3|早/晚|菜油":1.5,"3|早/晚|瘦肉":30.0,"3|早/晚|鸡蛋":15.0,"3|早/晚|鸭":85.25,"3|早/晚|三线肉":122.5,"3|早/晚|莲白":65.0,"3|早/晚|海带":4.5,"3|早/晚|青豆":60.0,"3|早/晚|玉米":80.0,"3|早/晚|豆干":70.0,"3|午|大米":200.0,"3|午|菜油":1.0,"3|午|牛肉":145.6,"3|午|排骨":130.0,"3|午|土豆":132.5,"3|午|海带":6.5,"3|午|油麦菜":95.0,"3|午|豆腐":112.0,"3|午|南瓜":107.0,"3|午|大豆":32.0,"3|午|米豆":15.0,"4|早/晚|面粉":25.0,"4|早/晚|面条":88.0,"4|早/晚|菜油":1.5,"4|早/晚|瘦肉":30.0,"4|早/晚|鸡蛋":10.0,"4|早/晚|莲白":70.0,"4|早/晚|油麦菜":39.3,"4|午|大米":135.0,"4|午|菜油":1.5,"4|午|鸡":75.5,"4|午|瘦肉":105.0,"4|午|鸡蛋":20.0,"4|午|香菇":54.2,"4|午|洋葱":57.2,"4|午|冬瓜":137.0,"4|午|土豆":154.5,"4|午|西红柿":72.9,"6|早/晚|大米":100.0,"6|早/晚|菜油":1.0,"6|早/晚|三线肉":85.0,"6|早/晚|排骨":31.0,"6|早/晚|油麦菜":80.0,"6|早/晚|土豆":90.0,"6|早/晚|平菇":25.0,"1|早/晚|粉条":20.0,"2|早/晚|菜油":2.0,"2|早/晚|洋葱":50.0,"3|早/晚|油麦菜":35.0,"3|早/晚|胡萝卜":21.0,"4|早/晚|大米":80.0,"4|早/晚|三线肉":90.0,"4|早/晚|排骨":87.0,"4|早/晚|西红柿":45.0,"4|早/晚|冬瓜":65.0,"4|早/晚|平菇":21.0,"5|早/晚|瘦肉":132.0,"5|早/晚|三线肉":60.8,"5|早/晚|油麦菜":30.0,"5|早/晚|洋葱":31.0,"5|早/晚|土豆":100.0,"5|早/晚|莲白":40.0,"5|早/晚|玉米":40.0,"5|早/晚|南瓜":38.0,"5|午|鸡":32.2,"5|午|猪蹄":75.0,"5|午|鸡蛋":34.0,"5|午|尖椒":74.0,"5|午|西红柿":32.0},"fb":{"午|大米":190.0,"午|菜油":1.2,"午|鸡蛋":23.71,"午|排骨":152.0,"午|瘦肉":86.67,"午|鸡":80.21,"午|冬瓜":151.0,"午|土豆":129.25,"午|西红柿":58.16,"午|青豆":60.0,"午|玉米":80.0,"午|红苕粉条":35.0,"早/晚|大米":160.0,"早/晚|面条":96.8,"早/晚|面粉":30.0,"早/晚|菜油":1.4,"早/晚|瘦肉":53.45,"早/晚|三线肉":101.09,"早/晚|鸡蛋":14.0,"早/晚|土豆":92.5,"早/晚|莲白":64.98,"早/晚|油麦菜":48.51,"早/晚|平菇":25.17,"早/晚|豆芽":30.2,"午|大豆":32.0,"午|海带":5.25,"午|紫菜":2.0,"早/晚|木耳":7.5,"早/晚|黄豆":30.0,"早/晚|豌豆粉条":10.0,"午|胡萝卜":120.0,"早/晚|西红柿":72.33,"午|牛肉":147.8,"午|猪蹄":145.67,"午|洋葱":50.68,"早/晚|洋葱":41.67,"午|豆腐":112.67,"早/晚|牛肉":112.6,"早/晚|猪蹄":135.0,"早/晚|尖椒":29.7,"午|尖椒":53.0,"午|平菇":30.0,"早/晚|茄子":130.8,"午|木耳":10.0,"午|豇豆":130.8,"午|海带丝":10.5,"午|豌豆粉条":20.0,"早/晚|胡萝卜":20.5,"午|豆芽":50.4,"早/晚|鸭":85.25,"早/晚|海带":4.5,"早/晚|青豆":60.0,"早/晚|玉米":66.67,"早/晚|豆干":70.0,"午|油麦菜":95.0,"午|南瓜":107.0,"午|米豆":15.0,"午|香菇":54.2,"早/晚|排骨":59.0,"早/晚|粉条":20.0,"早/晚|冬瓜":65.0,"早/晚|南瓜":38.0},"menu":{"0":{"早餐":{"包子":["面粉","莲白"],"馒头":["面粉"],"稀饭":["大米"],"肉沫面条+鸡蛋":["面条","油麦菜","瘦肉","鸡蛋"]},"午餐":{"米饭":["大米"],"冬瓜排骨":["冬瓜","排骨"],"土豆炖鸡":["土豆","鸡"],"青豆玉米":["青豆","玉米"],"肉沫炒粉条":["红苕粉条","瘦肉"],"西红柿蛋汤":["西红柿","鸡蛋"]},"晚餐":{"米饭":["大米"],"粉蒸肉":["土豆","三线肉"],"青椒肉丝":["青椒","瘦肉"],"炒小白菜":["小白菜"],"炝炒花菜":["花菜"],"平菇豆芽汤":["平菇","豆芽"]},"全天":{"菜油":["菜油"]}},"1":{"早餐":{"包子":["面粉","莲白"],"馒头":["面粉"],"稀饭":["大米"],"肉沫面条+鸡蛋":["面条","油麦菜","瘦肉","鸡蛋"]},"午餐":{"米饭":["大米"],"土豆牛肉":["土豆","牛肉"],"大豆海带猪蹄":["大豆","海带","猪蹄"],"炒胡萝卜":["胡萝卜"],"红烧豆腐":["豆腐"],"紫菜蛋花汤":["紫菜","鸡蛋"]},"晚餐":{"米饭":["大米"],"木耳肉丝":["木耳","瘦肉"],"黄豆烧肉":["黄豆","三线肉"],"西红柿炒鸡蛋":["西红柿","鸡蛋"],"芹菜豆干":["芹菜","豆干"],"水白菜粉条":["水白菜","粉条"]},"全天":{"菜油":["菜油"]}},"2":{"早餐":{"包子":["面粉","莲白"],"馒头":["面粉"],"稀饭":["大米"],"牛肉面":["面条","油麦菜","牛肉"]},"午餐":{"米饭":["大米"],"木耳肉丝":["木耳","瘦肉"],"尖椒鸡":["尖椒","鸡","洋葱"],"炒豇豆":["豇豆"],"海丝粉条":["海带丝","豌豆粉条"],"平菇豆芽汤":["平菇","豆芽"]},"晚餐":{"米饭":["大米"],"尖椒猪蹄":["尖椒","猪蹄"],"肉沫芙蓉蛋":["鸡蛋","瘦肉"],"炒莲白":["莲白"],"炒茄子":["茄子"],"平菇肉片汤":["平菇","瘦肉"]},"全天":{"菜油":["菜油"]}},"3":{"早餐":{"包子":["面粉","莲白"],"馒头":["面粉"],"稀饭":["大米"],"肉沫面条+鸡蛋":["面条","油麦菜","瘦肉","鸡蛋"]},"午餐":{"米饭":["大米"],"土豆炖牛肉":["土豆","牛肉"],"大豆海带炖排骨":["大豆","海带","排骨"],"炒油麦菜":["油麦菜"],"红烧豆腐":["豆腐"],"米豆南瓜汤":["米豆","南瓜"]},"晚餐":{"米饭":["大米"],"酸萝卜海带烧鸭":["酸萝卜","海带","鸭"],"青椒回锅肉":["青椒","三线肉"],"青豆玉米":["青豆","玉米"],"炒豆干":["豆干"],"水白菜蛋汤":["水白菜","鸡蛋"]},"全天":{"菜油":["菜油"]}},"4":{"早餐":{"包子":["面粉","莲白"],"馒头":["面粉"],"稀饭":["大米"],"肉沫面条+鸡蛋":["面条","油麦菜","瘦肉","鸡蛋"]},"午餐":{"米饭":["大米"],"香菇烧鸡":["香菇","鸡"],"洋葱肉丝":["洋葱","瘦肉"],"红烧冬瓜":["冬瓜"],"炒土豆":["土豆"],"西红柿蛋汤":["西红柿","鸡蛋"]},"晚餐":{"米饭":["大米"],"青椒回锅肉":["青椒","三线肉"],"西红柿炖排骨":["西红柿","排骨"],"炒莲白":["莲白"],"白油冬瓜":["冬瓜"],"平菇豆芽汤":["平菇","豆芽"]},"全天":{"菜油":["菜油"]}},"5":{"早餐":{"稀饭":["大米"],"肉沫面条":["面条","油麦菜","瘦肉"]},"午餐":{"米饭":["大米"],"尖椒鸡":["尖椒","鸡"],"黄豆烧猪蹄":["黄豆","猪蹄"],"炒花菜":["花菜"],"炒油麦菜":["油麦菜"],"紫菜蛋花汤":["紫菜","鸡蛋"]},"晚餐":{"米饭":["大米"],"蒜苔肉丝":["蒜苔","瘦肉"],"粉蒸肉":["土豆","三线肉"],"炒土豆":["土豆"],"炒莲白粉条":["莲白","粉条"],"玉米南瓜汤":["玉米","南瓜"]},"全天":{"菜油":["菜油"]}},"6":{"早餐":{"稀饭":["大米"],"鸡蛋面":["面条","油麦菜","瘦肉","鸡蛋"]},"午餐":{"米饭":["大米"],"木耳肉丝":["木耳","瘦肉"],"西红柿炒鸡蛋":["西红柿","鸡蛋"],"烧白":["三线肉","水盐菜"],"红烧茄子":["茄子"],"水白菜粉条":["水白菜","粉条"]},"晚餐":{"米饭":["大米"],"回锅肉":["三线肉"],"粉蒸排骨":["土豆","排骨"],"炒土豆":["土豆"],"炒油麦菜":["油麦菜"],"平菇汤":["平菇"]},"全天":{"菜油":["菜油"]}}}};</script>
+<div class="top">
+  <div class="top-in">
+    <div class="brand"><b>食堂出库</b><span class="ver" id="verBadge"></span></div>
+    <div class="tabbar">
+      <button class="tab on" id="tabMain" onclick="switchView('main')">菜谱</button>
+      <button class="tab" id="tabOut" onclick="switchView('outbound')">出库</button>
+    </div>
+    <div class="top-btns">
+      <button class="icon-btn" id="btnImport" onclick="doImport()">导入菜谱</button>
+      <button class="icon-btn" id="btnEdit" onclick="toggleEditMode()">改菜谱</button>
+      <button class="icon-btn" onclick="openSet()">设置</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="wrap"></div>
+
+<div class="confirm-bar" id="confirmBar" style="display:none"></div>
+
+<div class="mask" id="mask" onclick="if(event.target===this)closeM()">
+  <div class="mbox">
+    <div class="mhead"><h3 id="mTitle"></h3><button class="mclose" onclick="closeM()">×</button></div>
+    <div class="mbody" id="mBody"></div>
+    <div class="mfoot" id="mFoot" style="display:none"></div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="onFile(event)">
+
+<script src="xlsx.full.min.js"></script>
 <script>
-'use strict';
-const CRC_TABLE = (function () {
-  const t = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-function crc32(buf) {
-  let c = 0xFFFFFFFF;
-  for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8);
-  return (c ^ 0xFFFFFFFF) >>> 0;
-}
-function utf8(s) { return new TextEncoder().encode(s); }
-function zipStore(files) {
-  const chunks = [], central = [];
-  let offset = 0;
-  for (const f of files) {
-    const name = utf8(f.name), data = f.data, crc = crc32(data);
-    const lh = new Uint8Array(30 + name.length);
-    const dv = new DataView(lh.buffer);
-    dv.setUint32(0, 0x04034b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 0x0800, true);
-    dv.setUint16(8, 0, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0, true);
-    dv.setUint32(14, crc, true); dv.setUint32(18, data.length, true); dv.setUint32(22, data.length, true);
-    dv.setUint16(26, name.length, true); dv.setUint16(28, 0, true);
-    lh.set(name, 30);
-    chunks.push(lh, data);
-    central.push({ name: name, crc: crc, size: data.length, offset: offset });
-    offset += lh.length + data.length;
-  }
-  const cd = [];
-  for (const c of central) {
-    const h = new Uint8Array(46 + c.name.length);
-    const dv = new DataView(h.buffer);
-    dv.setUint32(0, 0x02014b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 20, true);
-    dv.setUint16(8, 0x0800, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0, true); dv.setUint16(14, 0, true);
-    dv.setUint32(16, c.crc, true); dv.setUint32(20, c.size, true); dv.setUint32(24, c.size, true);
-    dv.setUint16(28, c.name.length, true); dv.setUint16(30, 0, true); dv.setUint16(32, 0, true);
-    dv.setUint16(34, 0, true); dv.setUint16(36, 0, true); dv.setUint32(38, 0, true);
-    dv.setUint32(42, c.offset, true);
-    h.set(c.name, 46);
-    cd.push(h);
-  }
-  const cdSize = cd.reduce(function (a, b) { return a + b.length; }, 0);
-  const end = new Uint8Array(22);
-  const ev = new DataView(end.buffer);
-  ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, central.length, true); ev.setUint16(10, central.length, true);
-  ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true);
-  const out = new Uint8Array(offset + cdSize + 22);
-  let p = 0;
-  for (const c of chunks) { out.set(c, p); p += c.length; }
-  for (const c of cd) { out.set(c, p); p += c.length; }
-  out.set(end, p);
-  return out;
-}
-function esc(s) {
-  return String(s).replace(/[&<>"]/g, function (c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
-  });
-}
-function colName(i) { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
-function sheetXml(rows) {
-  const body = rows.map(function (row, ri) {
-    const cells = row.map(function (v, ci) {
-      if (v === null || v === undefined || v === '') return '';
-      const ref = colName(ci) + (ri + 1);
-      if (typeof v === 'number' && isFinite(v)) return '<c r="' + ref + '"><v>' + v + '</v></c>';
-      return '<c r="' + ref + '" t="inlineStr"><is><t>' + esc(v) + '</t></is></c>';
-    }).join('');
-    return '<row r="' + (ri + 1) + '">' + cells + '</row>';
-  }).join('');
-  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' + body + '</sheetData></worksheet>';
-}
-function makeXlsx(sheets) {
-  const files = [];
-  let ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
-    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
-    '<Default Extension="xml" ContentType="application/xml"/>' +
-    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>';
-  sheets.forEach(function (_, i) { ct += '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'; });
-  ct += '</Types>';
-  files.push({ name: '[Content_Types].xml', data: utf8(ct) });
-  files.push({ name: '_rels/.rels', data: utf8('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>') });
-  let wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
-    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>';
-  sheets.forEach(function (s, i) { wb += '<sheet name="' + esc(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>'; });
-  wb += '</sheets></workbook>';
-  files.push({ name: 'xl/workbook.xml', data: utf8(wb) });
-  let rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
-  sheets.forEach(function (_, i) { rels += '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>'; });
-  rels += '</Relationships>';
-  files.push({ name: 'xl/_rels/workbook.xml.rels', data: utf8(rels) });
-  sheets.forEach(function (s, i) { files.push({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', data: utf8(sheetXml(s.rows)) }); });
-  return zipStore(files);
-}
-if (typeof module !== 'undefined') module.exports = { makeXlsx: makeXlsx };
+const APP_VERSION='V2.5';
+const APP_BUILD='2026-11-14 22:03:23';
+const CHANGELOG=[
+  {version:'V2.5',date:'2026-11-14 22:03:23',items:[
+    '出库录入改为「按菜谱」：选日期+餐次，自动列出当天菜谱全部食材，无需逐个手填品名',
+    '数量/单价/单位输入即自动保存（不再需要「添加」按钮），分类按食材名自动判定',
+    '支持临时「加菜」（加一道菜/食材）、「删菜」（隐藏某食材）、误删可一键恢复',
+    '早餐+晚餐合并为「早/晚」，午餐单独一份，与结算表口径一致',
+    '导出 Excel / 午餐图片功能保持不变'
+  ]},
+  {version:'V2.4',date:'2026-11-14 21:53:02',items:[
+    '新增「出库」视图：手机端直接录入每日出库（日期/餐次/分类/品名/数量/单价/领用人）',
+    '一键导出 Excel：列结构与结算表「每日出库」一致，可直接粘贴对账',
+    '午餐出库清单导出图片，方便发微信或打印',
+    '顶部「菜谱/出库」切换，菜谱功能保持不变'
+  ]},
+  {version:'V2.3',date:'2026-10-29 22:06:00',items:[
+    '重新设计 App 图标（绿色餐盘，更好看）',
+    '改分类即时生效、营养午餐出库单独立、禁缩放、日历紧凑'
+  ]},
+  {version:'V2.1',date:'2026-10-29 21:30:00',items:[
+    '每样食材后加「出库单」按钮，点一下标记已填，防止漏',
+    '食材汇总改一列，「中」字橙色醒目',
+    '干鲜改紫色，和蔬菜分得更清',
+    '营养午餐单独一份，橙色边框圈出，也带出库单按钮',
+    '顶栏加「改菜谱」入口，手动改名/改食材/加菜/删菜',
+    '顶栏下移，手机不再被状态栏挡住'
+  ]},
+  {version:'V2.0',date:'2026-10-29 20:50:00',items:[
+    '重做：以最新菜谱表为准，只关心每天出什么菜、用什么食材',
+    '顶部加日历，翻月选日，核对今天和过去的差异',
+    '食材汇总去重，每样后面标早/中/晚餐次',
+    '营养午餐单独一份，按米油面蛋/肉/蔬菜/干鲜分类',
+    '可直接改菜名、改食材，每周微调不用重做',
+    '一键导入菜谱表（Excel），自动识别',
+    '出库确认：点一下记住今天已出库，日历上打点'
+  ]},
+];
 
-
-/* ---------- 读 xlsx（浏览器内解压 + 解析） ---------- */
-function u16(b,o){return b[o]|(b[o+1]<<8);}
-function u32(b,o){return (b[o]|(b[o+1]<<8)|(b[o+2]<<16)|(b[o+3]<<24))>>>0;}
-async function inflateRaw(u8){
-  if(typeof DecompressionStream!=='undefined'){
-    var ds=new DecompressionStream('deflate-raw');
-    var st=new Blob([u8]).stream().pipeThrough(ds);
-    return new Uint8Array(await new Response(st).arrayBuffer());
-  }
-  throw new Error('浏览器太旧，不支持解压');
+const CATS=['米油面蛋','肉类','蔬菜','干鲜'];
+const CAT_META={
+  '米油面蛋':{c:'c-amber',order:1},
+  '肉类':{c:'c-red',order:2},
+  '蔬菜':{c:'c-green',order:3},
+  '干鲜':{c:'c-purple',order:4}
+};
+const EXACT_CAT={
+  '大米':'米油面蛋','面粉':'米油面蛋','面条':'米油面蛋','米粉':'米油面蛋',
+  '油':'米油面蛋','菜油':'米油面蛋','食用油':'米油面蛋','鸡蛋':'米油面蛋',
+  '瘦肉':'肉类','三线肉':'肉类','五花肉':'肉类','排骨':'肉类','牛肉':'肉类',
+  '猪蹄':'肉类','鸡':'肉类','鸭':'肉类','肉片':'肉类','肉沫':'肉类','肉末':'肉类',
+  '肉丝':'肉类','鲜鸡':'肉类',
+  '青豆':'干鲜','玉米':'干鲜','红苕粉条':'干鲜','红薯粉条':'干鲜','大豆':'干鲜',
+  '黄豆':'干鲜','紫菜':'干鲜','海带':'干鲜','海带丝':'干鲜','豌豆粉条':'干鲜',
+  '米豆':'干鲜','木耳':'干鲜','粉条':'干鲜','水盐菜':'干鲜','苕粉':'干鲜'
+};
+function catOf(name){
+  if(S.cat[name])return S.cat[name];
+  if(EXACT_CAT[name])return EXACT_CAT[name];
+  if(name.includes('肉'))return '肉类';
+  if(/[鸡鸭猪牛]/.test(name))return '肉类';
+  if((name.includes('豆')||name.includes('玉米'))&&!name.includes('芽')&&!name.includes('腐')&&!name.includes('干'))return '干鲜';
+  if(name.includes('粉条')||name.includes('海带')||name.includes('紫菜')||name.includes('木耳'))return '干鲜';
+  return '蔬菜';
 }
-async function unzip(buf){
-  var out={},i=buf.length-22;
-  while(i>0&&u32(buf,i)!==0x06054b50)i--;
-  if(i<=0)throw new Error('不是有效的 xlsx');
-  var n=u16(buf,i+10),off=u32(buf,i+16),p=off;
-  for(var k=0;k<n;k++){
-    if(u32(buf,p)!==0x02014b50)break;
-    var method=u16(buf,p+10),csize=u32(buf,p+20),nameLen=u16(buf,p+28),extra=u16(buf,p+30),cmt=u16(buf,p+32);
-    var name='';
-    for(var j=0;j<nameLen;j++)name+=String.fromCharCode(buf[p+46+j]);
-    var lho=u32(buf,p+42);
-    var lnameLen=u16(buf,lho+26),lextra=u16(buf,lho+28);
-    var dataOff=lho+30+lnameLen+lextra;
-    var data=buf.subarray(dataOff,dataOff+csize);
-    out[name]=method===0?data:await inflateRaw(data);
-    p+=46+nameLen+extra+cmt;
-  }
-  return out;
-}
-function decodeXml(u8){return new TextDecoder('utf-8').decode(u8);}
-function colIndex(ref){
-  var s=ref.replace(/[0-9]/g,''),n=0;
-  for(var i=0;i<s.length;i++)n=n*26+(s.charCodeAt(i)-64);
-  return n-1;
-}
-function serialToDate(v){
-  var n=Number(v);if(!isFinite(n))return '';
-  var d=new Date(Date.UTC(1899,11,30)+n*86400000);
-  return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);
-}
-async function readXlsx(file){
-  var buf=new Uint8Array(await file.arrayBuffer());
-  var zip=await unzip(buf);
-  var shared=[];
-  if(zip['xl/sharedStrings.xml']){
-    var sx=decodeXml(zip['xl/sharedStrings.xml']);
-    var items=sx.split('<si>').slice(1);
-    items.forEach(function(si){
-      var ts=si.match(/<t[^>]*>([\s\S]*?)<\/t>/g)||[];
-      shared.push(ts.map(function(t){return t.replace(/<[^>]+>/g,'');}).join(''));
-    });
-  }
-  var names=[],paths=[];
-  var wx=decodeXml(zip['xl/workbook.xml']);
-  var m,nameRe=/<sheet[^>]*name="([^"]*)"[^>]*r:id="rId(\d+)"/g,mm;
-  while((mm=nameRe.exec(wx))){names.push(mm[1]);paths.push(+mm[2]);}
-  var relx=decodeXml(zip['xl/_rels/workbook.xml.rels']);
-  var relMap={},rre=/Id="rId(\d+)"[^>]*Target="([^"]*)"/g,rr;
-  while((rr=rre.exec(relx)))relMap[rr[1]]=rr[2];
-  var result={};
-  names.forEach(function(nm,idx){
-    var t=relMap[String(paths[idx])]||('worksheets/sheet'+(idx+1)+'.xml');
-    var path=t.indexOf('xl/')===0?t:('xl/'+t.replace(/^\/?/,''));
-    var xml=zip[path];if(!xml)return;
-    var doc=new DOMParser().parseFromString(decodeXml(xml),'application/xml');
-    var rows=[];
-    var rs=doc.getElementsByTagName('row');
-    for(var i=0;i<rs.length;i++){
-      var cells=rs[i].getElementsByTagName('c'),arr=[];
-      for(var c=0;c<cells.length;c++){
-        var cell=cells[c],ref=cell.getAttribute('r')||'',t2=cell.getAttribute('t');
-        var ci=colIndex(ref),v='';
-        if(t2==='inlineStr'){var is=cell.getElementsByTagName('t');if(is.length)v=is[0].textContent;}
-        else{
-          var vn=cell.getElementsByTagName('v');
-          if(vn.length){v=vn[0].textContent;if(t2==='s')v=shared[+v]||'';}
-        }
-        arr[ci]=v;
-      }
-      rows.push(arr);
-    }
-    result[nm]=rows;
-  });
-  return result;
-}
+const ING_ORDER=['大米','菜油','油','面粉','面条','鸡蛋'];
 
+function D(n,i){return {n:n,i:i};}
+const DEFAULT_MENU={
+1:{早:[D('包子',['面粉','莲白']),D('馒头',['面粉']),D('稀饭',['大米']),D('肉沫面条+鸡蛋',['面条','油麦菜','瘦肉','鸡蛋'])],
+   午:[D('米饭',['大米']),D('冬瓜排骨',['冬瓜','排骨']),D('土豆炖鸡',['土豆','鸡']),D('青豆玉米',['青豆','玉米']),D('肉沫炒粉条',['红苕粉条','瘦肉']),D('西红柿蛋汤',['西红柿','鸡蛋'])],
+   晚:[D('米饭',['大米']),D('粉蒸肉',['土豆','三线肉']),D('青椒肉丝',['青椒','瘦肉']),D('炒小白菜',['小白菜']),D('炝炒花菜',['花菜']),D('平菇豆芽汤',['平菇','豆芽'])]},
+2:{早:[D('包子',['面粉','莲白']),D('馒头',['面粉']),D('稀饭',['大米']),D('肉沫面条+鸡蛋',['面条','油麦菜','瘦肉','鸡蛋'])],
+   午:[D('米饭',['大米']),D('土豆牛肉',['土豆','牛肉']),D('大豆海带猪蹄',['大豆','海带','猪蹄']),D('炒胡萝卜',['胡萝卜']),D('红烧豆腐',['豆腐']),D('紫菜蛋花汤',['紫菜','鸡蛋'])],
+   晚:[D('米饭',['大米']),D('木耳肉丝',['木耳','瘦肉']),D('黄豆烧肉',['黄豆','三线肉']),D('西红柿炒鸡蛋',['西红柿','鸡蛋']),D('芹菜豆干',['芹菜','豆干']),D('水白菜粉条',['水白菜','粉条'])]},
+3:{早:[D('包子',['面粉','莲白']),D('馒头',['面粉']),D('稀饭',['大米']),D('牛肉面',['面条','油麦菜','牛肉'])],
+   午:[D('米饭',['大米']),D('木耳肉丝',['木耳','瘦肉']),D('尖椒鸡',['尖椒','鸡']),D('炒豇豆',['豇豆']),D('海丝粉条',['海带丝','豌豆粉条']),D('平菇豆芽汤',['平菇','豆芽'])],
+   晚:[D('米饭',['大米']),D('尖椒猪蹄',['尖椒','猪蹄']),D('肉沫芙蓉蛋',['鸡蛋','瘦肉']),D('炒莲白',['莲白']),D('炒茄子',['茄子']),D('平菇肉片汤',['平菇','瘦肉'])]},
+4:{早:[D('包子',['面粉','莲白']),D('馒头',['面粉']),D('稀饭',['大米']),D('肉沫面条+鸡蛋',['面条','油麦菜','瘦肉','鸡蛋'])],
+   午:[D('米饭',['大米']),D('土豆炖牛肉',['土豆','牛肉']),D('大豆海带炖排骨',['大豆','海带','排骨']),D('炒油麦菜',['油麦菜']),D('红烧豆腐',['豆腐']),D('米豆南瓜汤',['米豆','南瓜'])],
+   晚:[D('米饭',['大米']),D('酸萝卜海带烧鸭',['酸萝卜','海带','鸭']),D('青椒回锅肉',['青椒','三线肉']),D('青豆玉米',['青豆','玉米']),D('炒豆干',['豆干']),D('水白菜蛋汤',['水白菜','鸡蛋'])]},
+5:{早:[D('包子',['面粉','莲白']),D('馒头',['面粉']),D('稀饭',['大米']),D('肉沫面条+鸡蛋',['面条','油麦菜','瘦肉','鸡蛋'])],
+   午:[D('米饭',['大米']),D('香菇烧鸡',['香菇','鸡']),D('洋葱肉丝',['洋葱','瘦肉']),D('红烧冬瓜',['冬瓜']),D('炒土豆',['土豆']),D('西红柿蛋汤',['西红柿','鸡蛋'])],
+   晚:[D('米饭',['大米']),D('青椒回锅肉',['青椒','三线肉']),D('西红柿炖排骨',['西红柿','排骨']),D('炒莲白',['莲白']),D('白油冬瓜',['冬瓜']),D('平菇豆芽汤',['平菇','豆芽'])]},
+6:{早:[D('稀饭',['大米']),D('肉沫面条',['面条','油麦菜','瘦肉'])],
+   午:[D('米饭',['大米']),D('尖椒鸡',['尖椒','鸡']),D('黄豆烧猪蹄',['黄豆','猪蹄']),D('炒花菜',['花菜']),D('炒油麦菜',['油麦菜']),D('紫菜蛋花汤',['紫菜','鸡蛋'])],
+   晚:[D('米饭',['大米']),D('蒜苔肉丝',['蒜苔','瘦肉']),D('粉蒸肉',['土豆','三线肉']),D('炒土豆',['土豆']),D('炒莲白粉条',['莲白','粉条']),D('玉米南瓜汤',['玉米','南瓜'])]},
+7:{早:[D('稀饭',['大米']),D('鸡蛋面',['面条','油麦菜','瘦肉'])],
+   午:[D('米饭',['大米']),D('木耳肉丝',['木耳','瘦肉']),D('西红柿炒鸡蛋',['西红柿','鸡蛋']),D('烧白',['三线肉','水盐菜']),D('红烧茄子',['茄子']),D('水白菜粉条',['水白菜','粉条'])],
+   晚:[D('米饭',['大米']),D('回锅肉',['三线肉']),D('粉蒸排骨',['土豆','排骨']),D('炒土豆',['土豆']),D('炒油麦菜',['油麦菜']),D('平菇汤',['平菇'])]}
+};
+const DAYS=['周一','周二','周三','周四','周五','周六','周日'];
+const SLOTS=['早','午','晚'];
+const SLOT_NAMES={早:'早餐',午:'午餐',晚:'晚餐'};
 
-(function () {
-'use strict';
-var CATS = ['粮食','油盐','肉禽蛋','蔬菜','瓜果','干鲜','低值易耗'];
-var DAYC = ['周一','周二','周三','周四','周五','周六','周日'];
-var MEALS = ['早餐','午餐','晚餐'];
-var KEY = 'canteen_out_v4';
-
-var S = null, ITEM = {}, ORDER = [];
-
-function pad(n){return n<10?'0'+n:''+n;}
-function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
-function wdOf(s){var p=s.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return (d.getDay()+6)%7;}
-function num(v){var n=parseFloat(v);return isFinite(n)?n:0;}
-function r2(v){return Math.round(v*100)/100;}
-function fmt(v,d){if(d===undefined)d=1;var x=Number(v)||0;return x.toFixed(d).replace(/\.0+$/,'');}
-function yen(v){return (Number(v)||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
-
-function seed(){
-  var items = DATA.items.map(function(it){return {n:it.n,c:it.c,u:it.u};});
-  var price = {};
-  Object.keys(DATA.price).forEach(function(k){price[k]=DATA.price[k];});
-  var menu = JSON.parse(JSON.stringify(DATA.menu));
-  var dt = {};
-  var st = {};
-  items.forEach(function(it){st[it.n]=0;});
-  DATA.opening.forEach(function(o){if(st[o.n]!==undefined)st[o.n]+=num(o.q);});
-  DATA.inb.forEach(function(o){if(st[o.n]!==undefined)st[o.n]+=num(o.q);});
-  DATA.out.forEach(function(o){if(st[o.n]!==undefined)st[o.n]-=num(o.q);});
-  var daily = {};
-  DATA.out.forEach(function(o){daily[o.n]=1;});
-  DATA.oneoff.forEach(function(o){
-    if(st[o.n]===undefined)return;
-    if(daily[o.n])return;
-    st[o.n]-=num(o.q);
-  });
-  var neg=0;
-  Object.keys(st).forEach(function(n){if(st[n]<-0.01)neg++;});
-  var op={};
-  DATA.opening.forEach(function(o){op[o.n]=num(o.q);});
-
-  // 每道菜、每样食材的出库量（斤）：按历史出库量摊到当天用到它的菜上
-  var byDayMeal = {};
-  DATA.out.forEach(function(o){
-    var wd = wdOf(o.d);
-    var meals = o.t==='午' ? ['午餐'] : ['早餐','晚餐'];
-    meals.forEach(function(mk){
-      var dishes = (menu[String(wd)]||{})[mk]||{};
-      var hit = Object.keys(dishes).filter(function(d){return (dishes[d]||[]).indexOf(o.n)>=0;});
-      if(!hit.length)return;
-      var share = num(o.q)/hit.length;
-      hit.forEach(function(d){
-        var k = wd+'|'+d+'|'+o.n;
-        if(!dt[k])dt[k]={s:0,c:0};
-        dt[k].s += share; dt[k].c += 1;
-        var kg = '*|'+d+'|'+o.n;
-        if(!dt[kg])dt[kg]={s:0,c:0};
-        dt[kg].s += share; dt[kg].c += 1;
-      });
-    });
-  });
-  var dishQty={};
-  Object.keys(dt).forEach(function(k){dishQty[k]=r2(dt[k].s/Math.max(1,dt[k].c));});
-
-  return {
-    school: DATA.school, month: DATA.month,
-    items: items, price: price, stock: st, negCount: neg,
-    menu: menu, dishQty: dishQty, opening: op,
-    inLog: DATA.inb.map(function(o){return {d:o.d,no:o.no||'',n:o.n,q:num(o.q),p:num(o.p),sup:o.sup||''};}),
-    outLog: DATA.out.map(function(o){return {d:o.d,t:o.t,n:o.n,q:num(o.q),p:num(o.p)};}),
-    oneLog: (function(){
-    var arr=[];
-    DATA.oneoff.forEach(function(o){
-      arr.push({d:o.d,n:o.n,q:num(o.q),p:num(o.p),dir:'in',h:1});
-      arr.push({d:o.d,n:o.n,q:num(o.q),p:num(o.p),dir:'out',h:1});
-    });
-    return arr;
-  })()
-  };
-}
-function dedupe(S){
-  var map={},out=[];
-  (S.outLog||[]).forEach(function(o){map[o.d+'|'+o.t+'|'+o.n]=o;});
-  Object.keys(map).forEach(function(k){out.push(map[k]);});
-  out.sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0);});
-  var inmap={},inn=[];
-  (S.inLog||[]).forEach(function(o){inn.push(o);});
-  S.outLog=out;
-  return S;
-}
+const LSKEY='canteen_menu_v2';
+let S=load()||fresh();
+let cur=new Date();
+let view='main';
+function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{},outDetail:{},outbound:[],outDel:{}};}
 function load(){
-  var s=null;
-  try{s=JSON.parse(localStorage.getItem(KEY));}catch(e){}
-  if(s&&s.stock&&s.menu){
-    if(!s.oneLog)s.oneLog=[];
-    if(!s.inLog)s.inLog=[];
-    if(!s.outLog)s.outLog=[];
-    if(!s.opening)s.opening={};
-    dedupe(s);return s;
-  }
-  return seed();
+  try{
+    const d=JSON.parse(localStorage.getItem(LSKEY));
+    if(!d||!d.menu)return null;
+    if(!d.cat)d.cat={};
+    if(!d.out)d.out={};
+    if(!d.outDetail)d.outDetail={};
+    if(!d.outbound)d.outbound=[];
+    if(!d.outDel)d.outDel={};
+    return d;
+  }catch(e){return null;}
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function save(){localStorage.setItem(LSKEY,JSON.stringify(S));}
 
-var PY={'大米':'D','面粉':'M','面条':'M','瘦肉':'S','三线肉':'S','排骨':'P','牛肉':'N','猪蹄':'Z','鸡':'J','鸭':'Y','鸡蛋':'J','莲白':'L','油麦菜':'Y','冬瓜':'D','南瓜':'N','土豆':'T','青椒':'Q','尖椒':'J','小白菜':'X','花菜':'H','芹菜':'Q','茄子':'Q','豇豆':'J','蒜苔':'S','水白菜':'S','胡萝卜':'H','洋葱':'Y','平菇':'P','香菇':'X','木耳':'M','豆芽':'D','西红柿':'X','酸萝卜':'S','海带':'H','海带丝':'H','紫菜':'Z','豆腐':'D','豆干':'D','青豆':'Q','山东白':'S','西芹':'X','大葱':'D','小葱':'X','生姜':'S','香菜':'X','蒜苗':'S','蒜米':'S','玉米':'Y','苹果':'P','香蕉':'X','橙子':'C','菜油':'C','盐':'Y','酱油':'J','醋':'C','味精':'W','鸡精':'J','料酒':'L','白糖':'B','豆瓣':'D','花椒':'H','干辣椒':'G','豌豆粉条':'W','胡椒面':'H','大豆':'D','黄豆':'H','米豆':'M','海椒面':'H','芝麻':'Z','孜然面':'Z','红苕芡粉':'H','嫩肉粉':'N','蒸肉粉':'Z','老抽':'L','味极鲜':'W','耗油':'H','老干妈':'L','十三香':'S','海椒节':'H','红泡椒':'H','泡姜':'P','火锅料':'H','老鸭汤':'L','胖子鱼':'P','老咸菜':'L','红苕粉条':'H','洗涤剂':'X','厨具杂件':'C','水盐菜':'S','香油':'X','花椒面':'H','藕':'O','粉条':'F'};
-function pyOf(n){return PY[n]||'#';}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dowOf=d=>{let w=d.getDay();return w===0?7:w;};
 
-function rebuildItems(){
-  ITEM={};ORDER=[];
-  S.items.forEach(function(it){if(!ITEM[it.n]){ITEM[it.n]=it;ORDER.push(it.n);}});
-  ORDER.sort(function(a,b){
-    var ca=CATS.indexOf(ITEM[a].c),cb=CATS.indexOf(ITEM[b].c);
-    if(ca<0)ca=9;if(cb<0)cb=9;
-    if(ca!==cb)return ca-cb;
-    var pa=pyOf(a),pb=pyOf(b);
-    if(pa!==pb)return pa<pb?-1:1;
-    return a<b?-1:1;
+function slotsOf(dow,ing){
+  const s=[];
+  SLOTS.forEach(sl=>{
+    if(S.menu[dow][sl].some(x=>x.i.includes(ing)))s.push(sl==='早'?'早':sl==='午'?'中':'晚');
   });
-}
-function priceOf(n){return num(S.price[n])||0;}
-function unitOf(n){return (ITEM[n]&&ITEM[n].u)||'斤';}
-function catOf(n){return (ITEM[n]&&ITEM[n].c)||'蔬菜';}
-function stockOf(n){return r2(S.stock[n]||0);}
-function recompute(){
-  var st={},val={};
-  ORDER.forEach(function(n){st[n]=0;val[n]=0;});
-  var op=S.opening||{};
-  Object.keys(op).forEach(function(n){
-    if(st[n]===undefined)return;
-    var q=num(op[n]);st[n]+=q;val[n]+=q*priceOf(n);
-  });
-  S.inLog.forEach(function(o){
-    if(st[o.n]===undefined)return;
-    st[o.n]+=o.q;val[o.n]+=o.q*o.p;
-  });
-  S.outLog.forEach(function(o){
-    if(st[o.n]===undefined)return;
-    var c=st[o.n]>0?val[o.n]/st[o.n]:priceOf(o.n);
-    if(!(c>0))c=priceOf(o.n);
-    st[o.n]-=o.q;val[o.n]-=o.q*c;
-  });
-  var daily={};
-  S.outLog.forEach(function(o){daily[o.n]=1;});
-  (S.oneLog||[]).forEach(function(o){
-    if(st[o.n]===undefined)return;
-    if(o.dir==='in'){st[o.n]+=o.q;val[o.n]+=o.q*o.p;return;}
-    if(o.h&&daily[o.n]&&o._skip)return;
-    var c2=st[o.n]>0?val[o.n]/st[o.n]:priceOf(o.n);
-    if(!(c2>0))c2=priceOf(o.n);
-    st[o.n]-=o.q;val[o.n]-=o.q*c2;
-  });
-  S.cost={};
-  Object.keys(st).forEach(function(n){
-    st[n]=r2(st[n]);
-    var c3=st[n]>0.001?(val[n]/st[n]):priceOf(n);
-    S.cost[n]=r2(c3>0?c3:priceOf(n));
-  });
-  S.stock=st;
-  var neg=0;Object.keys(st).forEach(function(n){if(st[n]<-0.01)neg++;});
-  S.negCount=neg;
-}
-function costOf(n){return (S.cost&&S.cost[n])||priceOf(n);}
-
-var CAT_RANK={'粮食':1,'油盐':2,'肉禽蛋':3,'蔬菜':4,'瓜果':5,'干鲜':6,'低值易耗':7};
-var COUNT_UNITS=['桶','袋','瓶','件','包','个'];
-function isCount(n){return COUNT_UNITS.indexOf(unitOf(n))>=0;}
-function qround(n,v){return isCount(n)?Math.round(v):r2(v);}
-function sortRows(arr){
-  return arr.slice().sort(function(a,b){
-    var ra=CAT_RANK[catOf(a)]||9,rb=CAT_RANK[catOf(b)]||9;
-    if(ra!==rb)return ra-rb;
-    return ORDER.indexOf(a)-ORDER.indexOf(b);
-  });
-}
-function basisOf(n){
-  var o=num(S.opening&&S.opening[n]),i=0,u=0;
-  S.inLog.forEach(function(r){if(r.n===n)i+=r.q;});
-  S.outLog.forEach(function(r){if(r.n===n)u+=r.q;});
-  return {o:o,i:r2(i),u:r2(u)};
-}
-
-function fbOf(meal,n){return num((DATA.fb||{})[meal+'|'+n]);}
-function isWeekend(wd){return wd>=5;}
-function dishesOf(wd,meal){
-  var m=S.menu[String(wd)]||{};
-  var names = meal==='午'?['午餐']:(isWeekend(wd)?['早餐','午餐','晚餐']:['早餐','晚餐']);
-  var out=[];
-  names.forEach(function(mk){
-    var d=m[mk]||{};
-    Object.keys(d).forEach(function(x){out.push({meal:mk,dish:x,ings:d[x]});});
-  });
-  return out;
-}
-function refOf(wd,meal,ing){
-  var list=dishesOf(wd,meal),t=0,has=false;
-  list.forEach(function(o){
-    if((o.ings||[]).indexOf(ing)<0)return;
-    var k=wd+'|'+o.dish+'|'+ing;
-    if(S.dishQty[k]!==undefined){t+=S.dishQty[k];has=true;}
-    else if(S.dishQty['*|'+o.dish+'|'+ing]!==undefined){t+=S.dishQty['*|'+o.dish+'|'+ing];has=true;}
-  });
-  if(has)return r2(t);
-  var v=num(DATA.base[wd+'|'+meal+'|'+ing]);
-  if(v>0)return v;
-  return fbOf(meal,ing);
-}
-function dayRows(wd,meal){
-  var set={},list=dishesOf(wd,meal);
-  list.forEach(function(o){ (o.ings||[]).forEach(function(i){if(ITEM[i])set[i]=1;}); });
-  if(ITEM['菜油'])set['菜油']=1;
-  return sortRows(Object.keys(set));
-}
-function dailyAvg(n){
-  var t=0;
-  for(var wd=0;wd<7;wd++)for(var i=0;i<2;i++)t+=fbOf(i?'午':'早/晚',n);
-  return r2(t/7);
-}
-function totals(){
-  var inAmt=0,nut=0,eve=0;
-  S.inLog.forEach(function(o){inAmt+=o.q*o.p;});
-  S.outLog.forEach(function(o){var a=o.q*o.p;if(o.t==='午')nut+=a;else eve+=a;});
-  var sa=0;
-  ORDER.forEach(function(n){sa+=stockOf(n)*priceOf(n);});
-  return {inAmt:inAmt,nut:nut,eve:eve,outAmt:nut+eve,stockAmt:sa};
-}
-
-
-var $ = function(id){return document.getElementById(id);};
-function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
-function clr(e){while(e.firstChild)e.removeChild(e.firstChild);}
-var toastT=null;
-function toast(m){var t=$('toast');t.textContent=m;t.className='toast show';clearTimeout(toastT);toastT=setTimeout(function(){t.className='toast';},1900);}
-
-var tab='today', viewDate=iso(new Date()), menuDay=(new Date().getDay()+6)%7;
-var _q=((typeof location!=='undefined'&&location.search)||'');
-var _dm=_q.match(/[?&]d=(\d{4}-\d{2}-\d{2})/);
-if(_dm)viewDate=_dm[1];
-var _h=((typeof location!=='undefined'&&location.hash)||'').replace('#','');
-if(['today','stock','in','menu','archive','month'].indexOf(_h)>=0)tab=_h;
-
-var lastRenderTab=null;
-function render(){
-  var sy=(typeof window!=='undefined')?window.scrollY:0;
-  var sameTab=(tab===lastRenderTab);
-  $('school').textContent=S.school||'食堂出库';
-  $('sub').textContent=(S.month||'')+' · 单位：斤';
-  var v=$('view');clr(v);
-  if(tab==='today')v.appendChild(renderToday());
-  if(tab==='stock')v.appendChild(renderStock());
-  if(tab==='in')v.appendChild(renderIn());
-  if(tab==='menu')v.appendChild(renderMenu());
-  if(tab==='month')v.appendChild(renderMonth());
-  if(tab==='archive')v.appendChild(renderArchive());
-  Array.prototype.forEach.call($('tabs').children,function(b){b.className=b.dataset.t===tab?'on':'';});
-  var wd0=wdOf(viewDate),n0=0,a0=0;
-  (isWeekend(wd0)?['早/晚']:['午','早/晚']).forEach(function(m){
-    dayRows(wd0,m).forEach(function(n){
-      var r=(tab==='menu')?0:refOf(wd0,m,n);
-      if(r>0){n0++;a0+=r*priceOf(n);}
-    });
-  });
-  clr($('chips'));
-  var c1=el('div','chip');c1.appendChild(el('b','',String(n0)));c1.appendChild(document.createTextNode('样待出'));
-  var c2=el('div','chip');c2.appendChild(el('b','','¥'+fmt(a0,0)));c2.appendChild(document.createTextNode('预计金额'));
-  $('chips').appendChild(c1);$('chips').appendChild(c2);
-  lastRenderTab=tab;
-  if(typeof window!=='undefined')window.scrollTo(0,sameTab?sy:0);
-}
-function go(t){tab=t;render();}
-
-/* ---------------- 今日列表（可当天删菜） ---------------- */
-function skipList(dt,meal){return ((S.skip||{})[dt+'|'+meal])||[];}
-function todayDishes(wd,meal){
-  var sk=skipList(viewDate,meal);
-  return dishesOf(wd,meal).filter(function(o){return sk.indexOf(o.dish)<0;});
-}
-function skipIngs(dt,meal,dish){return ((S.skipIng||{})[dt+'|'+meal+'|'+dish])||[];}
-function todayRows(wd,meal){
-  var set={};
-  todayDishes(wd,meal).forEach(function(o){
-    var sk=skipIngs(viewDate,meal,o.dish);
-    (o.ings||[]).forEach(function(i){if(ITEM[i]&&sk.indexOf(i)<0)set[i]=1;});
-  });
-  if(ITEM['菜油'])set['菜油']=1;
-  return sortRows(Object.keys(set));
-}
-function todayRef(wd,meal,ing){
-  var t=0,has=false;
-  todayDishes(wd,meal).forEach(function(o){
-    if((o.ings||[]).indexOf(ing)<0)return;
-    if(skipIngs(viewDate,meal,o.dish).indexOf(ing)>=0)return;
-    var k=wd+'|'+o.dish+'|'+ing;
-    if(S.dishQty[k]!==undefined){t+=S.dishQty[k];has=true;}
-    else if(S.dishQty['*|'+o.dish+'|'+ing]!==undefined){t+=S.dishQty['*|'+o.dish+'|'+ing];has=true;}
-  });
-  return has?r2(t):refOf(wd,meal,ing);
-}
-
-/* ---------------- 单样食材面板 ---------------- */
-function openIngPanel(meal,o){
-  var ov=el('div','ov');
-  var box=el('div','ovin');
-  var h=el('div','h');h.appendChild(el('b','',o.dish));
-  h.appendChild(el('span','tag',meal==='午'?'午餐':'早/晚'));
-  box.appendChild(h);
-  box.appendChild(el('div','muted','点食材可以今天不做这一样，再点恢复。'));
-  var wrap=el('div','chips2');wrap.style.marginTop='10px';
-  (o.ings||[]).forEach(function(ing){
-    var off=skipIngs(viewDate,meal,o.dish).indexOf(ing)>=0;
-    var c=el('span','ichip '+(off?'off':'c-green'),ing);
-    c.onclick=function(){
-      var k=viewDate+'|'+meal+'|'+o.dish;
-      S.skipIng=S.skipIng||{};
-      var arr=S.skipIng[k]||[];
-      S.skipIng[k]=off?arr.filter(function(z){return z!==ing;}):arr.concat([ing]);
-      document.body.removeChild(ov);save();render();toast(off?'已恢复：'+ing:'今天不用：'+ing);
-    };
-    wrap.appendChild(c);
-  });
-  box.appendChild(wrap);
-  var cl=el('button','btn ghost','关闭');cl.style.marginTop='14px';
-  cl.onclick=function(){document.body.removeChild(ov);};
-  box.appendChild(cl);
-  ov.appendChild(box);
-  ov.onclick=function(e){if(e.target===ov)document.body.removeChild(ov);};
-  document.body.appendChild(ov);
-}
-
-/* ---------------- 日历 ---------------- */
-function calCard(){
-  var card=el('div','card');
-  var d=new Date(viewDate+'T00:00:00');
-  var y=d.getFullYear(), m=d.getMonth();
-  var head=el('div','calhead');
-  head.appendChild(el('b','calym',y+'年'+(m+1)+'月'));
-  var nav=el('div','');
-  nav.style.display='flex';nav.style.gap='6px';
-  var b1=el('button','calnav','‹'),b2=el('button','calnav','›');
-  b1.onclick=function(){var t=new Date(y,m-1,1);viewDate=iso(t);render();};
-  b2.onclick=function(){var t=new Date(y,m+1,1);viewDate=iso(t);render();};
-  nav.appendChild(b1);nav.appendChild(b2);
-  head.appendChild(nav);
-  card.appendChild(head);
-  var g=el('div','calgrid');
-  ['一','二','三','四','五','六','日'].forEach(function(w){g.appendChild(el('div','calwd',w));});
-  var first=new Date(y,m,1), start=(first.getDay()+6)%7;
-  for(var i=0;i<start;i++)g.appendChild(el('div','calcell empty'));
-  var days=new Date(y,m+1,0).getDate();
-  var hasOut={};
-  S.outLog.forEach(function(o){hasOut[o.d]=1;});
-  for(var dd=1;dd<=days;dd++){
-    var ds=iso(new Date(y,m,dd));
-    var c=el('div','calcell',String(dd));
-    if(ds===iso(new Date()))c.className+=' today';
-    if(ds===viewDate)c.className+=' sel';
-    if(hasOut[ds])c.appendChild(el('span','d'));
-    (function(ds2){
-      c.onclick=function(){viewDate=ds2;render();};
-    })(ds);
-    g.appendChild(c);
-  }
-  card.appendChild(g);
-  var lg=el('div','callegend');
-  lg.appendChild(el('span','','今天'));
-  var s1=el('span','','选中');s1.style.fontWeight='600';lg.appendChild(s1);
-  var s2=el('span','');var dot=el('i','');dot.style.background='var(--brand)';s2.appendChild(dot);s2.appendChild(document.createTextNode('已出库'));
-  lg.appendChild(s2);
-  card.appendChild(lg);
-  return card;
-}
-
-/* ---------------- 未来预计 ---------------- */
-function forecast(){
-  var st=new Date(viewDate+'T00:00:00');
-  var dels=[2,6],end=null,i,d;
-  for(i=1;i<=8;i++){
-    d=new Date(st.getTime());d.setDate(st.getDate()+i);
-    if(dels.indexOf((d.getDay()+6)%7)>=0){end=d;break;}
-  }
-  var rows={},cur=new Date(st.getTime()),days=0;
-  while(cur<end&&days<10){
-    var wd=(cur.getDay()+6)%7;
-    if(!isWeekend(wd))dayRows(wd,'午').forEach(function(n){rows[n]=(rows[n]||0)+refOf(wd,'午',n);});
-    rows=rows;
-    dayRows(wd,'早/晚').forEach(function(n){rows[n]=(rows[n]||0)+refOf(wd,'早/晚',n);});
-    cur.setDate(cur.getDate()+1);days++;
-  }
-  return {end:end,days:days,rows:rows};
-}
-function forecastCard(){
-  var fc=forecast();
-  var card=el('div','card');
-  var h=el('div','h');
-  h.appendChild(el('b','','未来预计'));
-  h.appendChild(el('span','tag','到'+DAYC[(fc.end.getDay()+6)%7]+'来菜'));
-  card.appendChild(h);
-  var need=0,short=0,list=[];
-  Object.keys(fc.rows).forEach(function(n){
-    var d=fc.rows[n];if(d<=0.001)return;
-    need++;
-    var gap=stockOf(n)-d;
-    list.push({n:n,d:d,s:stockOf(n),gap:gap});
-    if(gap<-0.01)short++;
-  });
-  list.sort(function(a,b){return a.gap-b.gap;});
-  card.appendChild(el('div','muted','接下来 '+fc.days+' 天（'+(fc.days*2)+' 餐）要用 '+need+' 样，缺 '+short+' 样'));
-  var top=list.slice(0,6);
-  if(!top.length)card.appendChild(el('div','empty','菜单里还没有食材'));
-  top.forEach(function(x){
-    var row=el('div','row');
-    var nm=el('div','nm');
-    nm.appendChild(el('b','',x.n));
-    nm.appendChild(el('small','','要用 '+fmt(x.d)+' · 现有 '+fmt(x.s)+' '+unitOf(x.n)));
-    var v=el('div','');
-    v.style.textAlign='right';
-    if(x.gap<-0.01){var b=el('b','','缺 '+fmt(-x.gap));b.style.color='var(--red)';b.style.fontSize='14px';v.appendChild(b);}
-    else {var b2=el('b','','够');b2.style.color='var(--brand)';b2.style.fontSize='14px';v.appendChild(b2);}
-    row.appendChild(nm);row.appendChild(v);
-    card.appendChild(row);
-  });
-  if(list.length>6)card.appendChild(el('div','muted','还有 '+(list.length-6)+' 样，去「库存」看全部'));
-  return card;
-}
-
-/* ---------------- 今日 ---------------- */
-function renderToday(){
-  var f=document.createDocumentFragment();
-  var wd=wdOf(viewDate);
-  f.appendChild(calCard());
-
-  if(S.negCount){
-    f.appendChild(el('div','banner','11 月只录了 '+S.inLog.length+' 笔入库，有 '+S.negCount+' 样只出不进，所以结存是负的。到「库存」里点任意一行，直接填实际盘点数就能校正。'));
-  }
-
-  var wk=isWeekend(wd);
-  var ML=wk?[['早/晚','早、中、晚']]:[['午','营养午餐'],['早/晚','早、晚餐']];
-  ML.forEach(function(mk){
-    var meal=mk[0];
-    var card=el('div','card');
-    var h=el('div','h');
-    h.appendChild(el('b','',mk[1]));
-    h.appendChild(el('span','tag'+(meal==='午'?' nut':''),meal==='午'?'午餐':(wk?'周末不分开':'早餐＋晚餐')));
-    card.appendChild(h);
-    var dishes=todayDishes(wd,meal);
-    if(dishes.length){
-      var dl=el('div','chips2');
-      dl.style.margin='2px 0 6px';
-      dishes.forEach(function(o){
-        var c=el('span','dishname');
-        var nm2=el('span','','');nm2.textContent=o.dish;nm2.style.cursor='pointer';
-        nm2.onclick=function(){openIngPanel(meal,o);};
-        c.appendChild(nm2);
-        var x=el('button','dishx','×');
-        x.onclick=function(ev){
-          if(ev&&ev.stopPropagation)ev.stopPropagation();
-          var k=viewDate+'|'+meal;
-          S.skip=S.skip||{};
-          S.skip[k]=(S.skip[k]||[]).concat([o.dish]);
-          save();render();toast('今天不做：'+o.dish);
-        };
-        c.appendChild(x);
-        dl.appendChild(c);
-      });
-      card.appendChild(dl);
-    }
-    var skl=skipList(viewDate,meal);
-    if(skl.length){
-      var rl=el('div','chips2');rl.style.margin='0 0 6px';
-      var lb=el('span','muted','今天不做：');lb.style.fontSize='12px';rl.appendChild(lb);
-      skl.forEach(function(dn){
-        var cc=el('span','dishname');
-        cc.appendChild(document.createTextNode(dn));
-        var un=el('button','dishx','↺');
-        un.onclick=function(){
-          S.skip[viewDate+'|'+meal]=skl.filter(function(z){return z!==dn;});
-          save();render();toast('已恢复：'+dn);
-        };
-        cc.appendChild(un);rl.appendChild(cc);
-      });
-      card.appendChild(rl);
-    }
-    var list=todayRows(wd,meal);
-    if(!list.length)card.appendChild(el('div','empty','这天菜单里没有食材，去「菜谱」加菜'));
-    var doneKey=viewDate+'|'+meal;
-    list.forEach(function(n){
-      var ref=todayRef(wd,meal,n),st=stockOf(n);
-      var row=el('div','row');
-      var nm=el('div','nm');
-      nm.appendChild(el('b','',n));
-      if(isCount(n))ref=Math.round(ref);
-      var s=el('small','','库存 '+fmt(st)+' · 参考 '+fmt(ref)+' '+unitOf(n));
-      if(st<0){s.textContent='结存 '+fmt(st)+'（入库没录全）· 参考 '+fmt(ref)+' '+unitOf(n);}
-      else if(st<=0)s.textContent='未入库 · 参考 '+fmt(ref)+' '+unitOf(n);
-      else if(ref>st)nm.appendChild(el('div','warn-t','库存差 '+fmt(ref-st)+' '+unitOf(n)));
-      nm.insertBefore(s,nm.firstChild.nextSibling);
-      var step=el('div','step');
-      var mi=el('button','sbtn','\u2212');
-      var q=el('input','q');q.type='number';q.step='0.1';q.inputMode='decimal';
-      var pre=null;
-      S.outLog.forEach(function(o){if(o.d===viewDate&&o.t===meal&&o.n===n)pre=o.q;});
-      var baseUnit=(unitOf(n)==='公斤')?'公斤':'斤';
-      var fac=(baseUnit==='公斤')?2:1;
-      var val=(pre!==null)?pre:(ref||0);
-      if(isCount(n))val=Math.round(val);
-      q.dataset.n=n;q.dataset.f=String(fac);
-      q.value=val?fmt(val/fac,2):'';
-      if(isCount(n))q.step='1';
-      var pl=el('button','sbtn','\uff0b');
-      var stp=isCount(n)?1:(fac===2?0.5:1);
-      mi.onclick=function(){q.value=fmt(Math.max(0,num(q.value)-stp),2);};
-      pl.onclick=function(){q.value=fmt(num(q.value)+stp,2);};
-      step.appendChild(mi);step.appendChild(q);step.appendChild(pl);
-      var u;
-      if(isCount(n)){
-        u=el('span','u',unitOf(n));
-      }else{
-        u=el('select','usel');
-        ['斤','公斤'].forEach(function(x){var o=el('option','',x);o.value=x;u.appendChild(o);});
-        u.value=baseUnit;
-        u.onchange=function(){
-          var nf=(u.value==='公斤')?2:1;
-          var cur=num(q.value)*num(q.dataset.f);
-          q.dataset.f=String(nf);
-          q.value=fmt(cur/nf,2);
-          stp=(nf===2)?0.5:1;
-        };
-      }
-      row.appendChild(nm);row.appendChild(step);row.appendChild(u);
-      card.appendChild(row);
-    });
-    var has=S.outLog.some(function(o){return o.d===viewDate&&o.t===meal;});
-    var nk=viewDate+'|'+meal;
-    var nb=el('input','');nb.placeholder='备注：今天临时加了什么、或者有什么特殊情况';
-    nb.value=(S.note&&S.note[nk])||'';
-    nb.style.marginTop='10px';nb.style.fontSize='13px';
-    nb.onchange=function(){
-      S.note=S.note||{};
-      S.note[nk]=nb.value.trim();
-      save();toast('备注已保存');
-    };
-    card.appendChild(nb);
-    var btn=el('button','btn main',(has?'更新本次出库（覆盖） · ':'确认出库 · ')+(meal==='午'?'营养午餐':(wk?'早中晚':'早、晚餐')));
-    btn.style.marginTop='12px';
-    btn.onclick=function(){doIssue(card,meal);};
-    card.appendChild(btn);
-    f.appendChild(card);
-  });
-  f.appendChild(forecastCard());
-
-  var c3=el('div','card');
-  c3.appendChild(el('div','h')).appendChild(el('b','','今日单据'));
-  var g=el('div','f2');
-  if(isWeekend(wdOf(viewDate))){
-    var bx=el('button','btn main','早中晚 出库单');
-    bx.onclick=function(){showSlip('早/晚');};
-    g.appendChild(bx);
-  }else{
-    var b1x=el('button','btn ghost','营养午餐单'),b2x=el('button','btn ghost','早、晚餐单');
-    b1x.onclick=function(){showSlip('午');};
-    b2x.onclick=function(){showSlip('早/晚');};
-    g.appendChild(b1x);g.appendChild(b2x);
-  }
-  c3.appendChild(g);
-  c3.appendChild(el('div','muted','生成图片，可直接发微信或打印给对方签字。')).style.marginTop='10px';
-  f.appendChild(c3);
-  return f;
-}
-function shiftDay(k){var p=viewDate.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]+k);viewDate=iso(d);render();}
-function doIssue(card,meal){
-  var ins=card.querySelectorAll('input.q'),cnt=0,amt=0;
-  var keep=S.outLog.filter(function(o){return !(o.d===viewDate&&o.t===meal);});
-  var had=S.outLog.length!==keep.length;
-  var rows=[];
-  Array.prototype.forEach.call(ins,function(inp){
-    var n=inp.dataset.n,q=num(inp.value);
-    if(q<=0)return;
-    var p=costOf(n);
-    rows.push({d:viewDate,t:meal,n:n,q:r2(q),p:p});cnt++;amt+=q*p;
-  });
-  if(!cnt){toast('还没有填写数量');return;}
-  S.outLog=keep.concat(rows);
-  recompute();save();render();
-  toast((had?'已更新 ':'已出库 ')+cnt+' 样 · ¥'+yen(amt));
-}
-
-/* ---------------- 库存 ---------------- */
-function renderStock(){
-  var f=document.createDocumentFragment();
-  var t=totals();
-  var k=el('div','kpi');
-  var avail=0;
-  ORDER.forEach(function(n){var q=stockOf(n);if(q>0)avail+=q*priceOf(n);});
-  var k1=el('div');k1.appendChild(el('small','','有货结存金额'));k1.appendChild(el('b','','¥'+yen(avail)));
-  var zero=ORDER.filter(function(n){return stockOf(n)<=0;}).length;
-  var k2=el('div');k2.appendChild(el('small','','缺货 / 待补录入库'));k2.appendChild(el('b','',String(zero)));
-  k.appendChild(k1);k.appendChild(k2);f.appendChild(k);
-
-  var box=el('div','card');
-  var inp=el('input','');inp.placeholder='搜品名…';
-  box.appendChild(inp);
-  var mode='all';
-  var az='';
-  var letters=[];
-  ORDER.forEach(function(n){var L=pyOf(n);if(letters.indexOf(L)<0)letters.push(L);});
-  letters.sort();
-  var bar=el('div','azbar');
-  var azBtns={};
-  ['全'].concat(letters).forEach(function(L){
-    var b=el('button',L==='全'?'on':'',L);
-    b.onclick=function(){az=(L==='全'?'':L);Object.keys(azBtns).forEach(function(k){azBtns[k].className=(k===(L==='全'?'全':L))?'on':'';});draw();};
-    azBtns[L==='全'?'全':L]=b;bar.appendChild(b);
-  });
-  box.appendChild(bar);
-  var seg=el('div','seg'),btns={};
-  [['all','全部'],['has','有库存'],['zero','缺货']].forEach(function(m){
-    var b=el('button',m[0]==='all'?'on':'',m[1]);
-    b.onclick=function(){mode=m[0];Object.keys(btns).forEach(function(k2){btns[k2].className=k2===mode?'on':'';});draw();};
-    btns[m[0]]=b;seg.appendChild(b);
-  });
-  box.appendChild(seg);
-  var list=el('div');box.appendChild(list);
-  function draw(){
-    clr(list);
-    var kw=inp.value.trim(),shown=0;
-    CATS.forEach(function(c){
-      var names=ORDER.filter(function(n){
-        if(catOf(n)!==c)return false;
-        if(kw&&n.indexOf(kw)<0)return false;
-        if(mode==='has'&&stockOf(n)<=0)return false;
-        if(mode==='zero'&&stockOf(n)>0)return false;
-        if(az&&pyOf(n)!==az)return false;
-        return true;
-      });
-      if(!names.length)return;
-      list.appendChild(el('div','sect',c));
-      names.forEach(function(n){
-        shown++;
-        var st=stockOf(n),avg=dailyAvg(n);
-        var row=el('div','row');
-        var nm=el('div','nm');
-        nm.appendChild(el('b','',n));
-        var bs=basisOf(n);
-        nm.appendChild(el('small','','余 '+fmt(bs.o)+' + 入 '+fmt(bs.i)+' − 用 '+fmt(bs.u)));
-        nm.appendChild(el('small','','日均 '+fmt(avg,2)+' · 可用 '+(avg>0?fmt(st/avg)+' 天':'—')));
-        var v=el('div','');v.style.textAlign='right';
-        var bb=el('b','',fmt(st));bb.style.fontSize='16px';
-        if(st<=0)bb.style.color='var(--red)';
-        v.appendChild(bb);v.appendChild(document.createTextNode(' '+unitOf(n)));
-        row.appendChild(nm);row.appendChild(v);
-        row.onclick=function(){
-          var v=prompt('「'+n+'」实际库存（'+unitOf(n)+'）', fmt(st));
-          if(v===null)return;
-          var q=num(v),bs=basisOf(n);
-          S.opening[n]=r2(q-bs.i+bs.u);
-          recompute();save();render();toast(n+' 已校正为 '+fmt(q)+unitOf(n));
-        };
-        list.appendChild(row);
-      });
-    });
-    if(!shown)list.appendChild(el('div','empty','没有匹配的食材'));
-  }
-  inp.oninput=draw;draw();
-  f.appendChild(box);
-  return f;
-}
-
-/* ---------------- 入库 ---------------- */
-var inCat='粮食';
-function renderIn(){
-  var f=document.createDocumentFragment();
-  var card=el('div','card');
-  card.appendChild(el('div','h')).appendChild(el('b','','来货入库'));
-  var seg=el('div','seg segwrap');
-  CATS.forEach(function(c){
-    var b=el('button',c===inCat?'on':'',c);
-    b.onclick=function(){inCat=c;render();};
-    seg.appendChild(b);
-  });
-  card.appendChild(seg);
-  var names=ORDER.filter(function(n){return catOf(n)===inCat;});
-  card.appendChild(el('label','','品名（'+inCat+'）'));
-  var sel=el('select','');
-  if(!names.length){var o=el('option','','（这个分类还没有品名，先新增）');o.value='';sel.appendChild(o);}
-  names.forEach(function(n){var o=el('option','',n+'（'+unitOf(n)+'）');o.value=n;sel.appendChild(o);});
-  card.appendChild(sel);
-  var f2=el('div','f2');
-  var c1=el('div');c1.appendChild(el('label','','数量'));var qi=el('input','');qi.type='number';qi.inputMode='decimal';qi.placeholder='0.0';c1.appendChild(qi);
-  var c2=el('div');c2.appendChild(el('label','','单位'));var uq=el('select','');
-  [unitOf(sel.value),'斤','公斤','桶','袋','瓶','件','包'].filter(function(v,i,a){return a.indexOf(v)===i;}).forEach(function(u){var o=el('option','',u);o.value=u;uq.appendChild(o);});
-  c2.appendChild(uq);
-  f2.appendChild(c1);f2.appendChild(c2);card.appendChild(f2);
-  card.appendChild(el('label','','单价(元)'));
-  var pi=el('input','');pi.type='number';pi.inputMode='decimal';card.appendChild(pi);
-  sel.onchange=function(){
-    pi.value=fmt(priceOf(sel.value),2);
-    clr(uq);
-    [unitOf(sel.value),'斤','公斤','桶','袋','瓶','件','包'].filter(function(v,i,a){return a.indexOf(v)===i;}).forEach(function(u){var o=el('option','',u);o.value=u;uq.appendChild(o);});
-  };
-  card.appendChild(el('label','','供应商 / 单据号（可不填）'));
-  var sup=el('input','');card.appendChild(sup);
-  if(S.lastIn&&names.indexOf(S.lastIn)>=0)sel.value=S.lastIn;
-  pi.value=fmt(priceOf(sel.value),2);
-  var btn=el('button','btn main','\uff0b 入库');btn.style.marginTop='14px';
-  btn.onclick=function(){
-    var n=sel.value,q=num(qi.value),p=num(pi.value),uu=uq.value||unitOf(n);
-    if(!n){toast('先选品名');return;}
-    if(q<=0){toast('数量要大于 0');return;}
-    if(uu==='公斤'){q=q*2;p=p/2;}
-    S.inLog.push({d:iso(new Date()),no:'',n:n,q:r2(q),p:p,sup:sup.value.trim()});
-    S.lastIn=n;
-    recompute();save();qi.value='';toast(n+' 入库 '+fmt(q)+' '+unitOf(n));render();
-  };
-  card.appendChild(btn);
-
-  var addBtn=el('button','btn ghost','\uff0b 新增品名 / 临时采购');
-  addBtn.style.marginTop='8px';
-  addBtn.onclick=function(){card.appendChild(buildItemForm());addBtn.style.display='none';};
-  card.appendChild(addBtn);
-  f.appendChild(card);
-
-  var card2=el('div','card');
-  card2.appendChild(el('div','h')).appendChild(el('b','','最近入库'));
-  var rec=S.inLog.slice(-10).reverse();
-  if(!rec.length)card2.appendChild(el('div','empty','还没有入库记录'));
-  rec.forEach(function(o){
-    var row=el('div','row');
-    var nm=el('div','nm');
-    nm.appendChild(el('b','',o.n));
-    nm.appendChild(el('small','',o.d+(o.sup?' · '+o.sup:'')));
-    var v=el('div','');v.style.textAlign='right';
-    var bb=el('b','','+'+fmt(o.q)+' '+unitOf(o.n));bb.style.color='var(--brand)';
-    v.appendChild(bb);
-    row.appendChild(nm);row.appendChild(v);
-    card2.appendChild(row);
-  });
-  f.appendChild(oneOffCard());
-  f.appendChild(card2);
-  return f;
-}
-function buildItemForm(){
-  var box=el('div','subcard');
-  box.appendChild(el('div','sect','新增品名'));
-  var n=el('input','');n.placeholder='品名，例如：藕 / 鸡腿 / 一次性手套';
-  box.appendChild(n);
-  var f2=el('div','f2');
-  var c1=el('div');c1.appendChild(el('label','','分类'));
-  var cs=el('select','');CATS.forEach(function(c){var o=el('option','',c);o.value=c;if(c===inCat)o.selected=true;cs.appendChild(o);});c1.appendChild(cs);
-  var c2=el('div');c2.appendChild(el('label','','单位'));
-  var us=el('select','');['斤','公斤','桶','袋','瓶','件','包','个','批'].forEach(function(u){var o=el('option','',u);o.value=u;us.appendChild(o);});c2.appendChild(us);
-  f2.appendChild(c1);f2.appendChild(c2);box.appendChild(f2);
-  box.appendChild(el('label','','参考单价(元)'));
-  var p=el('input','');p.type='number';p.inputMode='decimal';box.appendChild(p);
-  var b=el('button','btn main','保存品名');b.style.marginTop='12px';
-  b.onclick=function(){
-    var name=n.value.trim();
-    if(!name){toast('品名不能空');return;}
-    if(ITEM[name]){toast('已经有这个品名了');return;}
-    S.items.push({n:name,c:cs.value,u:us.value});
-    S.price[name]=num(p.value);
-    S.stock[name]=0;
-    rebuildItems();save();toast('已新增：'+name);render();
-  };
-  box.appendChild(b);
-  return box;
-}
-
-
-/* ---------------- 菜谱 ---------------- */
-var openDish=null, addDishMeal=null, tmpDish=null;
-var mView='day';
-var ICLS={'粮食':'c-amber','油盐':'c-blue','肉禽蛋':'c-red','蔬菜':'c-green','瓜果':'c-green','干鲜':'c-purple','低值易耗':'c-blue'};
-function chipOf(ing){
-  var c=el('span','ichip '+(ICLS[catOf(ing)]||'c-green'),ing);
-  var x=el('i','','×');
-  x.onclick=function(){removeIng(mkCur,dnCur,ing);};
-  return c;
-}
-function renderMenu(){
-  var f=document.createDocumentFragment();
-  var seg=el('div','seg');
-  [['day','每天'],['week','每周']].forEach(function(m){
-    var b=el('button',mView===m[0]?'on':'',m[1]);
-    b.onclick=function(){mView=m[0];openDish=null;addDishMeal=null;render();};
-    seg.appendChild(b);
-  });
-  var top=el('div','card');top.appendChild(seg);
-  f.appendChild(top);
-
-  if(mView==='week'){f.appendChild(weekBoard());return f;}
-
-  var dseg=el('div','card');
-  var dbar=el('div','seg segwrap');
-  DAYC.forEach(function(d,i){
-    var b=el('button',i===menuDay?'on':'',d);
-    b.onclick=function(){menuDay=i;openDish=null;addDishMeal=null;render();};
-    dbar.appendChild(b);
-  });
-  dseg.appendChild(dbar);
-  f.appendChild(dseg);
-
-  var card=el('div','card');
-  var h=el('div','h');
-  h.appendChild(el('b','',DAYC[menuDay]+' · 全天菜谱'+(menuDay>=5?'（周末不分开）':'')));
-  h.appendChild(el('span','mhint','点食材可删，点＋食材可加'));
-  card.appendChild(h);
-
-  ['早餐','午餐','晚餐'].forEach(function(mk){
-    card.appendChild(el('div','mpart',mk+(mk==='午餐'&&menuDay<5?'　·　营养午餐':'')));
-    var dishes=(S.menu[String(menuDay)]||{})[mk]||{};
-    var names=Object.keys(dishes);
-    if(!names.length)card.appendChild(el('div','empty','这一餐还没有菜'));
-    names.forEach(function(dn){
-      var line=el('div','dishline');
-      var left=el('div','dn2');
-      left.textContent=dn;
-      line.appendChild(left);
-      var ings=el('div','ings');
-      (dishes[dn]||[]).forEach(function(ing){
-        var c=el('span','ichip '+(ICLS[catOf(ing)]||'c-green'),ing+' ×');
-        c.onclick=function(){
-          var arr=S.menu[String(menuDay)][mk][dn];
-          S.menu[String(menuDay)][mk][dn]=arr.filter(function(z){return z!==ing;});
-          save();render();
-        };
-        ings.appendChild(c);
-      });
-      var add=el('button','ingadd','＋食材');
-      add.onclick=function(){openDish={mk:mk,dn:dn};render();};
-      ings.appendChild(add);
-      if(openDish&&openDish.mk===mk&&openDish.dn===dn){
-        var sel=el('select','mini-sel');
-        ORDER.forEach(function(n){var o=el('option','',n);o.value=n;sel.appendChild(o);});
-        var q=el('input','q2');q.type='number';q.placeholder='斤';
-        q.value=fmt((S.dishQty[menuDay+'|'+dn+'|'+sel.value]||S.dishQty['*|'+dn+'|'+sel.value]||0));
-        sel.onchange=function(){q.value=fmt((S.dishQty[menuDay+'|'+dn+'|'+sel.value]||S.dishQty['*|'+dn+'|'+sel.value]||0));};
-        var ok=el('button','mini ok','加');
-        ok.onclick=function(){
-          var arr=S.menu[String(menuDay)][mk][dn];
-          if(arr.indexOf(sel.value)>=0){toast('已经在这道菜里');return;}
-          arr.push(sel.value);
-          S.dishQty[menuDay+'|'+dn+'|'+sel.value]=num(q.value);
-          openDish=null;save();render();
-        };
-        ings.appendChild(sel);ings.appendChild(q);ings.appendChild(ok);
-      }
-      var del=el('button','mini','删');
-      del.onclick=function(){
-        if(!confirm('删掉「'+dn+'」？'))return;
-        delete S.menu[String(menuDay)][mk][dn];save();render();
-      };
-      ings.appendChild(del);
-      line.appendChild(ings);
-      card.appendChild(line);
-    });
-    var ab=el('button','btn ghost','＋ 加菜到'+mk);
-    ab.style.marginTop='8px';
-    ab.onclick=function(){addDishMeal=mk;tmpDish={name:'',ings:[]};openDish=null;render();};
-    card.appendChild(ab);
-    if(addDishMeal===mk){card.appendChild(buildDishForm(mk));ab.style.display='none';}
-  });
-  f.appendChild(card);
-  return f;
-}
-function weekBoard(){
-  var wrap=document.createDocumentFragment();
-  var board=el('div','card');
-  board.appendChild(el('div','h')).appendChild(el('b','','本周菜谱黑板'));
-  DAYC.forEach(function(d,i){
-    var m=S.menu[String(i)]||{};
-    var line=function(k){var o=m[k]||{};return Object.keys(o).join('、')||'—';};
-    var row=el('div','brow');
-    row.appendChild(el('span','bday',d));
-    var txt=el('div','btxt');
-    if(i>=5){
-      var all=[];
-      ['早餐','午餐','晚餐'].forEach(function(k){var o=m[k]||{};Object.keys(o).forEach(function(x){if(all.indexOf(x)<0)all.push(x);});});
-      txt.appendChild(el('div','','早中晚：'+(all.join('、')||'—')));
-    }else{
-      txt.appendChild(el('div','','早：'+line('早餐')));
-      txt.appendChild(el('div','','午：'+line('午餐')));
-      txt.appendChild(el('div','','晚：'+line('晚餐')));
-    }
-    row.appendChild(txt);board.appendChild(row);
-  });
-  wrap.appendChild(board);
-  return wrap;
-}
-function dishBlock(mk,dn,ings){
-  var box=el('div','dish');
-  var dh=el('div','dh');
-  dh.appendChild(el('b','',dn));
-  var del=el('button','mini','删');
-  del.onclick=function(){
-    if(!confirm('删掉「'+dn+'」这道菜？'))return;
-    var m=S.menu[String(menuDay)][mk];
-    delete m[dn];
-    save();render();
-  };
-  dh.appendChild(del);
-  box.appendChild(dh);
-  var chips=el('div','chips2');
-  (ings||[]).forEach(function(ing){
-    var c=el('span','ingchip',ing);
-    var x=el('i','','\u00d7');
-    x.onclick=function(){
-      var arr=S.menu[String(menuDay)][mk][dn];
-      S.menu[String(menuDay)][mk][dn]=arr.filter(function(z){return z!==ing;});
-      save();render();
-    };
-    c.appendChild(x);
-    chips.appendChild(c);
-  });
-  var add=el('button','ingadd','\uff0b食材');
-  add.onclick=function(){
-    openDish=(openDish&&openDish.mk===mk&&openDish.dn===dn)?null:{mk:mk,dn:dn};
-    render();
-  };
-  chips.appendChild(add);
-  box.appendChild(chips);
-
-  if(openDish&&openDish.mk===mk&&openDish.dn===dn){
-    var pr=el('div','pickrow');
-    var sel=el('select','');
-    ORDER.forEach(function(n){var o=el('option','',n);o.value=n;sel.appendChild(o);});
-    var q=el('input','q2');q.type='number';q.placeholder='斤';
-    q.value=fmt(refOf(menuDay,mk==='午餐'?'午':'早/晚',sel.value)/Math.max(1,(ings||[]).length)||0);
-    sel.onchange=function(){q.value=fmt(r2((S.dishQty[menuDay+'|'+dn+'|'+sel.value]||S.dishQty['*|'+dn+'|'+sel.value]||fbOf('午',sel.value)||0)));};
-    var ok=el('button','mini ok','加');
-    ok.onclick=function(){
-      var ing=sel.value;
-      var arr=S.menu[String(menuDay)][mk][dn];
-      if(arr.indexOf(ing)>=0){toast('已经在这道菜里了');return;}
-      arr.push(ing);
-      S.dishQty[menuDay+'|'+dn+'|'+ing]=num(q.value);
-      openDish=null;save();render();
-    };
-    pr.appendChild(sel);pr.appendChild(q);pr.appendChild(ok);
-    box.appendChild(pr);
-  }
-  return box;
-}
-function buildDishForm(mk){
-  var box=el('div','subcard');
-  box.appendChild(el('div','sect','新菜：'+mk));
-  var nm=el('input','');nm.placeholder='菜名，例如：香菇滑鸡';
-  nm.value=tmpDish.name;
-  nm.oninput=function(){tmpDish.name=nm.value;};
-  box.appendChild(nm);
-  var chips=el('div','chips2');
-  tmpDish.ings.forEach(function(it,idx){
-    var c=el('span','ingchip',it.n+' '+fmt(it.q)+'斤');
-    var x=el('i','','\u00d7');
-    x.onclick=function(){tmpDish.ings.splice(idx,1);render();};
-    c.appendChild(x);chips.appendChild(c);
-  });
-  box.appendChild(chips);
-  var row=el('div','pickrow');
-  var sel=el('select','');
-  ORDER.forEach(function(n){var o=el('option','',n);o.value=n;sel.appendChild(o);});
-  var q=el('input','q2');q.type='number';q.placeholder='斤';q.value='1';
-  var add=el('button','mini ok','添加');
-  add.onclick=function(){
-    var n=sel.value,v=num(q.value);
-    if(v<=0){toast('数量要大于 0');return;}
-    tmpDish.ings=tmpDish.ings.filter(function(z){return z.n!==n;});
-    tmpDish.ings.push({n:n,q:v});
-    render();
-  };
-  row.appendChild(sel);row.appendChild(q);row.appendChild(add);
-  box.appendChild(row);
-  var bar=el('div','btnbar');
-  var saveB=el('button','btn main','保存这道菜');
-  saveB.onclick=function(){
-    var name=(tmpDish.name||'').trim();
-    if(!name){toast('先写菜名');return;}
-    if(!tmpDish.ings.length){toast('至少加一样食材');return;}
-    var m=S.menu[String(menuDay)][mk];
-    m[name]=tmpDish.ings.map(function(z){return z.n;});
-    tmpDish.ings.forEach(function(z){S.dishQty[menuDay+'|'+name+'|'+z.n]=z.q;});
-    addDishMeal=null;tmpDish=null;save();render();toast('已加：'+name);
-  };
-  var cancel=el('button','btn ghost','取消');
-  cancel.onclick=function(){addDishMeal=null;tmpDish=null;render();};
-  bar.appendChild(saveB);bar.appendChild(cancel);
-  box.appendChild(bar);
-  return box;
-}
-
-/* ---------------- 月结 ---------------- */
-function renderMonth(){
-  var f=document.createDocumentFragment();
-  var t=totals();
-  var k=el('div','kpi');
-  [['本月入库','¥'+yen(t.inAmt)],['本月出库','¥'+yen(t.outAmt)],['营养午餐','¥'+yen(t.nut)],['早、晚餐','¥'+yen(t.eve)]].forEach(function(x){
-    var d=el('div');d.appendChild(el('small','',x[0]));d.appendChild(el('b','',x[1]));k.appendChild(d);
-  });
-  f.appendChild(k);
-
-  var card=el('div','card');
-  card.appendChild(el('div','h')).appendChild(el('b','','按类别'));
-  var tb=el('table');
-  var hr=el('tr');['类别','入库','营养','早晚餐','出库合计'].forEach(function(h){hr.appendChild(el('th','',h));});
-  tb.appendChild(hr);
-  CATS.forEach(function(c){
-    var ia=0,nu=0,ev=0,has=false;
-    ORDER.forEach(function(n){
-      if(catOf(n)!==c)return;
-      S.inLog.forEach(function(o){if(o.n===n){ia+=o.q*o.p;has=true;}});
-      S.outLog.forEach(function(o){if(o.n===n){has=true;if(o.t==='午')nu+=o.q*o.p;else ev+=o.q*o.p;}});
-    });
-    if(!has)return;
-    var tr=el('tr');
-    [c,yen(ia),yen(nu),yen(ev),yen(nu+ev)].forEach(function(x){tr.appendChild(el('td','',x));});
-    tb.appendChild(tr);
-  });
-  var tr2=el('tr');
-  ['合计',yen(t.inAmt),yen(t.nut),yen(t.eve),yen(t.outAmt)].forEach(function(x){var td=el('td','',x);td.style.fontWeight='600';tr2.appendChild(td);});
-  tb.appendChild(tr2);
-  card.appendChild(tb);
-  f.appendChild(card);
-
-  var c2=el('div','card');
-  c2.appendChild(el('div','h')).appendChild(el('b','','导出'));
-  var b1=el('button','btn main','导出结算表（Excel，5 张表）');
-  b1.onclick=function(){downloadXlsx();};
-  c2.appendChild(b1);
-  var g=el('div','f2');g.style.marginTop='8px';
-  var b2=el('button','btn ghost','营养午餐单图'),b3=el('button','btn ghost','早、晚餐单图');
-  b2.onclick=function(){showSlip('午');};b3.onclick=function(){showSlip('早/晚');};
-  g.appendChild(b2);g.appendChild(b3);c2.appendChild(g);
-  c2.appendChild(el('div','muted','结算表列名和你那张表一致：日期/餐次/分类/品名/单位/数量/单价/金额，可直接粘过去。')).style.marginTop='10px';
-  f.appendChild(c2);
-
-  var c3=el('div','card');
-  var b4=el('button','btn warn','清空记录，恢复 11 月数据');
-  b4.onclick=function(){
-    if(!confirm('会清掉手机上录的出入库和改过的菜谱，恢复成 11 月初的样子。确定？'))return;
-    S=seed();rebuildItems();save();render();toast('已重置');
-  };
-  c3.appendChild(b4);
-  f.appendChild(c3);
-  return f;
-}
-
-/* ---------------- 出库单图片 ---------------- */
-function slipPages(meal){
-  var rows=S.outLog.filter(function(o){return o.d===viewDate&&o.t===meal;});
-  if(!rows.length)return [];
-  rows.sort(function(a,b){
-    var ra=CAT_RANK[catOf(a.n)]||9,rb=CAT_RANK[catOf(b.n)]||9;
-    if(ra!==rb)return ra-rb;
-    return ORDER.indexOf(a.n)-ORDER.indexOf(b.n);
-  });
-  var PER=30,pages=[];
-  var total=Math.ceil(rows.length/PER);
-  for(var i=0;i<total;i++){
-    var chunk=rows.slice(i*PER,(i+1)*PER);
-    var pgStr=total>1?('第 '+(i+1)+' 页 / 共 '+total+' 页'):'';
-    pages.push(slipURL(meal,chunk,pgStr));
-  }
-  return pages;
-}
-function showSlip(meal){
-  var pages=slipPages(meal);
-  if(!pages.length){toast('这天还没有出库记录');return;}
-  var cur=0;
-  var ov=el('div','ov');
-  var box=el('div','ovin');
-  var img=el('img','');
-  box.appendChild(img);
-  var bar=el('div','f2');
-  var prev=el('button','btn ghost','‹ 上一页'),next=el('button','btn ghost','下一页 ›');
-  bar.appendChild(prev);bar.appendChild(next);
-  box.appendChild(bar);
-  box.appendChild(el('div','muted','长按图片可保存到相册，或点下面按钮下载。'));
-  var dl=el('button','btn main','下载这一页');
-  var cl=el('button','btn ghost','关闭');
-  box.appendChild(dl);box.appendChild(cl);
-  function paint(){
-    img.src=pages[cur];
-    var multi=pages.length>1;
-    bar.style.display=multi?'grid':'none';
-    prev.disabled=(cur===0);next.disabled=(cur===pages.length-1);
-    prev.style.opacity=(cur===0)?'.4':'1';next.style.opacity=(cur===pages.length-1)?'.4':'1';
-    dl.textContent=multi?('下载第 '+(cur+1)+' 页'):'下载图片';
-  }
-  prev.onclick=function(){if(cur>0){cur--;paint();}};
-  next.onclick=function(){if(cur<pages.length-1){cur++;paint();}};
-  dl.onclick=function(){
-    var a=document.createElement('a');a.href=pages[cur];
-    a.download='出库单_'+viewDate+'_'+(meal==='午'?'营养午餐':'早晚餐')+(pages.length>1?('_p'+(cur+1)):'')+'.png';
-    a.click();
-  };
-  cl.onclick=function(){document.body.removeChild(ov);};
-  ov.appendChild(box);
-  ov.onclick=function(e){if(e.target===ov)document.body.removeChild(ov);};
-  document.body.appendChild(ov);
-  paint();
-}
-function cnMoney(n){
-  var D='零壹贰叁肆伍陆柒捌玖';
-  var U=['','拾','佰','仟','万','拾','佰','仟','亿'];
-  var v=Math.round(n*100), fen=v%10, jiao=Math.floor(v/10)%10, yuan=Math.floor(v/100);
-  if(yuan===0&&jiao===0&&fen===0)return '零元整';
-  var s='';
-  if(yuan>0){
-    var a=String(yuan).split('');
-    for(var i=0;i<a.length;i++){
-      var d=+a[i], pos=a.length-1-i;
-      if(d===0){ if(s&&s.charAt(s.length-1)!=='零')s+='零'; }
-      else s+=D.charAt(d)+U[pos];
-    }
-    s=s.replace(/零+$/,'')+'元';
-  }
-  if(jiao>0)s+=D.charAt(jiao)+'角';
-  else if(fen>0&&yuan>0)s+='零';
-  if(fen>0)s+=D.charAt(fen)+'分';
-  else if(jiao>0)s+='整';
-  else if(yuan>0)s+='整';
   return s;
 }
-var BLOCKS=[['粮食类','粮食'],['肉禽蛋类','肉禽蛋'],['蔬菜瓜果类','蔬菜|瓜果'],['油盐辅料干货','油盐|干鲜']];
-function slipURL(meal,rows,pgStr){
-  var groups=BLOCKS.map(function(b){
-    var cats=b[1].split('|');
-    var list=rows.filter(function(o){return cats.indexOf(catOf(o.n))>=0;});
-    var sum=0;list.forEach(function(o){sum+=o.q*o.p;});
-    return {name:b[0],list:list,sum:sum};
-  });
-  var W=760,pad=28;
-  var headH=150, footH=170;
-  var bodyH=0;
-  groups.forEach(function(g){
-    if(!g.list.length)return;
-    bodyH+=30+30+g.list.length*30+30;
-  });
-  var H=headH+bodyH+footH;
-  var sc=2;
-  var c=document.createElement('canvas');
-  c.width=W*sc;c.height=H*sc;
-  var g=c.getContext('2d');
-  g.scale(sc,sc);
-  g.fillStyle='#fff';g.fillRect(0,0,W,H);
-  g.fillStyle='#12402f';g.fillRect(0,0,W,8);
 
-  var F=' -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
-  g.textAlign='center';g.fillStyle='#111a16';
-  g.font='700 21px'+F;
-  g.fillText(S.school+' 食堂出库单',W/2,52);
-  g.font='400 12.5px'+F;g.fillStyle='#5c6b64';
-  g.fillText(viewDate+'　'+DAYC[wdOf(viewDate)]+'　'+(meal==='午'?'营养午餐':(isWeekend(wdOf(viewDate))?'早、中、晚':'早、晚餐'))+(pgStr?'　'+pgStr:''),W/2,74);
-  g.textAlign='right';g.font='400 11.5px'+F;
-  g.fillText('编号：'+viewDate.replace(/-/g,'')+'-'+(meal==='午'?'W':'Z')+'-01',W-pad,74);
+function render(){
+  if(view==='outbound'){renderOutbound();return;}
+  const dow=dowOf(cur);
+  const wrap=$('wrap');
+  const selIso=iso(cur);
+  let h='';
 
-  var x0=pad,x1=W-pad;
-  var cols=[[x0+10,'left','序号'],[x0+56,'left','品名'],[x0+300,'left','单位'],
-            [x0+398,'right','数量'],[x0+500,'right','单价'],[x1-10,'right','金额']];
-  g.fillStyle='#1a7f63';g.fillRect(x0,88,x1-x0,26);
-  g.fillStyle='#fff';g.font='600 12.5px'+F;
-  cols.forEach(function(cl){g.textAlign=cl[1];g.fillText(cl[2],cl[0],105);});
+  h+=`<div class="card">
+    <div class="cal-head">
+      <span class="ym">${cur.getFullYear()}年${cur.getMonth()+1}月</span>
+      <div class="cal-nav">
+        <button onclick="shiftMonth(-1)">‹</button>
+        <button onclick="shiftMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+    <div class="cal-grid">${calGrid()}</div>
+    <div class="cal-legend">
+      <span><i style="background:var(--blue)"></i>今天</span>
+      <span><i style="background:var(--tx)"></i>选中</span>
+      <span><i style="background:var(--green)"></i>已出库</span>
+    </div>
+  </div>`;
 
-  var y=114,seq=0,grand=0;
-  groups.forEach(function(grp){
-    if(!grp.list.length)return;
-    g.fillStyle='#eef4f1';g.fillRect(x0,y,x1-x0,26);
-    g.fillStyle='#12402f';g.font='700 12.5px'+F;g.textAlign='left';
-    g.fillText(grp.name,x0+10,y+18);
-    y+=26;
-    grp.list.forEach(function(o){
-      seq++;
-      if(seq%2===0){g.fillStyle='#fafcfb';g.fillRect(x0,y,x1-x0,30);}
-      g.fillStyle='#111a16';g.font='400 12.5px'+F;
-      g.textAlign='left';g.fillText(String(seq),x0+10,y+20);
-      g.font='500 12.5px'+F;g.fillText(o.n,x0+56,y+20);
-      g.font='400 12px'+F;g.fillStyle='#5c6b64';g.fillText(unitOf(o.n),x0+300,y+20);
-      g.fillStyle='#111a16';
-      g.textAlign='right';g.fillText(fmt(o.q),x0+398,y+20);
-      g.fillText(fmt(o.p,2),x0+500,y+20);
-      g.font='600 12.5px'+F;g.fillText(yen(o.q*o.p),x1-10,y+20);
-      y+=30;
+  h+=`<div class="card">
+    <div class="sec-h"><span class="t">${DAYS[dow-1]} · 食材汇总</span><span class="s">后跟出库单</span></div>
+    <div class="sum-grid">${sumGrid(dow)}</div>
+  </div>`;
+
+  h+=`<div class="card${window._editing?' edit-mode':''}">
+    <div class="sec-h"><span class="t">${DAYS[dow-1]} · 全天菜谱</span><span class="s">${window._editing?'编辑模式：可加删改':'点菜名/食材可改'}</span></div>
+    ${SLOTS.map(sl=>slotBlock(dow,sl)).join('<div class="divider"></div>')}
+  </div>`;
+
+  h+=`<div class="card lunch">
+    <div class="sec-h"><span class="t" style="color:var(--orange)">营养午餐食材</span><span class="s">单独一份 · 后跟出库单</span></div>
+    <div class="sum-grid">${sumGrid(dow,'午',true)}</div>
+  </div>`;
+
+  wrap.innerHTML=h;
+
+  // 底部进度条
+  const total=countDishes(dow);
+  const filled=countFilled(dow);
+  $('confirmBar').style.display='block';
+  $('confirmBar').innerHTML=`
+    <div class="prog">
+      <div class="prog-bg"><div class="prog-fill" style="width:${total?Math.round(filled/total*100):0}%"></div></div>
+      <div class="prog-txt">已填出库单 ${filled} / ${total}</div>
+    </div>`;
+}
+/* 当天食材总数（去重） */
+function allIngs(dow,slot){
+  const set=new Set();
+  const slots=slot?[slot]:['早','午','晚'];
+  slots.forEach(sl=>S.menu[dow][sl].forEach(x=>x.i.forEach(i=>set.add(i))));
+  if(!slot||slot==='午')set.add('菜油');
+  return [...set];
+}
+function countDishes(dow){return allIngs(dow).length;}
+function countFilled(dow){
+  const di=iso(cur);
+  return allIngs(dow).filter(ing=>S.outDetail[di+'|'+ing]).length;
+}
+function toggleOb(ing,lunch){
+  const di=iso(cur);
+  const k=di+(lunch?'|午':'')+'|'+ing;   // 营养午餐用「日期|午|食材」独立记录，不与汇总联动
+  if(S.outDetail[k])delete S.outDetail[k];
+  else{
+    S.outDetail[k]=true;
+    // 全部填完则标记当天已出库（只统计汇总，不含营养午餐独立那份）
+    if(countFilled(dowOf(cur))===countDishes(dowOf(cur)))S.out[di]=true;
+  }
+  // 若有撤销则同步取消当天整体标记
+  if(S.out[di]&&countFilled(dowOf(cur))<countDishes(dowOf(cur)))delete S.out[di];
+  save();render();
+}
+
+function calGrid(){
+  const y=cur.getFullYear(),m=cur.getMonth();
+  const first=new Date(y,m,1);
+  const startDow=first.getDay()===0?7:first.getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const today=new Date();
+  const tIso=iso(today);
+  const selIso=iso(cur);
+  let cells='';
+  for(let i=1;i<startDow;i++)cells+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const dt=new Date(y,m,d);
+    const di=iso(dt);
+    let cls='cal-day';
+    if(di===tIso)cls+=' today';
+    if(di===selIso)cls+=' sel';
+    if(!S.out[di]&&di!==selIso&&di!==tIso)cls+=' other';
+    const done=S.out[di]?'<span class="done"></span>':'';
+    cells+=`<div class="${cls}" onclick="pick('${di}')">${d}${done}</div>`;
+  }
+  return cells;
+}
+
+function sumGrid(dow,slot,onlyLunch){
+  const group={};
+  CATS.forEach(c=>group[c]=[]);
+  const seen=new Set();
+  const slots=slot?[slot]:['早','午','晚'];
+  slots.forEach(sl=>{
+    S.menu[dow][sl].forEach(x=>{
+      x.i.forEach(ing=>{
+        if(seen.has(ing))return;
+        seen.add(ing);
+        group[catOf(ing)].push(ing);
+      });
     });
-    grand+=grp.sum;
-    g.fillStyle='#fff';g.fillRect(x0,y,x1-x0,26);
-    g.fillStyle='#5c6b64';g.font='400 12px'+F;g.textAlign='right';
-    g.fillText('本类小计　¥'+yen(grp.sum),x1-10,y+18);
-    g.strokeStyle='#e8ecea';g.beginPath();g.moveTo(x0,y+26);g.lineTo(x1,y+26);g.stroke();
-    y+=30;
   });
-
-  g.fillStyle='#e7f3ee';g.fillRect(x0,y,x1-x0,46);
-  g.fillStyle='#12402f';g.font='700 13.5px'+F;g.textAlign='left';
-  g.fillText('合计：¥'+yen(grand),x0+10,y+20);
-  g.font='400 11.5px'+F;
-  g.fillText('大写：'+cnMoney(grand),x0+10,y+38);
-  g.textAlign='right';g.font='600 12px'+F;
-  g.fillText('共 '+seq+' 笔',x1-10,y+20);
-  y+=46;
-
-  y+=34;
-  g.fillStyle='#111a16';g.font='400 12px'+F;g.textAlign='left';
-  g.fillText('领料人：__________',x0,y);
-  g.fillText('保管员：__________',x0+220,y);
-  g.fillText('验收人：__________',x0+440,y);
-  y+=26;
-  g.fillText('食堂负责人：__________',x0,y);
-  g.textAlign='right';
-  g.fillText('制单日期：'+viewDate,W-pad,y);
-  return c.toDataURL('image/png');
-}
-
-
-/* ---------------- 一次性出入库 ---------------- */
-function oneOffCard(){
-  var card=el('div','card');
-  card.appendChild(el('div','h')).appendChild(el('b','','一次性出入库'));
-  card.appendChild(el('div','muted','当天进、当天出（低值易耗、调料、临时采购），进出同额记账。'));
-  card.appendChild(el('label','','品名'));
-  var sel=el('select','');
-  ORDER.forEach(function(n){var o=el('option','',n+'（'+unitOf(n)+'）');o.value=n;sel.appendChild(o);});
-  card.appendChild(sel);
-  var f2=el('div','f2');
-  var c1=el('div');c1.appendChild(el('label','','数量'));var qi=el('input','');qi.type='number';qi.inputMode='decimal';c1.appendChild(qi);
-  var c2=el('div');c2.appendChild(el('label','','单价(元)'));var pi=el('input','');pi.type='number';pi.inputMode='decimal';c2.appendChild(pi);
-  f2.appendChild(c1);f2.appendChild(c2);card.appendChild(f2);
-  card.appendChild(el('label','','用途（可不填）'));
-  var use=el('input','');use.placeholder='例如：食堂杂支、接待';card.appendChild(use);
-  pi.value=fmt(priceOf(sel.value),2);
-  sel.onchange=function(){pi.value=fmt(priceOf(sel.value),2);};
-  var b=el('button','btn main','记一笔（入库＋出库）');b.style.marginTop='12px';
-  b.onclick=function(){
-    var n=sel.value,q=num(qi.value),p=num(pi.value);
-    if(q<=0){toast('数量要大于 0');return;}
-    var d=iso(new Date());
-    S.oneLog.push({d:d,n:n,q:r2(q),p:p,dir:'in',use:use.value.trim()});
-    S.oneLog.push({d:d,n:n,q:r2(q),p:p,dir:'out',use:use.value.trim()});
-    recompute();save();qi.value='';render();
-    toast('已记：'+n+' 进出各 '+fmt(q)+unitOf(n));
+  if(!slot||slot==='午'){
+    if(!seen.has('菜油'))group[catOf('菜油')].push('菜油');
+  }
+  const sortInCat=(c,arr)=>{
+    if(c==='米油面蛋'){
+      return arr.sort((a,b)=>{
+        const ia=ING_ORDER.indexOf(a),ib=ING_ORDER.indexOf(b);
+        if(ia>=0&&ib>=0)return ia-ib;
+        if(ia>=0)return -1;if(ib>=0)return 1;
+        return a.localeCompare(b,'zh');
+      });
+    }
+    return arr;
   };
-  card.appendChild(b);
-  return card;
+  const di=iso(cur);
+  // 一列：按 CATS 顺序往下排
+  return CATS.map(c=>{
+    const arr=sortInCat(c,group[c]);
+    if(!arr.length)return '';
+    const meta=CAT_META[c];
+    const rows=arr.map(ing=>{
+      const s=onlyLunch?[]:slotsOf(dow,ing);
+      const slotsHtml=s.map(sl=>`<span class="s${sl==='中'?' mid':''}">${sl}</span>`).join('');
+      const doneKey=di+(onlyLunch?'|午':'')+'|'+ing;
+      const done=S.outDetail[doneKey];
+      return `<div class="ing-row">
+        <span class="nm">${esc(ing)}</span>
+        ${s.length?`<span class="slots">${slotsHtml}</span>`:''}
+        <button class="obtn${done?' done':''}" onclick="toggleOb('${esc(ing)}',${onlyLunch?'true':'false'})">${done?'✓ 已填':'出库单'}</button>
+      </div>`;
+    }).join('');
+    return `<div class="sum-col"><div class="cat ${meta.c}">${c}</div>${rows}</div>`;
+  }).join('');
 }
 
-/* ---------------- 结算 ---------------- */
-function oneStats(){
-  var inAmt=0,outAmt=0;
-  (S.oneLog||[]).forEach(function(o){
-    if(o.dir==='in')inAmt+=o.q*o.p;
-    else outAmt+=o.q*o.p;
-  });
-  return {inAmt:inAmt,outAmt:outAmt};
+function slotBlock(dow,slot){
+  const dishes=S.menu[dow][slot];
+  const editing=window._editing;
+  const rows=dishes.map((x,xi)=>{
+    const chips=x.i.map(ing=>{
+      const c=catOf(ing);
+      return `<span class="chip ${CAT_META[c].c}" onclick="editIng(${dow},'${slot}',${xi},'${esc(ing)}')">${esc(ing)}</span>`;
+    }).join('');
+    return `<div class="dish-row">
+      <span class="dn" onclick="editDish(${dow},'${slot}',${xi})">${esc(x.n)}</span>
+      <span class="ings">${chips}${editing?`<span class="add" onclick="addIng(${dow},'${slot}',${xi})">+</span>`:''}</span>
+      ${editing?`<span class="del" onclick="delDish(${dow},'${slot}',${xi})">删</span>`:''}
+    </div>`;
+  }).join('');
+  const addBtn=editing?`<div class="add-dish" onclick="addDish(${dow},'${slot}')">＋ 加菜</div>`:'';
+  return `<div class="slot-block">
+    <div class="slot-tag">${SLOT_NAMES[slot]}</div>
+    ${rows}${addBtn}
+  </div>`;
 }
-function dayMap(){
-  var m={};
-  S.outLog.forEach(function(o){
-    if(!m[o.d])m[o.d]={nut:0,eve:0};
-    if(o.t==='午')m[o.d].nut+=o.q*o.p;else m[o.d].eve+=o.q*o.p;
+
+function toggleEditMode(){
+  window._editing=!window._editing;
+  const btn=$('btnEdit');
+  if(btn)btn.classList.toggle('editing',window._editing);
+  render();
+  if(window._editing)msg('编辑模式：可改菜名、改食材、加菜、删菜');
+}
+function delDish(dow,slot,xi){
+  const x=S.menu[dow][slot][xi];
+  if(!confirm('删除「'+x.n+'」这道菜？'))return;
+  S.menu[dow][slot].splice(xi,1);
+  save();render();
+}
+function addDish(dow,slot){
+  openM('加菜 · '+SLOT_NAMES[slot],`
+    <label class="f-label">菜名</label>
+    <input id="eNewDish" placeholder="如：清炒豆芽">
+    <label class="f-label">食材（顿号隔开）</label>
+    <input id="eNewIngs" placeholder="如：豆芽、蒜">
+  `,
+  `<button class="btn-s" onclick="closeM()">取消</button><button class="btn-p" onclick="saveAddDish(${dow},'${slot}')">添加</button>`);
+}
+function saveAddDish(dow,slot){
+  const n=$('eNewDish').value.trim();
+  if(!n){alert('请输入菜名');return;}
+  const ings=$('eNewIngs').value.trim().split(/[、,，\s]+/).filter(x=>x);
+  S.menu[dow][slot].push({n:n,i:ings});
+  save();render();closeM();
+}
+
+function shiftMonth(d){cur=new Date(cur.getFullYear(),cur.getMonth()+d,1);render();}
+function pick(isoStr){
+  const p=isoStr.split('-');
+  cur=new Date(+p[0],+p[1]-1,+p[2]);
+  render();
+}
+
+function editDish(dow,slot,xi){
+  const x=S.menu[dow][slot][xi];
+  openM('改菜名',`
+    <label class="f-label">菜名</label>
+    <input id="eDishName" value="${esc(x.n)}">
+    <div class="hint">只改名字，食材不变。</div>`,
+  `<button class="btn-s" onclick="closeM()">取消</button><button class="btn-p" onclick="saveDishName(${dow},'${slot}',${xi})">保存</button>`);
+}
+function saveDishName(dow,slot,xi){
+  const v=$('eDishName').value.trim();
+  if(!v){alert('菜名不能为空');return;}
+  S.menu[dow][slot][xi].n=v;
+  save();render();closeM();
+}
+function editIng(dow,slot,xi,ing){
+  openM('改食材',`
+    <div class="f-label">菜名：${esc(S.menu[dow][slot][xi].n)}</div>
+    <label class="f-label">食材</label>
+    <input id="eIngName" value="${esc(ing)}">
+    <div class="hint">改名后，汇总里的分类会按新名字自动归。也可在「设置 → 食材分类」里手动指定。</div>`,
+  `<button class="btn-s" onclick="closeM()">取消</button>
+   <button class="btn-p" onclick="saveIngName(${dow},'${slot}',${xi},'${esc(ing)}')">保存</button>
+   <button class="btn-s" style="color:var(--red)" onclick="delIng(${dow},'${slot}',${xi},'${esc(ing)}')">删除</button>`);
+}
+function saveIngName(dow,slot,xi,old){
+  const v=$('eIngName').value.trim();
+  if(!v){alert('食材不能为空');return;}
+  const arr=S.menu[dow][slot][xi].i;
+  const idx=arr.indexOf(old);
+  if(idx>=0)arr[idx]=v;
+  save();render();closeM();
+}
+function delIng(dow,slot,xi,ing){
+  const arr=S.menu[dow][slot][xi].i;
+  const idx=arr.indexOf(ing);
+  if(idx>=0)arr.splice(idx,1);
+  save();render();closeM();
+}
+function addIng(dow,slot,xi){
+  openM('加食材',`
+    <div class="f-label">菜名：${esc(S.menu[dow][slot][xi].n)}</div>
+    <label class="f-label">新食材</label>
+    <input id="eAddIng" placeholder="如：葱、姜">
+    <div class="hint">多个食材用顿号「、」隔开。</div>`,
+  `<button class="btn-s" onclick="closeM()">取消</button><button class="btn-p" onclick="saveAddIng(${dow},'${slot}',${xi})">添加</button>`);
+}
+function saveAddIng(dow,slot,xi){
+  const v=$('eAddIng').value.trim();
+  if(!v){alert('请输入食材');return;}
+  v.split(/[、,，]/).forEach(s=>{s=s.trim();if(s)S.menu[dow][slot][xi].i.push(s);});
+  save();render();closeM();
+}
+
+function openM(title,body,foot){
+  $('mTitle').textContent=title;
+  $('mBody').innerHTML=body;
+  const f=$('mFoot');
+  if(foot){f.style.display='flex';f.innerHTML=foot;}
+  else f.style.display='none';
+  $('mask').classList.add('on');
+}
+function closeM(){$('mask').classList.remove('on');}
+
+function doImport(){
+  $('fileInput').click();
+}
+function onFile(ev){
+  const f=ev.target.files[0];
+  if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      const menu=parseRows(rows);
+      if(!menu){alert('没识别出菜谱，请确认表格是「星期 × 早餐/午餐/晚餐」的布局。');return;}
+      openM('导入确认',`
+        <p style="font-size:14px;line-height:1.7;margin:0">
+          识别到 <strong>7 天</strong>菜谱（周一~周日）。<br><br>
+          导入会<strong>覆盖</strong>当前菜谱数据（你手动改过的菜名/食材会被替换）。<br>
+          已确认出库的记录不受影响。<br><br>确定导入吗？</p>`,
+      `<button class="btn-s" onclick="closeM()">取消</button><button class="btn-p" onclick="commitImport()">确定导入</button>`);
+      window._pendingMenu=menu;
+    }catch(err){
+      alert('解析失败：'+err.message);
+    }
+  };
+  rd.readAsArrayBuffer(f);
+  ev.target.value='';
+}
+function commitImport(){
+  if(!window._pendingMenu)return;
+  S.menu=window._pendingMenu;
+  save();render();closeM();
+  msg('✅ 菜谱已更新');
+}
+function parseRows(rows){
+  // 找表头行：同一行里要同时出现「周一」和「周二」（排除只含"周天"的标题行）
+  let headRow=-1;
+  for(let r=0;r<Math.min(8,rows.length);r++){
+    const joined=(rows[r]||[]).join('');
+    if(/周一/.test(joined)&&/周二/.test(joined)){headRow=r;break;}
+  }
+  if(headRow<0)return null;
+  const head=rows[headRow];
+  const dayCols={};
+  for(let c=0;c<head.length;c++){
+    const v=String(head[c]||'').trim();
+    const m=v.match(/^周([一二三四五六天日])$/);
+    if(m){
+      const map={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'天':7,'日':7};
+      dayCols[map[m[1]]]=c;
+    }
+  }
+  if(Object.keys(dayCols).length<5)return null;
+  const menu={1:{早:[],午:[],晚:[]},2:{早:[],午:[],晚:[]},3:{早:[],午:[],晚:[]},4:{早:[],午:[],晚:[]},5:{早:[],午:[],晚:[]},6:{早:[],午:[],晚:[]},7:{早:[],午:[],晚:[]}};
+  let curSlot=null;
+  for(let r=headRow+1;r<rows.length;r++){
+    const row=rows[r]||[];
+    const a=String(row[0]||'').trim();
+    if(a.includes('早餐'))curSlot='早';
+    else if(a.includes('午餐'))curSlot='午';
+    else if(a.includes('晚餐'))curSlot='晚';
+    if(!curSlot)continue;
+    for(const d in dayCols){
+      const c=dayCols[d];
+      const name=String(row[c]||'').trim();
+      if(!name)continue;
+      if((name==='油'||name==='菜油'||name==='食用油')&&!String(row[c+1]||'').trim())continue;
+      const ings=String(row[c+1]||'').trim().split(/[、,，\s]+/).filter(x=>x&&x!=='菜名'&&x!=='食材');
+      menu[d][curSlot].push({n:name,i:ings.length?ings:[]});
+    }
+  }
+  const total=Object.values(menu).reduce((s,d)=>s+Object.values(d).reduce((a,arr)=>a+arr.length,0),0);
+  return total>=20?menu:null;
+}
+
+function openSet(){
+  const ings=new Set();
+  for(let d=1;d<=7;d++)for(const sl of SLOTS)S.menu[d][sl].forEach(x=>x.i.forEach(i=>ings.add(i)));
+  const list=[...ings].sort((a,b)=>{
+    const ca=catOf(a),cb=catOf(b);
+    if(CAT_META[ca].order!==CAT_META[cb].order)return CAT_META[ca].order-CAT_META[cb].order;
+    return a.localeCompare(b,'zh');
   });
-  (S.oneLog||[]).forEach(function(o){
-    if(!m[o.d])m[o.d]={nut:0,eve:0};
-    if(!m[o.d].one)m[o.d].one=0;
-    if(o.dir==='out')m[o.d].one+=o.q*o.p;
-    else m[o.d].nin=(m[o.d].nin||0)+o.q*o.p;
-  });
+  const rows=list.map(ing=>{
+    return `<div class="cat-item"><span class="nm">${esc(ing)}</span>
+      <select onchange="setCat('${esc(ing)}',this.value)">
+        ${CATS.map(c=>`<option ${c===catOf(ing)?'selected':''}>${c}</option>`).join('')}
+      </select></div>`;
+  }).join('');
+  openM('设置',`
+    <div class="f-label">食材分类（点下拉可改，改完全局生效）</div>
+    <div class="cat-list">${rows}</div>
+    <div class="divider"></div>
+    <div class="row2">
+      <button class="btn-p" onclick="saveFile()">备份数据</button>
+      <button class="btn-s" onclick="$('fileInput2').click()">恢复备份</button>
+    </div>
+    <input type="file" id="fileInput2" accept=".json" style="display:none" onchange="restoreFile(event)">
+    <div class="divider"></div>
+    <div class="f-label">版本与更新记录</div>
+    <div id="verList">${CHANGELOG.map((c,i)=>`<div class="ver-entry">
+      <div class="vh"><b>${c.version}</b><span>${c.date}</span>${i===0?'<span style="font-size:10px;color:var(--green)">当前</span>':''}</div>
+      <ul>${c.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`).join('')}
+    </div>
+    <div class="hint" style="margin-top:14px">版本 ${APP_VERSION} · 更新于 ${APP_BUILD}</div>`,
+  `<button class="btn-s" onclick="closeM()">关闭</button>`);
+}
+function setCat(ing,v){
+  if(catOf(ing)===v){delete S.cat[ing];}
+  else S.cat[ing]=v;
+  save();
+  render();   // 主页面立即生效
+  openSet();
+}
+
+function saveFile(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='菜谱备份_'+iso(new Date())+'.json';
+  a.click();
+  msg('✅ 已导出备份');
+}
+function restoreFile(ev){
+  const f=ev.target.files[0];
+  if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.menu){alert('备份文件格式不对');return;}
+      S=d;
+      if(!S.cat)S.cat={};if(!S.out)S.out={};
+      save();render();closeM();
+      msg('✅ 已恢复');
+    }catch(err){alert('恢复失败：'+err.message);}
+  };
+  rd.readAsText(f);
+  ev.target.value='';
+}
+
+let _msgT=null;
+function msg(t){
+  let el=document.getElementById('toast');
+  if(!el){el=document.createElement('div');el.id='toast';
+    document.body.appendChild(el);}
+  el.textContent=t;el.style.opacity=1;
+  clearTimeout(_msgT);
+  _msgT=setTimeout(()=>{el.style.opacity=0;},2200);
+}
+
+const OUT_CATS=['粮食','油盐','肉禽蛋','蔬菜','干鲜','辅料','低值易耗'];
+function switchView(v){
+  view=v;
+  $('tabMain').classList.toggle('on',v==='main');
+  $('tabOut').classList.toggle('on',v==='outbound');
+  document.getElementById('btnImport').style.display=v==='main'?'':'none';
+  document.getElementById('btnEdit').style.display=v==='main'?'':'none';
+  if(v==='outbound')$('confirmBar').style.display='none';
+  render();
+}
+function wdName(d){
+  const w=new Date(d).getDay();
+  return '周'+['日','一','二','三','四','五','六'][w];
+}
+// ============ 出库：基于菜谱每日食材自动列出 ============
+function outKey(date,meal,name){return date+'|'+meal+'|'+name;}
+function outMap(){
+  const m={};
+  (S.outbound||[]).forEach(r=>{m[outKey(r.date,r.meal,r.name)]=r;});
   return m;
 }
-var mMode='day', mOpen=null;
-
-/* ---------------- 单据封面 ---------------- */
-var coverG='粮食类', coverK='非';
-var GMAP={'粮食':'粮食类','油盐':'油辅干货类','干鲜':'油辅干货类','肉禽蛋':'肉禽蛋类',
-          '蔬菜':'蔬菜瓜果类','瓜果':'蔬菜瓜果类'};
-function rollName(n){
-  var c=catOf(n);
-  if(['瘦肉','三线肉','排骨','猪蹄'].indexOf(n)>=0)return '猪肉';
-  if(n==='鸡')return '鲜鸡';
-  if(n==='鸭')return '鲜鸭';
-  if(n==='豆腐'||n==='豆干')return '蔬菜';
-  if(c==='瓜果')return '水果';
-  if(c==='蔬菜')return '蔬菜';
-  if(c==='干鲜')return '干鲜';
-  if(c==='油盐')return n==='菜油'?'菜油':(n==='盐'?'盐':'干鲜');
-  return n;
+function outUnit(name){
+  const U={'鸡蛋':'个','鸭蛋':'个','皮蛋':'个','鹌鹑蛋':'个','大米':'斤','面粉':'斤','面条':'斤','菜油':'斤','油':'斤'};
+  return U[name]||'斤';
 }
-function coverData(){
-  var agg={},total=0;
-  S.outLog.forEach(function(o){
-    var g=lgGroup(o.n);
-    if(g!=='蔬菜'&&g!=='水果')g=(g==='肉类'?'肉禽蛋类':(g==='粮食'?'粮食类':'油辅干货类'));
-    else g='蔬菜瓜果类';
-    var isNut=(o.t==='午');
-    if((coverK==='营')!==isNut)return;
-    if(g!==coverG)return;
-    var k=rollName(o.n);
-    agg[k]=(agg[k]||0)+o.q*o.p;
-    total+=o.q*o.p;
-  });
-  var rows=Object.keys(agg).map(function(k){return {n:k,a:agg[k]};});
-  rows.sort(function(x,y){return y.a-x.a;});
-  return {rows:rows,total:total};
-}
-function coverTitle(){
-  var mo=(S.month||'2026-11').split('-');
-  var y=+mo[0],m=+mo[1];
-  var season=(m>=9||m<=1)?'秋':'春';
-  var school=String(S.school||'');
-  var short=school.indexOf('第三中学')>=0?'丰三中':school;
-  return y+'年'+season+m+'月'+short+'食堂'+coverG+'出库（'+(coverK==='营'?'营养':'非营养')+'）';
-}
-
-var lgCat='肉类', lgMeal='午餐';
-var LCATS=['粮食','肉类','蔬菜','水果','干鲜','油盐'];
-function lgGroup(n){
-  var c=catOf(n);
-  if(c==='粮食')return '粮食';
-  if(c==='肉禽蛋')return '肉类';
-  if(c==='蔬菜')return '蔬菜';
-  if(c==='瓜果')return '水果';
-  if(c==='干鲜')return '干鲜';
-  if(c==='油盐')return '油盐';
-  return '其他';
-}
-function ledgerRows(){
-  var rows=[];
-  S.outLog.forEach(function(o){
-    if(lgGroup(o.n)!==lgCat)return;
-    var isNut=(o.t==='午');
-    if((lgMeal==='午餐')!==isNut)return;
-    rows.push(o);
-  });
-  rows.sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0);});
-  return rows;
-}
-function ledgerSheet(){
-  var c=el('div','card');
-  var seg=el('div','seg segwrap');
-  LCATS.forEach(function(g){
-    var b=el('button',g===lgCat?'on':'',g);
-    b.onclick=function(){lgCat=g;render();};
-    seg.appendChild(b);
-  });
-  c.appendChild(seg);
-  var seg2=el('div','seg');
-  [['午餐','营养午餐'],['早/晚','早、晚餐']].forEach(function(k){
-    var b=el('button',k[0]===lgMeal?'on':'',k[1]);
-    b.onclick=function(){lgMeal=k[0];render();};
-    seg2.appendChild(b);
-  });
-  c.appendChild(seg2);
-
-  var rows=ledgerRows(), total=0;
-  var sum=el('div','lgsum');
-  var tb=el('table');
-  tb.style.fontSize='12px';
-  var hr=el('tr');
-  ['日期','名称','单位','数量','单价','金额'].forEach(function(h){hr.appendChild(el('th','',h));});
-  tb.appendChild(hr);
-  rows.forEach(function(o){
-    total+=o.q*o.p;
-    var tr=el('tr');
-    tr.appendChild(el('td','',o.d.slice(5)));
-    tr.appendChild(el('td','',o.n));
-    tr.appendChild(el('td','',unitOf(o.n)));
-    [fmt(o.q),fmt(o.p,2),yen(o.q*o.p)].forEach(function(v){
-      var td=el('td','',v);td.style.textAlign='right';tr.appendChild(td);
+function baseIngList(meal){
+  const date=$('oDate').value||iso(new Date());
+  const dow=dowOf(new Date(date));
+  const slots = meal==='午' ? ['午'] : ['早','晚'];
+  const seen=new Set(); const list=[];
+  slots.forEach(sl=>{
+    (S.menu[dow][sl]||[]).forEach(d=>{
+      (d.i||[]).forEach(ing=>{ if(!seen.has(ing)){seen.add(ing);list.push(ing);} });
     });
-    tb.appendChild(tr);
   });
-  if(!rows.length){
-    var tr0=el('tr');var td0=el('td','','这个类别本月没有出库');td0.colSpan=6;td0.style.textAlign='center';tr0.appendChild(td0);tb.appendChild(tr0);
+  return list;
+}
+function onOutDateChange(){ renderOutbound(); }
+
+function renderOutbound(){
+  if(!S.outbound)S.outbound=[];
+  if(!S.outDel)S.outDel={};
+  const wrap=$('wrap');
+  const today=iso(new Date());
+  const date=$('oDate').value||today;
+  const meal=$('oMeal').value||'午';
+  let h='';
+  h+=`<div class="card out-form">
+    <div class="sec-h"><span class="t">出库录入（按菜谱）</span><span class="s">选日期自动带出食材</span></div>
+    <div class="f-row"><label>日期</label><input type="date" id="oDate" value="${date}" onchange="onOutDateChange()"></div>
+    <div class="f-row"><label>餐次</label><select id="oMeal" onchange="onOutDateChange()">
+      <option value="午"${meal==='午'?' selected':''}>午（营养午餐）</option>
+      <option value="早/晚"${meal==='早/晚'?' selected':''}>早/晚（早+晚合并）</option>
+    </select></div>
+    <div class="hint">食材按当天菜谱自动列出，填「数量 / 单价」即自动保存；可加菜、删菜。</div>
+    <div class="o-edit">`;
+  const base=baseIngList(meal);
+  const map=outMap();
+  let anyBase=false;
+  base.forEach(name=>{
+    const key=outKey(date,meal,name);
+    if(S.outDel[key])return;
+    anyBase=true;
+    const rec=map[key];
+    const qty=rec&&rec.qty?rec.qty:'';
+    const price=rec&&rec.price?rec.price:'';
+    const unit=rec&&rec.unit?rec.unit:outUnit(name);
+    h+=`<div class="o-erow">
+      <div class="o-etop"><span class="o-ename">${esc(name)}</span><span class="o-ecat">${catOf(name)}</span></div>
+      <div class="o-ebot">
+        <input class="o-eqty" type="number" step="0.01" inputmode="decimal" placeholder="数量" value="${qty}" oninput="setOutField('${key}','qty',this.value)">
+        <input class="o-eunit" value="${esc(unit)}" oninput="setOutField('${key}','unit',this.value)">
+        <input class="o-eprice" type="number" step="0.01" inputmode="decimal" placeholder="单价" value="${price}" oninput="setOutField('${key}','price',this.value)">
+        <button class="o-edel" onclick="delOutIngredient('${key}')">删</button>
+      </div>
+    </div>`;
+  });
+  if(!anyBase)h+=`<div class="hint">当天菜谱没有食材，可点下面「＋ 加菜」手动添加。</div>`;
+  const baseSet=new Set(base);
+  const extras=(S.outbound||[]).filter(r=>r.date===date&&r.meal===meal&&!baseSet.has(r.name)&&!S.outDel[outKey(r.date,r.meal,r.name)]);
+  extras.forEach(r=>{
+    const key=outKey(r.date,r.meal,r.name);
+    const unit=r.unit||outUnit(r.name);
+    h+=`<div class="o-erow extra">
+      <div class="o-etop"><span class="o-ename">${esc(r.name)}</span><span class="o-ecat">${catOf(r.name)}</span><span class="o-etag">加</span></div>
+      <div class="o-ebot">
+        <input class="o-eqty" type="number" step="0.01" inputmode="decimal" placeholder="数量" value="${r.qty||''}" oninput="setOutField('${key}','qty',this.value)">
+        <input class="o-eunit" value="${esc(unit)}" oninput="setOutField('${key}','unit',this.value)">
+        <input class="o-eprice" type="number" step="0.01" inputmode="decimal" placeholder="单价" value="${r.price||''}" oninput="setOutField('${key}','price',this.value)">
+        <button class="o-edel" onclick="delOutIngredient('${key}')">删</button>
+      </div>
+    </div>`;
+  });
+  h+=`</div>
+    <button class="btn-p" style="width:100%;padding:11px;margin-top:8px" onclick="addOutIngredient()">＋ 加一道菜 / 食材</button>`;
+  const hidden=base.filter(n=>S.outDel[outKey(date,meal,n)]);
+  if(hidden.length){
+    h+=`<div class="o-hidden">已隐藏：${hidden.map(n=>`<button class="o-restore" onclick="restoreOutIngredient('${date}','${meal}','${esc(n)}')">${esc(n)}↺</button>`).join(' ')}</div>`;
+  }
+  h+=`</div>`;
+  // 历史记录
+  const recs=S.outbound.slice().sort((a,b)=>(b.date+a.id).localeCompare(a.date+a.id));
+  const byDate={};
+  recs.forEach(r=>{(byDate[r.date]=byDate[r.date]||[]).push(r);});
+  const dates=Object.keys(byDate).sort().reverse();
+  if(dates.length===0){
+    h+=`<div class="card"><div class="hint">还没有出库记录。选日期、填数量单价即可自动保存，月底一键导出 Excel 或午餐图片。</div></div>`;
   }else{
-    var tr2=el('tr');
-    var t1=el('td','','合计');t1.colSpan=5;t1.style.fontWeight='600';tr2.appendChild(t1);
-    var t2=el('td','¥'+yen(total));t2.style.textAlign='right';t2.style.fontWeight='700';tr2.appendChild(t2);
-    tb.appendChild(tr2);
-  }
-  c.appendChild(tb);
-  sum.textContent='合计　'+rows.length+' 笔　¥'+yen(total);
-  c.appendChild(sum);
-
-  var btn=el('button','btn ghost','复制这张表（可粘到 Excel）');
-  btn.style.marginTop='10px';
-  btn.onclick=function(){
-    var L=['日期	名称	单位	数量	单价	金额'];
-    rows.forEach(function(o){L.push([o.d.slice(5),o.n,unitOf(o.n),fmt(o.q),fmt(o.p,2),yen(o.q*o.p)].join('	'));});
-    L.push(['合计','','','','','¥'+yen(total)].join('	'));
-    var txt=L.join(String.fromCharCode(10));
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(function(){toast('已复制');},function(){toast('复制失败');});
-    else toast('请长按复制');
-  };
-  c.appendChild(btn);
-  return c;
-}
-
-function coverCard(){
-  var c=el('div','card');
-  c.appendChild(el('div','h')).appendChild(el('b','','单据封面'));
-  var seg=el('div','seg segwrap');
-  ['粮食类','肉禽蛋类','蔬菜瓜果类','油辅干货类'].forEach(function(g){
-    var b=el('button',g===coverG?'on':'',g);
-    b.onclick=function(){coverG=g;render();};
-    seg.appendChild(b);
-  });
-  c.appendChild(seg);
-  var seg2=el('div','seg');
-  [['非','非营养'],['营','营养']].forEach(function(k){
-    var b=el('button',k[0]===coverK?'on':'',k[1]);
-    b.onclick=function(){coverK=k[0];render();};
-    seg2.appendChild(b);
-  });
-  c.appendChild(seg2);
-
-  var d=coverData();
-  var mo=(S.month||'2026-11').split('-');
-  var end=new Date(+mo[0],+mo[1],0);
-  var endTxt=end.getFullYear()+'年'+(end.getMonth()+1)+'月'+end.getDate()+'日';
-
-  var sheet=el('div','cover');
-  sheet.appendChild(el('div','cvtitle','单 据 封 面'));
-  function field(label,val,big){
-    var r=el('div','cvrow');
-    var l=el('div','cvlab',label);
-    var v=el('div','cvval'+(big?' big':''));
-    v.textContent=val;
-    r.appendChild(l);r.appendChild(v);
-    sheet.appendChild(r);
-    return v;
-  }
-  field('项目名称',coverTitle());
-  field('单据张数','　　　　　　　');
-  field('金额','¥'+yen(d.total),true);
-  var note=el('div','cvrow');
-  var l2=el('div','cvlab','备　注');
-  var v2=el('div','cvval');
-  if(!d.rows.length)v2.textContent='本月无出库';
-  d.rows.forEach(function(x){
-    var line=el('div','');
-    line.style.fontSize='12.5px';
-    line.textContent=x.n+'：'+yen(x.a);
-    v2.appendChild(line);
-  });
-  note.appendChild(l2);note.appendChild(v2);
-  sheet.appendChild(note);
-  var sign=el('div','cvsign');
-  sign.appendChild(el('span','','审核人：______'));
-  sign.appendChild(el('span','','经手人：______'));
-  sign.appendChild(el('span','','日期：'+endTxt));
-  sheet.appendChild(sign);
-  c.appendChild(sheet);
-
-  var btn=el('button','btn ghost','复制这张封面的内容');
-  btn.style.marginTop='10px';
-  btn.onclick=function(){
-    var txt='项目名称：'+coverTitle()+String.fromCharCode(10)+
-            '金额：¥'+yen(d.total)+String.fromCharCode(10)+
-            '备注：'+d.rows.map(function(x){return x.n+'：'+yen(x.a);}).join('　')+String.fromCharCode(10)+
-            '日期：'+endTxt;
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(txt).then(function(){toast('已复制');},function(){toast('复制失败');});
-    }else toast('请长按复制');
-  };
-  c.appendChild(btn);
-  return c;
-}
-
-function renderMonth(){
-  var f=document.createDocumentFragment();
-  var t=totals(),os=oneStats();
-  var seg=el('div','seg');
-  [['day','每日结算'],['one','一次性结算'],['ledger','出库单']].forEach(function(m){
-    var b=el('button',mMode===m[0]?'on':'',m[1]);
-    b.onclick=function(){mMode=m[0];mOpen=null;render();};
-    seg.appendChild(b);
-  });
-  var top=el('div','card');top.appendChild(seg);
-  f.appendChild(coverCard());
-  top.appendChild(el('div','muted',mMode==='day'?'每天的出库金额，点日期看当天吃了什么菜。':(mMode==='one'?'一次性出入库单独算，不和日常出库混在一起。':'照着这张表抄《采购出库单》，一笔一行。')));
-  f.appendChild(top);
-
-  if(mMode==='day'){
-    var k=el('div','kpi');
-    [['本月入库','¥'+yen(t.inAmt)],['本月出库','¥'+yen(t.outAmt)],['营养午餐','¥'+yen(t.nut)],['早、晚餐','¥'+yen(t.eve)]].forEach(function(x){
-      var d=el('div');d.appendChild(el('small','',x[0]));d.appendChild(el('b','',x[1]));k.appendChild(d);
-    });
-    f.appendChild(k);
-    var dm=dayMap(),dates=Object.keys(dm).sort().reverse();
-    var c1=el('div','card');
-    c1.appendChild(el('div','h')).appendChild(el('b','','每日结算'));
-    var tb=el('table');
-    var hr=el('tr');['日期','午餐','早晚餐','合计'].forEach(function(hh){hr.appendChild(el('th','',hh));});
-    tb.appendChild(hr);
-    var T=[0,0];
-    dates.forEach(function(d){
-      var x=dm[d];T[0]+=x.nut;T[1]+=x.eve;
-      var tr=el('tr');
-      tr.style.cursor='pointer';
-      var td0=el('td','',(mOpen===d?'▾ ':'▸ ')+d.slice(5));
-      td0.style.color='var(--brand)';
-      tr.appendChild(td0);
-      [yen(x.nut),yen(x.eve),yen(x.nut+x.eve)].forEach(function(v){var td=el('td','',v);td.style.textAlign='right';tr.appendChild(td);});
-      tr.onclick=function(){mOpen=(mOpen===d?null:d);render();};
-      tb.appendChild(tr);
-      if(mOpen===d){
-        var tr2=el('tr');
-        var td=el('td','');td.colSpan=4;
-        td.style.background='#f7faf9';td.style.textAlign='left';td.style.padding='8px';
-        var ds=dishesFor(d);
-        if(!ds.length)td.textContent='这天菜谱里没有菜';
-        ds.forEach(function(g){
-          var line=el('div','');
-          line.style.fontSize='12px';line.style.marginBottom='3px';
-          line.appendChild(el('b','',g.label+'：'));
-          line.appendChild(document.createTextNode(g.dishes.join('、')));
-          td.appendChild(line);
-        });
-        ['午','早/晚'].forEach(function(tk){
-          var v=(S.note||{})[d+'|'+tk];
-          if(!v)return;
-          var ln=el('div','');
-          ln.style.fontSize='12px';ln.style.color='var(--amber)';ln.style.marginTop='3px';
-          ln.textContent=(tk==='午'?'【午餐备注】':'【早晚餐备注】')+v;
-          td.appendChild(ln);
-        });
-        tr2.appendChild(td);tb.appendChild(tr2);
-      }
-    });
-    var tr3=el('tr');
-    ['合计',yen(T[0]),yen(T[1]),yen(T[0]+T[1])].forEach(function(v){var td=el('td','',v);td.style.fontWeight='600';tr3.appendChild(td);});
-    tb.appendChild(tr3);
-    c1.appendChild(tb);
-    f.appendChild(c1);
-
-    var c2=el('div','card');
-    c2.appendChild(el('div','h')).appendChild(el('b','','按类别'));
-    var tb2=el('table');
-    var hr2=el('tr');['类别','入库','营养','早晚餐','出库合计'].forEach(function(hh){hr2.appendChild(el('th','',hh));});
-    tb2.appendChild(hr2);
-    CATS.forEach(function(c){
-      var ia=0,nu=0,ev=0,has=false;
-      ORDER.forEach(function(n){
-        if(catOf(n)!==c)return;
-        S.inLog.forEach(function(o){if(o.n===n){ia+=o.q*o.p;has=true;}});
-        S.outLog.forEach(function(o){if(o.n===n){has=true;if(o.t==='午')nu+=o.q*o.p;else ev+=o.q*o.p;}});
+    dates.forEach(d=>{
+      const list=byDate[d];
+      const sum=list.reduce((s,r)=>s+(r.qty*r.price||0),0);
+      h+=`<div class="card out-list">
+        <div class="sec-h"><span class="t">${d} ${wdName(d)}</span><span class="s">${list.length}条 · 合计 ${sum.toFixed(2)}元</span></div>`;
+      list.forEach(r=>{
+        h+=`<div class="o-item">
+          <div class="o-main">
+            <div class="o-name">${esc(r.name)} <span style="color:var(--tx3);font-weight:400">${r.meal}·${esc(r.cat||catOf(r.name))}</span></div>
+            <div class="o-sub">${r.qty}${esc(r.unit||'')} × ${r.price}元${r.user?(' · '+esc(r.user)):''}${r.note?(' · '+esc(r.note)):''}</div>
+          </div>
+          <div class="o-amt">${((r.qty*r.price)||0).toFixed(2)}</div>
+          <button class="o-del" onclick="delOutbound('${r.id}')">删</button>
+        </div>`;
       });
-      if(!has)return;
-      var tr=el('tr');
-      [c,yen(ia),yen(nu),yen(ev),yen(nu+ev)].forEach(function(x){tr.appendChild(el('td','',x));});
-      tb2.appendChild(tr);
+      h+=`</div>`;
     });
-    var tr4=el('tr');
-    ['合计',yen(t.inAmt),yen(t.nut),yen(t.eve),yen(t.outAmt)].forEach(function(x){var td=el('td','',x);td.style.fontWeight='600';tr4.appendChild(td);});
-    tb2.appendChild(tr4);
-    c2.appendChild(tb2);
-    f.appendChild(c2);
-  }else if(mMode==='ledger'){
-    f.appendChild(ledgerSheet());
-  }else{
-    var k2=el('div','kpi');
-    [['一次性入库','¥'+yen(os.inAmt)],['一次性出库','¥'+yen(os.outAmt)],['差额','¥'+yen(os.inAmt-os.outAmt)],['笔数',String((S.oneLog||[]).length)]].forEach(function(x){
-      var d=el('div');d.appendChild(el('small','',x[0]));d.appendChild(el('b','',x[1]));k2.appendChild(d);
-    });
-    f.appendChild(k2);
-    var outs=(S.oneLog||[]).filter(function(o){return o.dir!=='in';});
-    var c3=el('div','card');
-    c3.appendChild(el('div','h')).appendChild(el('b','','一次性结算（按类别）'));
-    if(!outs.length)c3.appendChild(el('div','empty','还没有一次性出库'));
-    var byCat={};
-    outs.forEach(function(o){var c=catOf(o.n);(byCat[c]=byCat[c]||[]).push(o);});
-    var grand=0;
-    CATS.forEach(function(c){
-      var arr=byCat[c];if(!arr)return;
-      var sub=0;arr.forEach(function(o){sub+=o.q*o.p;});grand+=sub;
-      c3.appendChild(el('div','sect',c+'　¥'+yen(sub)+'　('+arr.length+' 笔)'));
-      arr.forEach(function(o){
-        var row=el('div','row');
-        var nm=el('div','nm');
-        nm.appendChild(el('b','',o.n));
-        nm.appendChild(el('small','',o.d.slice(5)+' · '+fmt(o.q)+unitOf(o.n)+' × ¥'+fmt(o.p,2)+(o.use?' · '+o.use:'')));
-        var v=el('div','');v.style.textAlign='right';v.appendChild(el('b','','¥'+yen(o.q*o.p)));
-        row.appendChild(nm);row.appendChild(v);c3.appendChild(row);
-      });
-    });
-    if(outs.length)c3.appendChild(el('div','muted','合计 ¥'+yen(grand)));
-    f.appendChild(c3);
   }
+  h+=`<div class="out-bar">
+    <button class="b-excel" onclick="exportExcel()">导出 Excel</button>
+    <button class="b-img" onclick="exportLunchImage()">导出午餐图片</button>
+  </div>`;
+  wrap.innerHTML=h;
+}
 
-  var c4=el('div','card');
-  c4.appendChild(el('div','h')).appendChild(el('b','','导出'));
-  var b1=el('button','btn main','导出结算表（Excel，6 张表）');
-  b1.onclick=function(){downloadXlsx();};
-  c4.appendChild(b1);
-  var g=el('div','f2');g.style.marginTop='8px';
-  if(isWeekend(wdOf(viewDate))){
-    var bx=el('button','btn ghost','今日 早中晚单');
-    bx.onclick=function(){showSlip('早/晚');};g.appendChild(bx);
-  }else{
-    var b2=el('button','btn ghost','营养午餐单'),b3=el('button','btn ghost','早、晚餐单');
-    b2.onclick=function(){showSlip('午');};b3.onclick=function(){showSlip('早/晚');};
-    g.appendChild(b2);g.appendChild(b3);
+let _oid=0;
+function setOutField(key,field,val){
+  if(!S.outbound)S.outbound=[];
+  let rec=S.outbound.find(r=>outKey(r.date,r.meal,r.name)===key);
+  if(!rec){
+    const [date,meal,name]=key.split('|');
+    rec={id:Date.now()+'_'+(_oid++),date,meal,name,unit:outUnit(name),cat:catOf(name),qty:0,price:0,user:'',note:''};
+    S.outbound.push(rec);
   }
-  c4.appendChild(g);
-  c4.appendChild(el('div','muted','导出的 6 张表和你那张 v1 结算表同名同列，可直接粘过去。')).style.marginTop='10px';
-  f.appendChild(c4);
-
-  var c6=el('div','card');
-  c6.appendChild(el('div','h')).appendChild(el('b','','从电脑导入'));
-  c6.appendChild(el('div','muted','选你电脑上那张《食堂出入库结算表 v1.xlsx》，按电脑上的数据为准覆盖手机里的出入库。'));
-  var fIn=el('input','');fIn.type='file';fIn.accept='.xlsx';fIn.style.marginTop='10px';
-  fIn.onchange=function(){
-    var file=fIn.files&&fIn.files[0];
-    if(!file)return;
-    readXlsx(file).then(function(wb){
-      var msg=[];
-      var nOut=(wb['每日出库']||[]).length-3;
-      var nIn=(wb['本月入库']||[]).length-3;
-      var nOp=(wb['上月结余']||[]).length-3;
-      var nOne=(wb['一次性出库']||[]).length-3;
-      msg.push('每日出库 '+Math.max(0,nOut)+' 行');
-      msg.push('本月入库 '+Math.max(0,nIn)+' 行');
-      msg.push('上月结余 '+Math.max(0,nOp)+' 行');
-      msg.push('一次性出库 '+Math.max(0,nOne)+' 行');
-      if(!confirm('识别到：'+msg.join('，')+'。要用这些数据覆盖手机上现有的出入库吗？'))return;
-      applyImport(wb);
-    }).catch(function(e){alert('读不了这个文件：'+e.message);});
-  };
-  c6.appendChild(fIn);
-  f.appendChild(c6);
-
-  var c5=el('div','card');
-  var b4=el('button','btn warn','清空记录，恢复 11 月数据');
-  b4.onclick=function(){
-    if(!confirm('会清掉手机上录的出入库和改过的菜谱，恢复成 11 月初的样子。确定？'))return;
-    S=seed();rebuildItems();save();render();toast('已重置');
-  };
-  c5.appendChild(b4);
-  f.appendChild(c5);
-  return f;
+  if(field==='qty')rec.qty=parseFloat(val)||0;
+  else if(field==='price')rec.price=parseFloat(val)||0;
+  else if(field==='unit')rec.unit=val.trim()||rec.unit;
+  save();
+}
+function addOutIngredient(){
+  const date=$('oDate').value||iso(new Date());
+  const meal=$('oMeal').value;
+  const nm=prompt('加一道菜 / 食材的名称：','');
+  if(!nm)return;
+  const name=nm.trim();
+  if(!name)return;
+  const key=outKey(date,meal,name);
+  if(S.outbound.some(r=>outKey(r.date,r.meal,r.name)===key)){msg('该食材已存在');return;}
+  if(!S.outDel)S.outDel={};delete S.outDel[key];
+  S.outbound.push({id:Date.now()+'_'+(_oid++),date,meal,name,unit:outUnit(name),cat:catOf(name),qty:0,price:0,user:'',note:''});
+  save();renderOutbound();msg('✅ 已加：'+name);
+}
+function delOutIngredient(key){
+  S.outbound=S.outbound.filter(r=>outKey(r.date,r.meal,r.name)!==key);
+  if(!S.outDel)S.outDel={};
+  S.outDel[key]=true;
+  save();renderOutbound();
+}
+function restoreOutIngredient(date,meal,name){
+  const key=outKey(date,meal,name);
+  if(S.outDel)delete S.outDel[key];
+  save();renderOutbound();msg('已恢复：'+name);
+}
+function delOutbound(id){
+  S.outbound=S.outbound.filter(r=>r.id!==id);
+  save();renderOutbound();
+}
+function exportExcel(){
+  if(!S.outbound||S.outbound.length===0){msg('还没有出库记录');return;}
+  const aoa=[['日期','星期','餐次','分类','品名','单位','数量','单价(元)','金额(元)','领用人','备注']];
+  S.outbound.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>{
+    aoa.push([r.date,wdName(r.date),r.meal,r.cat,r.name,r.unit,r.qty,r.price,+(r.qty*r.price).toFixed(2),r.user,r.note]);
+  });
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:11},{wch:6},{wch:8},{wch:8},{wch:12},{wch:6},{wch:8},{wch:9},{wch:10},{wch:8},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'每日出库');
+  XLSX.writeFile(wb,'食堂出库_'+iso(new Date())+'.xlsx');
+  msg('✅ 已导出 Excel');
+}
+function exportLunchImage(){
+  const date=$('oDate').value||iso(new Date());
+  const list=(S.outbound||[]).filter(r=>r.date===date&&r.meal==='午');
+  if(list.length===0){msg('当天午餐没有出库记录');return;}
+  const c=document.createElement('canvas');
+  const W=720,pad=24,rowH=46,headH=70;
+  const H=headH+40+list.length*rowH+40;
+  c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  x.fillStyle='#ffffff';x.fillRect(0,0,W,H);
+  x.fillStyle='#d85a30';x.font='bold 26px sans-serif';x.textBaseline='top';
+  x.fillText('营养午餐出库清单',pad,20);
+  x.fillStyle='#5f6672';x.font='15px sans-serif';
+  x.fillText(date+' '+wdName(date),pad,52);
+  let y=headH;
+  x.fillStyle='#f0f2f5';x.fillRect(pad,y,W-2*pad,34);
+  x.fillStyle='#1a1c1f';x.font='bold 15px sans-serif';
+  x.fillText('品名',pad+10,y+9);
+  x.fillText('数量',pad+230,y+9);
+  x.fillText('单价',pad+340,y+9);
+  x.fillText('金额',pad+450,y+9);
+  y+=34;
+  list.forEach(r=>{
+    x.fillStyle='#1a1c1f';x.font='16px sans-serif';
+    x.fillText(r.name,pad+10,y+13);
+    x.fillText(r.qty+r.unit,pad+230,y+13);
+    x.fillText(r.price+'元',pad+340,y+13);
+    x.fillText((r.qty*r.price).toFixed(2)+'元',pad+450,y+13);
+    x.strokeStyle='#e5e8ec';x.beginPath();x.moveTo(pad,y+rowH-1);x.lineTo(W-pad,y+rowH-1);x.stroke();
+    y+=rowH;
+  });
+  const total=list.reduce((s,r)=>s+r.qty*r.price,0);
+  x.fillStyle='#c94f3d';x.font='bold 17px sans-serif';
+  x.fillText('合计：'+total.toFixed(2)+'元',pad+10,y+14);
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/png');a.download='午餐出库_'+date+'.png';a.click();
+  msg('✅ 午餐图片已导出');
 }
 
-/* ---------------- 食材档案 ---------------- */
-function renderArchive(){
-  var f=document.createDocumentFragment();
-  var card=el('div','card');
-  card.appendChild(el('div','h')).appendChild(el('b','','食材档案'));
-  card.appendChild(el('div','muted','分类、单位、单价都在这里改，改完全表跟着变（菜谱、出库、结算都用这份）。'));
-  var inp=el('input','');inp.placeholder='搜品名…';inp.style.margin='10px 0 6px';
-  card.appendChild(inp);
-  var acat='all';
-  var az='';
-  var letters=[];
-  ORDER.forEach(function(n){var L=pyOf(n);if(letters.indexOf(L)<0)letters.push(L);});
-  letters.sort();
-  var bar=el('div','azbar');
-  var azBtns={};
-  ['全'].concat(letters).forEach(function(L){
-    var b=el('button',L==='全'?'on':'',L);
-    b.onclick=function(){az=(L==='全'?'':L);Object.keys(azBtns).forEach(function(k){azBtns[k].className=(k===L)?'on':'';});draw();};
-    azBtns[L]=b;bar.appendChild(b);
-  });
-  card.appendChild(bar);
-  var seg=el('div','seg segwrap');
-  [['all','全部']].concat(CATS.map(function(c){return [c,c];})).forEach(function(m){
-    var b=el('button',m[0]==='all'?'on':'',m[1]);
-    b.onclick=function(){acat=m[0];Array.prototype.forEach.call(seg.children,function(x){x.className='';});b.className='on';draw();};
-    seg.appendChild(b);
-  });
-  card.appendChild(seg);
-  var list=el('div');card.appendChild(list);
-  function draw(){
-    clr(list);
-    var kw=inp.value.trim();
-    CATS.forEach(function(c){
-      if(acat!=='all'&&acat!==c)return;
-      var names=ORDER.filter(function(n){return catOf(n)===c&&(!kw||n.indexOf(kw)>=0)&&(!az||pyOf(n)===az);});
-      if(!names.length)return;
-      list.appendChild(el('div','sect',c));
-      names.forEach(function(n){
-        var it=ITEM[n];
-        var row=el('div','row');
-        var nm=el('div','nm');
-        nm.appendChild(el('b','',n));
-        var st=stockOf(n);
-        nm.appendChild(el('small','','结存 '+fmt(st)+' '+unitOf(n)+' · 单价 ¥'+fmt(priceOf(n),2)));
-        var ops=el('div','ops');
-        var cs=el('select','mini-sel');
-        CATS.forEach(function(cc){var o=el('option','',cc);o.value=cc;if(cc===it.c)o.selected=true;cs.appendChild(o);});
-        cs.onchange=function(){it.c=cs.value;save();draw();};
-        var us=el('select','mini-sel');
-        ['斤','公斤','桶','袋','瓶','件','包','个','批'].forEach(function(u){var o=el('option','',u);o.value=u;if(u===it.u)o.selected=true;us.appendChild(o);});
-        us.onchange=function(){it.u=us.value;save();draw();};
-        var ps=el('input','mini-num');ps.type='number';ps.value=fmt(priceOf(n),2);
-        ps.onchange=function(){S.price[n]=num(ps.value);save();toast(n+' 单价改为 ¥'+fmt(S.price[n],2));};
-        ops.appendChild(cs);ops.appendChild(us);ops.appendChild(ps);
-        nm.appendChild(ops);
-        row.appendChild(nm);
-        list.appendChild(row);
-      });
-    });
-    if(!kw)list.appendChild(el('div','muted','改完自动保存。'));
-  }
-  inp.oninput=draw;draw();
-  var add=el('button','btn ghost','\uff0b 新增品名');
-  add.style.marginTop='12px';
-  add.onclick=function(){
-    var box=buildItemForm();
-    card.appendChild(box);
-    add.style.display='none';
-  };
-  card.appendChild(add);
-  f.appendChild(card);
-  return f;
-}
-
-
-function num2(v){var n=parseFloat(v);return isFinite(n)?n:0;}
-function applyImport(wb){
-  var pick=function(rows,i,c){var r=rows[i]||[];var v=r[c];return v===undefined?'':v;};
-  var outs=[],ins=[],ops=[],ones=[];
-  (wb['每日出库']||[]).forEach(function(r,i){
-    if(i<3)return;
-    var d=serialToDate(r[0]);if(!d)return;
-    var n=r[4];if(!n)return;
-    if(num2(r[6])<=0)return;
-    outs.push({d:d,t:r[2]||'早/晚',n:n,q:num2(r[6]),p:num2(r[7])});
-  });
-  (wb['本月入库']||[]).forEach(function(r,i){
-    if(i<3)return;
-    var d=serialToDate(r[0]);if(!d)return;
-    var n=r[3];if(!n)return;
-    if(num2(r[5])<=0)return;
-    ins.push({d:d,no:r[1]||'',n:n,q:num2(r[5]),p:num2(r[6]),sup:r[8]||''});
-  });
-  (wb['上月结余']||[]).forEach(function(r,i){
-    if(i<3)return;
-    var n=r[1];if(!n)return;
-    ops.push({n:n,q:num2(r[4]),p:num2(r[5])});
-  });
-  (wb['一次性出库']||[]).forEach(function(r,i){
-    if(i<3)return;
-    var d=serialToDate(r[0]);if(!d)return;
-    var n=r[2];if(!n)return;
-    ones.push({d:d,n:n,q:num2(r[4]),p:num2(r[5]),dir:'out',h:1});
-  });
-  S.outLog=outs;S.inLog=ins;S.oneLog=ones;
-  S.opening={};
-  ops.forEach(function(o){if(o.q)S.opening[o.n]=o.q;});
-  // 新出现的品名自动补进档案
-  var seen={};
-  ORDER.forEach(function(n){seen[n]=1;});
-  outs.concat(ins,ones).forEach(function(o){
-    if(seen[o.n])return;seen[o.n]=1;
-    S.items.push({n:o.n,c:'蔬菜',u:'斤'});
-  });
-  rebuildItems();recompute();save();render();
-  toast('已导入：出库 '+outs.length+' 行 / 入库 '+ins.length+' 行');
-}
-
-
-/* ---------------- 导出 ---------------- */
-function exportSheets(){
-  var out=[['日期','星期','餐次','分类','品名','单位','数量','单价(元)','出库金额(元)','领用人','备注']];
-  S.outLog.slice().sort(function(a,b){return a.d<b.d?-1:(a.d>b.d?1:0);}).forEach(function(o){
-    out.push([o.d,DAYC[wdOf(o.d)],o.t,catOf(o.n),o.n,unitOf(o.n),r2(o.q),o.p,r2(o.q*o.p),'',(S.note||{})[o.d+'|'+o.t]||'']);
-  });
-  var one=[['日期','分类','品名','单位','数量','单价(元)','金额(元)','用途','领用人','备注']];
-  S.oneLog.forEach(function(o){if(o.dir==='in')return;one.push([o.d,catOf(o.n),o.n,unitOf(o.n),r2(o.q),o.p,r2(o.q*o.p),o.use||'','','']);});
-  var inb=[['日期','单据号','分类','品名','单位','数量','单价(元)','入库金额(元)','供应商','验收人','备注']];
-  S.inLog.slice().sort(function(a,b){return a.d<b.d?-1:1;}).forEach(function(o){
-    inb.push([o.d,o.no||'',catOf(o.n),o.n,unitOf(o.n),r2(o.q),o.p,r2(o.q*o.p),o.sup||'','','']);
-  });
-  var op=[['序号','品名','分类','单位','结余数量','单价(元)','结余金额(元)','备注']];
-  ORDER.forEach(function(n,i){
-    var q=num(S.opening&&S.opening[n]);
-    op.push([i+1,n,catOf(n),unitOf(n),q,priceOf(n),r2(q*priceOf(n)),'']);
-  });
-  // 月度结算（按类别，和 v1 同列）
-  var set=[['类别','原材料名称','本月入库金额','营养午餐','早、晚餐','出库合计','上月余额','本月余额']];
-  var T=[0,0,0,0,0];
-  CATS.forEach(function(c){
-    var ia=0,nu=0,ev=0,ob=0,rows=[];
-    ORDER.forEach(function(n){
-      if(catOf(n)!==c)return;
-      var i2=0,u2=0,e2=0;
-      S.inLog.forEach(function(o){if(o.n===n)i2+=o.q*o.p;});
-      S.outLog.forEach(function(o){if(o.n===n){if(o.t==='午')u2+=o.q*o.p;else e2+=o.q*o.p;}});
-      var ob2=num(S.opening&&S.opening[n])*priceOf(n);
-      if(i2||u2||e2||ob2){
-        rows.push([n,r2(i2),r2(u2),r2(e2),r2(ob2)]);
-        ia+=i2;nu+=u2;ev+=e2;ob+=ob2;
-      }
-    });
-    if(!rows.length)return;
-    rows.forEach(function(r){set.push([c,r[0],r[1],r[2],r[3],r2(r[2]+r[3]),r[4],r2(r[4]+r[1]-r[2]-r[3])]);});
-    set.push([c+'小计','',r2(ia),r2(nu),r2(ev),r2(nu+ev),r2(ob),r2(ob+ia-nu-ev)]);
-    T[0]+=ia;T[1]+=nu;T[2]+=ev;T[3]+=nu+ev;T[4]+=ob;
-  });
-  set.push(['合计','',r2(T[0]),r2(T[1]),r2(T[2]),r2(T[3]),r2(T[4]),r2(T[4]+T[0]-T[1]-T[2])]);
-  var arch=[['序号','品名','分类','单位','备注']];
-  ORDER.forEach(function(n,i){arch.push([i+1,n,catOf(n),unitOf(n),'']);});
-  return [{name:'每日出库',rows:out},{name:'一次性出库',rows:one},
-          {name:'本月入库',rows:inb},{name:'上月结余',rows:op},
-          {name:'月度结算',rows:set},{name:'食材档案',rows:arch}];
-}
-function downloadXlsx(){
-  var buf=makeXlsx(exportSheets());
-  var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='食堂出入库结算表_'+(S.month||'')+'.xlsx';
-  document.body.appendChild(a);a.click();
-  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);
-  toast('已导出 Excel');
-}
-
-/* ---------------- 启动 ---------------- */
-S=load();
-rebuildItems();
-
-if(typeof document!=='undefined'){
-  window.addEventListener('error',function(ev){
-    try{var v=document.getElementById('view');if(v)v.innerHTML='<div class="card">出错了：'+(ev.message||'未知错误')+'<br><br>点底部「结算」→「清空记录，恢复 11 月数据」可重置。</div>';}catch(e){}
-  });
-  Array.prototype.forEach.call($('tabs').children,function(b){
-    b.onclick=function(){tab=b.dataset.t;openDish=null;addDishMeal=null;render();};
-  });
+function init(){
+  $('verBadge').textContent=APP_VERSION;
+  window._editing=false;
+  cur=new Date();
   render();
-  var qs=((typeof location!=='undefined'&&location.search)||'');
-  if(qs.indexOf('slip=2')>=0)setTimeout(function(){showSlip('早/晚');},400);
-  else if(qs.indexOf('slip=1')>=0)setTimeout(function(){showSlip('午');},400);
 }
-if(typeof module!=='undefined')module.exports={
-  seed:seed, exportSheets:exportSheets, dayRows:dayRows, refOf:refOf,
-  totals:totals, dedupe:dedupe, recompute:recompute, rebuild:function(){rebuildItems();},
-  get S(){return S;}, set S(v){S=v;}, setItems:function(){rebuildItems();}
-};
-})();
+init();
 </script>
 </body>
 </html>
