@@ -145,6 +145,23 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:200;transition:opacity .3s;max-width:80%;opacity:0}
 
+.tabbar{display:flex;gap:6px;margin:0 0 0 6px}
+.tab{font-size:13px;border:1px solid var(--line2);background:var(--panel);color:var(--tx2);border-radius:8px;padding:6px 14px;cursor:pointer}
+.tab.on{background:var(--tx);color:#fff;border-color:var(--tx);font-weight:600}
+.out-form .f-row{margin-bottom:10px}
+.out-form label{font-size:12px;color:var(--tx2);display:block;margin-bottom:4px}
+.out-list .o-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.out-list .o-item:last-child{border-bottom:0}
+.out-list .o-main{flex:1;min-width:0}
+.out-list .o-name{font-weight:500}
+.out-list .o-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.out-list .o-amt{font-weight:600;color:var(--red);white-space:nowrap}
+.out-list .o-del{font-size:11px;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:3px 7px;cursor:pointer;background:transparent;white-space:nowrap}
+.out-bar{position:sticky;bottom:0;display:flex;gap:8px;padding:10px 0;background:var(--panel);margin-top:6px}
+.out-bar button{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;border:0;cursor:pointer;color:#fff}
+.out-bar .b-excel{background:var(--green)}
+.out-bar .b-img{background:var(--blue)}
+
 @media(max-width:420px){
   .dish-row .dn{flex:0 0 82px}
   .sum-grid{gap:4px 12px}
@@ -155,6 +172,10 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)}
 <div class="top">
   <div class="top-in">
     <div class="brand"><b>食堂出库</b><span class="ver" id="verBadge"></span></div>
+    <div class="tabbar">
+      <button class="tab on" id="tabMain" onclick="switchView('main')">菜谱</button>
+      <button class="tab" id="tabOut" onclick="switchView('outbound')">出库</button>
+    </div>
     <div class="top-btns">
       <button class="icon-btn" id="btnImport" onclick="doImport()">导入菜谱</button>
       <button class="icon-btn" id="btnEdit" onclick="toggleEditMode()">改菜谱</button>
@@ -264,7 +285,8 @@ const SLOT_NAMES={早:'早餐',午:'午餐',晚:'晚餐'};
 const LSKEY='canteen_menu_v2';
 let S=load()||fresh();
 let cur=new Date();
-function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{},outDetail:{}};}
+let view='main';
+function fresh(){return {menu:JSON.parse(JSON.stringify(DEFAULT_MENU)),cat:{},out:{},outDetail:{},outbound:[]};}
 function load(){
   try{
     const d=JSON.parse(localStorage.getItem(LSKEY));
@@ -272,6 +294,7 @@ function load(){
     if(!d.cat)d.cat={};
     if(!d.out)d.out={};
     if(!d.outDetail)d.outDetail={};
+    if(!d.outbound)d.outbound=[];
     return d;
   }catch(e){return null;}
 }
@@ -291,6 +314,7 @@ function slotsOf(dow,ing){
 }
 
 function render(){
+  if(view==='outbound'){renderOutbound();return;}
   const dow=dowOf(cur);
   const wrap=$('wrap');
   const selIso=iso(cur);
@@ -709,6 +733,153 @@ function msg(t){
   el.textContent=t;el.style.opacity=1;
   clearTimeout(_msgT);
   _msgT=setTimeout(()=>{el.style.opacity=0;},2200);
+}
+
+const OUT_CATS=['粮食','油盐','肉禽蛋','蔬菜','干鲜','辅料','低值易耗'];
+function switchView(v){
+  view=v;
+  $('tabMain').classList.toggle('on',v==='main');
+  $('tabOut').classList.toggle('on',v==='outbound');
+  document.getElementById('btnImport').style.display=v==='main'?'':'none';
+  document.getElementById('btnEdit').style.display=v==='main'?'':'none';
+  if(v==='outbound')$('confirmBar').style.display='none';
+  render();
+}
+function wdName(d){
+  const w=new Date(d).getDay();
+  return '周'+['日','一','二','三','四','五','六'][w];
+}
+function renderOutbound(){
+  if(!S.outbound)S.outbound=[];
+  const wrap=$('wrap');
+  const today=iso(new Date());
+  let h='';
+  h+=`<div class="card out-form">
+    <div class="sec-h"><span class="t">出库录入</span><span class="s">手机上直接记</span></div>
+    <div class="f-row"><label>日期</label><input type="date" id="oDate" value="${today}"></div>
+    <div class="f-row"><label>餐次</label><select id="oMeal">
+      <option value="午">午（营养午餐）</option>
+      <option value="早/晚">早/晚（早+晚合并）</option>
+    </select></div>
+    <div class="f-row"><label>分类</label><select id="oCat">
+      ${OUT_CATS.map(c=>`<option>${c}</option>`).join('')}
+    </select></div>
+    <div class="f-row"><label>品名</label><input id="oName" placeholder="如：大米"></div>
+    <div class="row2">
+      <div class="f-row"><label>数量</label><input type="number" id="oQty" placeholder="0" step="0.01" inputmode="decimal"></div>
+      <div class="f-row"><label>单位</label><input id="oUnit" value="斤"></div>
+    </div>
+    <div class="f-row"><label>单价(元)</label><input type="number" id="oPrice" placeholder="0" step="0.01" inputmode="decimal"></div>
+    <div class="f-row"><label>领用人</label><input id="oUser" placeholder="选填"></div>
+    <div class="f-row"><label>备注</label><input id="oNote" placeholder="选填"></div>
+    <button class="btn-p" style="width:100%;padding:12px;margin-top:4px" onclick="addOutbound()">＋ 添加这条出库</button>
+  </div>`;
+  const recs=S.outbound.slice().sort((a,b)=>(b.date+a.id).localeCompare(a.date+a.id));
+  const byDate={};
+  recs.forEach(r=>{(byDate[r.date]=byDate[r.date]||[]).push(r);});
+  const dates=Object.keys(byDate).sort().reverse();
+  if(dates.length===0){
+    h+=`<div class="card"><div class="hint">还没有出库记录。上面录入后，月底可一键导出 Excel，或导出午餐图片。</div></div>`;
+  }else{
+    dates.forEach(d=>{
+      const list=byDate[d];
+      const sum=list.reduce((s,r)=>s+(r.qty*r.price||0),0);
+      h+=`<div class="card out-list">
+        <div class="sec-h"><span class="t">${d} ${wdName(d)}</span><span class="s">${list.length}条 · 合计 ${sum.toFixed(2)}元</span></div>`;
+      list.forEach(r=>{
+        h+=`<div class="o-item">
+          <div class="o-main">
+            <div class="o-name">${esc(r.name)} <span style="color:var(--tx3);font-weight:400">${r.meal}·${esc(r.cat)}</span></div>
+            <div class="o-sub">${r.qty}${esc(r.unit)} × ${r.price}元${r.user?(' · '+esc(r.user)):''}${r.note?(' · '+esc(r.note)):''}</div>
+          </div>
+          <div class="o-amt">${((r.qty*r.price)||0).toFixed(2)}</div>
+          <button class="o-del" onclick="delOutbound('${r.id}')">删</button>
+        </div>`;
+      });
+      h+=`</div>`;
+    });
+  }
+  h+=`<div class="out-bar">
+    <button class="b-excel" onclick="exportExcel()">导出 Excel</button>
+    <button class="b-img" onclick="exportLunchImage()">导出午餐图片</button>
+  </div>`;
+  wrap.innerHTML=h;
+}
+let _oid=0;
+function addOutbound(){
+  const date=$('oDate').value||iso(new Date());
+  const meal=$('oMeal').value;
+  const cat=$('oCat').value;
+  const name=$('oName').value.trim();
+  const unit=$('oUnit').value.trim()||'斤';
+  const qty=parseFloat($('oQty').value)||0;
+  const price=parseFloat($('oPrice').value)||0;
+  const user=$('oUser').value.trim();
+  const note=$('oNote').value.trim();
+  if(!name){msg('请填品名');return;}
+  if(qty<=0){msg('请填数量');return;}
+  if(!S.outbound)S.outbound=[];
+  S.outbound.push({id:Date.now()+'_'+(_oid++),date,meal,cat,name,unit,qty,price,user,note});
+  save();
+  $('oName').value='';$('oQty').value='';$('oPrice').value='';$('oUser').value='';$('oNote').value='';
+  $('oName').focus();
+  renderOutbound();
+  msg('✅ 已添加');
+}
+function delOutbound(id){
+  S.outbound=S.outbound.filter(r=>r.id!==id);
+  save();renderOutbound();
+}
+function exportExcel(){
+  if(!S.outbound||S.outbound.length===0){msg('还没有出库记录');return;}
+  const aoa=[['日期','星期','餐次','分类','品名','单位','数量','单价(元)','金额(元)','领用人','备注']];
+  S.outbound.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>{
+    aoa.push([r.date,wdName(r.date),r.meal,r.cat,r.name,r.unit,r.qty,r.price,+(r.qty*r.price).toFixed(2),r.user,r.note]);
+  });
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:11},{wch:6},{wch:8},{wch:8},{wch:12},{wch:6},{wch:8},{wch:9},{wch:10},{wch:8},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'每日出库');
+  XLSX.writeFile(wb,'食堂出库_'+iso(new Date())+'.xlsx');
+  msg('✅ 已导出 Excel');
+}
+function exportLunchImage(){
+  const date=$('oDate').value||iso(new Date());
+  const list=(S.outbound||[]).filter(r=>r.date===date&&r.meal==='午');
+  if(list.length===0){msg('当天午餐没有出库记录');return;}
+  const c=document.createElement('canvas');
+  const W=720,pad=24,rowH=46,headH=70;
+  const H=headH+40+list.length*rowH+40;
+  c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  x.fillStyle='#ffffff';x.fillRect(0,0,W,H);
+  x.fillStyle='#d85a30';x.font='bold 26px sans-serif';x.textBaseline='top';
+  x.fillText('营养午餐出库清单',pad,20);
+  x.fillStyle='#5f6672';x.font='15px sans-serif';
+  x.fillText(date+' '+wdName(date),pad,52);
+  let y=headH;
+  x.fillStyle='#f0f2f5';x.fillRect(pad,y,W-2*pad,34);
+  x.fillStyle='#1a1c1f';x.font='bold 15px sans-serif';
+  x.fillText('品名',pad+10,y+9);
+  x.fillText('数量',pad+230,y+9);
+  x.fillText('单价',pad+340,y+9);
+  x.fillText('金额',pad+450,y+9);
+  y+=34;
+  list.forEach(r=>{
+    x.fillStyle='#1a1c1f';x.font='16px sans-serif';
+    x.fillText(r.name,pad+10,y+13);
+    x.fillText(r.qty+r.unit,pad+230,y+13);
+    x.fillText(r.price+'元',pad+340,y+13);
+    x.fillText((r.qty*r.price).toFixed(2)+'元',pad+450,y+13);
+    x.strokeStyle='#e5e8ec';x.beginPath();x.moveTo(pad,y+rowH-1);x.lineTo(W-pad,y+rowH-1);x.stroke();
+    y+=rowH;
+  });
+  const total=list.reduce((s,r)=>s+r.qty*r.price,0);
+  x.fillStyle='#c94f3d';x.font='bold 17px sans-serif';
+  x.fillText('合计：'+total.toFixed(2)+'元',pad+10,y+14);
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/png');a.download='午餐出库_'+date+'.png';a.click();
+  msg('✅ 午餐图片已导出');
 }
 
 function init(){
